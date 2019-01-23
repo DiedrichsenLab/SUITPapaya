@@ -91,7 +91,7 @@ papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
 papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "File", "icons": null,
     "items": [
         {"label": "Add Image...", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        {"label": "Add Surface...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        {"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
         {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
             "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
         {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
