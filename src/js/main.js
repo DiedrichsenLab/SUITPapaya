@@ -688,7 +688,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
             (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
 
         //width = papayaRoundFast(height / ratio);
-        width = parentWidth;
+        width = parentWidth / 1.38;
 
         //width = parentWidth;
         //height = papayaRoundFast(width / ratio);
