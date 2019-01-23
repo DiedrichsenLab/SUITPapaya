@@ -44,7 +44,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
-    this.orthogonalTall = false;
+    this.orthogonalTall = true;
     this.orthogonalDynamic = false;
     this.kioskMode = false;
     this.noNewFiles = false;
@@ -687,7 +687,11 @@ papaya.Container.prototype.getViewerDimensions = function () {
             PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding && !this.nestedViewer ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
             (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
 
-        width = papayaRoundFast(height / ratio);
+        //width = papayaRoundFast(height / ratio);
+        width = parentWidth;
+
+        //width = parentWidth;
+        //height = papayaRoundFast(width / ratio);
     } else {
 
         width = parentWidth;
@@ -814,7 +818,7 @@ papaya.Container.prototype.reset = function () {
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
-    this.orthogonalTall = false;
+    this.orthogonalTall = true;
     this.orthogonalDynamic = false;
     this.kioskMode = false;
     this.noNewFiles = false;

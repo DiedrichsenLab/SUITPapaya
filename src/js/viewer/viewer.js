@@ -1556,23 +1556,29 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
     if (this.container.orthogonalTall) {
         if (this.container.hasSurface()) {
-            this.viewerDim = this.canvas.height / 1.333;
+            //this.viewerDim = this.canvas.height / 1.333;
+            this.viewerDim = this.canvas.height / 1.5;
 
-            this.getTransformParameters(this.mainImage, this.viewerDim, false, 3);
+            this.getTransformParameters(this.mainImage, this.viewerDim, false, 2);
             this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
             this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
 
-            this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 3);
+            this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2);
             this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = 0;
             this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = this.viewerDim + (papaya.viewer.Viewer.GAP);
 
-            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 3);
-            this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 3) + (papaya.viewer.Viewer.GAP));
+            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 2);
+            this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
             this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
 
-            this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 3);
-            this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX = 2 * ((((this.viewerDim - papaya.viewer.Viewer.GAP) / 3) + (papaya.viewer.Viewer.GAP)));
-            this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
+            // this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 3);
+            // this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX = 2 * ((((this.viewerDim - papaya.viewer.Viewer.GAP) / 3) + (papaya.viewer.Viewer.GAP)));
+            // this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
+
+            //TODO:
+            this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 0.667);
+            this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX = this.viewerDim + papaya.viewer.Viewer.GAP;
+            this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =  0;
         } else {
             this.viewerDim = this.canvas.height / 1.5;
 
@@ -1587,6 +1593,15 @@ papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
             this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2);
             this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
             this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
+
+            // this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2);
+            // this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = this.viewerDim + (papaya.viewer.Viewer.GAP);
+            // this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY =  0;
+
+            // // TODO:
+            // this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 2);
+            // this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX = this.viewerDim + papaya.viewer.Viewer.GAP;
+            // this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =  0;
         }
     } else {
         this.viewerDim = this.canvas.height;
