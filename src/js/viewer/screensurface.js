@@ -193,7 +193,7 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.zSize = this.volume.header.voxelDimensions.zSize;
     this.zDim = this.volume.header.imageDimensions.zDim;
     this.zHalf = (this.zDim * this.zSize) / 2.0;
-    this.showSurfacePlanes = (viewer.container.preferences.showSurfacePlanes === "Yes");
+    this.showSurfacePlanes = (viewer.container.preferences.showSurfacePlanes === "Yes"); // flag of surface plane
     this.backgroundColor = papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND;
     this.pickLocX = 0;
     this.pickLocY = 0;
@@ -222,7 +222,7 @@ papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION = [ -0.015552218963737041, 0.094
                                                     0.24400145970103732, 0.965822108594413, 0.0874693978960848, 0,
                                                     0, 0, 0, 1];
 papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY = 0.3;
-papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND = [0.5, 0.5, 0.5];
+papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND = [0, 0, 0]; // background color changes to black
 papaya.viewer.ScreenSurface.TEXT_SIZE = 50;
 papaya.viewer.ScreenSurface.ORIENTATION_SIZE = 10;
 papaya.viewer.ScreenSurface.RULER_COLOR = [1, 0.078, 0.576];
