@@ -10,6 +10,29 @@ papaya.viewer = papaya.viewer || {};
 
 
 /*** Shaders ***/
+var shaderVert_flat = [
+    "precision mediump float;",
+
+    "attribute vec3 flat_vertPosition;",
+    "attribute vec3 vertColor;",
+    "varying vec3 fragColor;",
+
+    "void main(void) {",
+        "fragColor = vertColor;",
+        "gl_Position = vec4(flat_vertPosition, 0.0, 1.0);",
+    "}"
+].join("\n");
+
+var shaderFrag_flat = [
+    "precision mediump float;",
+
+    "varying vec3 fragColor;",
+
+    "void main(void) {",
+        "gl_FragColor = vec4(fragColor, 1.0);",
+    "}"
+].join("\n");
+
 
 var shaderVert = [
     "precision mediump float;",
@@ -255,8 +278,8 @@ papaya.viewer.ScreenSurface.makeShader = function (gl, src, type) {
 
 
 papaya.viewer.ScreenSurface.initShaders = function (gl) {
-    var fragmentShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderVert, gl.VERTEX_SHADER);
-    var vertexShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderFrag, gl.FRAGMENT_SHADER);
+    var vertexShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderVert, gl.VERTEX_SHADER);
+    var fragmentShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderFrag, gl.FRAGMENT_SHADER);
     var shaderProgram = gl.createProgram();
     gl.attachShader(shaderProgram, vertexShader);
     gl.attachShader(shaderProgram, fragmentShader);
@@ -393,12 +416,18 @@ papaya.viewer.ScreenSurface.prototype.draw = function () {
     }
 };
 
+// Create flat map geometry - data buffer
+var flatmap_vertices = [
+    0.0, 0.5, 0.0,
+    -0.5, -0.5, 0.0,
+    0.5, -0.5, 0.0
+];
 
 
 papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     surface.pointsBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, surface.pointsBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, surface.pointData, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatmap_vertices), gl.STATIC_DRAW);
     surface.pointsBuffer.itemSize = 3;
     surface.pointsBuffer.numItems = surface.numPoints;
 

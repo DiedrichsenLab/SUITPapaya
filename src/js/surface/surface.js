@@ -281,7 +281,7 @@ papaya.surface.Surface.prototype.finishedReading = function () {
         }
     }
 
-    this.progressMeter.drawProgress(1, "Loading surface...");
+    this.progressMeter.drawProgress(1, "Loading flatmap...");
     this.onFinishedRead(this);
 };
 
