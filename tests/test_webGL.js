@@ -101,13 +101,31 @@ var InitDemo = function () {
     });
 
     console.log(triangleData);
-    var triangleVertices1 = [];
+    var triangleVertices = [];
 
     for (var i = 0; i < triangleData.length; i++) {
-        triangleVertices1.push(triangleData[i][0] / 100);
-        triangleVertices1.push(triangleData[i][1] / 100);
+        triangleVertices.push(triangleData[i][0] / 100);
+        triangleVertices.push(triangleData[i][1] / 100);
     }
-    console.log(triangleVertices1);
+    console.log(triangleVertices);
+
+    // ------------ Load flatmap border information and transfer to array -------------//
+    $.ajax({
+        url: "../tests/data/flatmap_border.csv",
+        async: false,
+        success: function (csvd) {
+            borderData = $.csv.toArrays(csvd);
+        }
+    });
+
+    console.log(borderData);
+    var border = [];
+
+    for (var i = 0; i < triangleData.length; i++) {
+        border.push(triangleData[i][0] / 100);
+        border.push(triangleData[i][1] / 100);
+    }
+    console.log(border);
 
     // ------------ Load flatmap edges information and transfer to array -------------//
     $.ajax({
@@ -119,14 +137,14 @@ var InitDemo = function () {
     });
 
     console.log(edgeData);
-    var triangleIndex1 = [];
+    var triangleIndex = [];
 
     for (var i = 0; i < edgeData.length; i++) {
-        triangleIndex1.push(edgeData[i][0] - 1);
-        triangleIndex1.push(edgeData[i][1] - 1);
-        triangleIndex1.push(edgeData[i][2] - 1);
+        triangleIndex.push(edgeData[i][0] - 1);
+        triangleIndex.push(edgeData[i][1] - 1);
+        triangleIndex.push(edgeData[i][2] - 1);
     }
-    console.log(triangleIndex1);
+    console.log(triangleIndex);
 
     // ------------ Load jet-colormap -------------//
     $.ajax({
@@ -149,14 +167,6 @@ var InitDemo = function () {
     });
 
     console.log(verticesColor);
-    // var triangleIndex1 = [];
-    //
-    // for (var i = 0; i < edgeData.length; i++) {
-    //     triangleIndex1.push(edgeData[i][0] - 1);
-    //     triangleIndex1.push(edgeData[i][1] - 1);
-    //     triangleIndex1.push(edgeData[i][2] - 1);
-    // }
-    // console.log(triangleIndex1);
 
     // ------------ Load flatmap edges COLOR information and transfer to array -------------//
     // var input = [0, 3, 2, 2, 6, 5, NaN];
@@ -184,17 +194,17 @@ var InitDemo = function () {
         //return a[0] - b[0];
     });
 
-    var count = 0;
-    for (var i = 0; i < indices.length; i++) {
-        if (isNaN(indices[i][0])) {
-            count += 1;
-            console.log(i);
-        }
-    }
-
-    console.log(count);
-    console.log(indices);
-    console.log(colormap[0][0]);
+    // var count = 0;
+    // for (var i = 0; i < indices.length; i++) {
+    //     if (isNaN(indices[i][0])) {
+    //         count += 1;
+    //         console.log(i);
+    //     }
+    // }
+    //
+    // console.log(count);
+    // console.log(indices);
+    // console.log(colormap[0][0]);
 
     var indices_color = [];
     indices_color.push([indices[0][0], indices[0][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
@@ -219,21 +229,17 @@ var InitDemo = function () {
     indices_color.sort(function (a, b) {
         return a[1] - b[1];
     });
-    // for (var i = 0; i < indices_color.length; i++){
-    //     console.log(indices_color[i][2] + " " + indices_color[i][3] + " " + indices_color[i][4] + '\n');
-    // }
-    //console.log(indices_color);
 
-    // Set threshold
+    // To Change: Set threshold to filter the middle range
     var upper = 1.0;
     var lower = -0.1;
 
     for (var i = 0; i < indices_color.length; i++) {
         if (!isNaN(indices_color[i][0])){
             if(indices_color[i][0] >= lower && indices_color[i][0] <= upper) {
-                indices_color[i][2] = 0.0;
-                indices_color[i][3] = 0.0;
-                indices_color[i][4] = 0.0;
+                indices_color[i][2] = 0.9;
+                indices_color[i][3] = 0.9;
+                indices_color[i][4] = 0.9;
             }
         }
     }
@@ -242,23 +248,28 @@ var InitDemo = function () {
     pos = 2;
     interval = 5;
 
-    while (pos < triangleVertices1.length) {
-        triangleVertices1.splice(pos, 0, indices_color[0][2], indices_color[0][3], indices_color[0][4]);
+    while (pos < triangleVertices.length) {
+        triangleVertices.splice(pos, 0, indices_color[0][2], indices_color[0][3], indices_color[0][4]);
         indices_color.shift();
         pos += interval;
     }
 
-    triangleVertices1.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
+    triangleVertices.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
 
     // triangle vertex buffer object
     const triangleVertexBufferObject = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVertices1), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVertices), gl.STATIC_DRAW);
 
     // Triangle Index buffer object
     const triangleIndexBufferObject = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleIndexBufferObject);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(triangleIndex1), gl.STATIC_DRAW);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(triangleIndex), gl.STATIC_DRAW);
+
+    // Border buffer object
+    const borderBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, borderBufferObject);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(border), gl.STATIC_DRAW);
 
     const positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
     const colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
@@ -287,5 +298,5 @@ var InitDemo = function () {
     // Main render loop
     //
     gl.useProgram(program);
-    gl.drawElements(gl.TRIANGLES, triangleIndex1.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, triangleIndex.length, gl.UNSIGNED_SHORT, 0);
 };
