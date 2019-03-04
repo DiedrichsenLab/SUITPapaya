@@ -10,6 +10,7 @@ var vertexShaderText =
         '{',
         '  fragColor = vertColor;',
         '  gl_Position = vec4(vertPosition, 0.0, 1.0);',
+        '  gl_PointSize = 2.0;',
         '}'
     ].join('\n');
 
@@ -78,19 +79,6 @@ var InitDemo = function () {
         return;
     }
 
-    // Test adding stride
-    // var triangleVertices_test = [0.0, 0.5, -0.5, -0.5, 0.5, -0.5];
-    // pos = 2;
-    // interval = 5;
-    //
-    // while (pos < triangleVertices_test.length) {
-    //     triangleVertices_test.splice(pos, 0, Math.random().toFixed(1), Math.random().toFixed(1), Math.random().toFixed(1));
-    //     pos += interval;
-    // }
-    //
-    // triangleVertices_test.push(Math.random().toFixed(1), Math.random().toFixed(1), Math.random().toFixed(1));
-    // console.log(triangleVertices_test);
-
     // ------------ Load flatmap vertices information and transfer to array -------------//
     $.ajax({
         url: "../tests/data/flatmap_vertices.csv",
@@ -121,9 +109,12 @@ var InitDemo = function () {
     console.log(borderData);
     var border = [];
 
-    for (var i = 0; i < triangleData.length; i++) {
-        border.push(triangleData[i][0] / 100);
-        border.push(triangleData[i][1] / 100);
+    for (var i = 0; i < borderData.length; i++) {
+        border.push(borderData[i][0] / 100);
+        border.push(borderData[i][1] / 100);
+        border.push(0.0);
+        border.push(0.0);
+        border.push(0.0);
     }
     console.log(border);
 
@@ -194,18 +185,6 @@ var InitDemo = function () {
         //return a[0] - b[0];
     });
 
-    // var count = 0;
-    // for (var i = 0; i < indices.length; i++) {
-    //     if (isNaN(indices[i][0])) {
-    //         count += 1;
-    //         console.log(i);
-    //     }
-    // }
-    //
-    // console.log(count);
-    // console.log(indices);
-    // console.log(colormap[0][0]);
-
     var indices_color = [];
     indices_color.push([indices[0][0], indices[0][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
     colormap.shift();
@@ -231,7 +210,7 @@ var InitDemo = function () {
     });
 
     // To Change: Set threshold to filter the middle range
-    var upper = 1.0;
+    var upper = 0.1;
     var lower = -0.1;
 
     for (var i = 0; i < indices_color.length; i++) {
@@ -244,9 +223,8 @@ var InitDemo = function () {
         }
     }
 
-    //var triangleVertices = [0.0, 0.5, -0.5, -0.5, 0.5, -0.5];
-    pos = 2;
-    interval = 5;
+    let pos = 2;
+    let interval = 5;
 
     while (pos < triangleVertices.length) {
         triangleVertices.splice(pos, 0, indices_color[0][2], indices_color[0][3], indices_color[0][4]);
@@ -256,6 +234,9 @@ var InitDemo = function () {
 
     triangleVertices.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
 
+
+    // ------------------------------------- Draw flatmap --------------------------------------//
+    gl.useProgram(program);
     // triangle vertex buffer object
     const triangleVertexBufferObject = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject);
@@ -266,10 +247,6 @@ var InitDemo = function () {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleIndexBufferObject);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(triangleIndex), gl.STATIC_DRAW);
 
-    // Border buffer object
-    const borderBufferObject = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, borderBufferObject);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(border), gl.STATIC_DRAW);
 
     const positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
     const colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
@@ -286,7 +263,7 @@ var InitDemo = function () {
         colorAttribLocation, // Attribute location
         3, // Number of elements per attribute
         gl.FLOAT, // Type of elements
-        gl.FALSE,
+        false,
         5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
         2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
     );
@@ -294,9 +271,43 @@ var InitDemo = function () {
     gl.enableVertexAttribArray(positionAttribLocation);
     gl.enableVertexAttribArray(colorAttribLocation);
 
-    //
     // Main render loop
-    //
-    gl.useProgram(program);
+    // gl.useProgram(program);
     gl.drawElements(gl.TRIANGLES, triangleIndex.length, gl.UNSIGNED_SHORT, 0);
+
+
+    // ------------------------------------- Draw Borders --------------------------------------//
+    gl.useProgram(program);
+    // Border buffer object
+    const borderBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, borderBufferObject);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(border), gl.STATIC_DRAW);
+
+    const borderAttribLocation = gl.getAttribLocation(program, 'vertPosition');
+    //const colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
+
+    gl.vertexAttribPointer(
+        borderAttribLocation, // Attribute location
+        2, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        0 // Offset from the beginning of a single vertex to this attribute
+    );
+
+    gl.vertexAttribPointer(
+        colorAttribLocation, // Attribute location
+        3, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
+    );
+
+    gl.enableVertexAttribArray(borderAttribLocation);
+    gl.enableVertexAttribArray(colorAttribLocation);
+
+    // Main render loop
+    //gl.useProgram(program);
+    gl.drawArrays(gl.POINTS, 0, borderData.length);
 };

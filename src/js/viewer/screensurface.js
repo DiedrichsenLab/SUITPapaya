@@ -216,7 +216,7 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.zSize = this.volume.header.voxelDimensions.zSize;
     this.zDim = this.volume.header.imageDimensions.zDim;
     this.zHalf = (this.zDim * this.zSize) / 2.0;
-    this.showSurfacePlanes = (viewer.container.preferences.showSurfacePlanes === "Yes"); // flag of surface plane
+    this.showSurfacePlanes = false; // flag of surface plane
     this.backgroundColor = papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND;
     this.pickLocX = 0;
     this.pickLocY = 0;
@@ -347,7 +347,7 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
 
     this.calculateScaleFactor();
     this.initActivePlaneBuffers(this.context);
-    this.initRulerBuffers(this.context);
+    //this.initRulerBuffers(this.context);
 
     mat4.multiply(this.centerMat, papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION, this.tempMat);
     mat4.multiply(this.tempMat, this.centerMatInv, this.mouseRotCurrent);
@@ -708,30 +708,30 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
             gl.uniform1i(this.shaderProgram.activePlaneEdge, 0);
         }
 
-        if (this.viewer.isShowingCrosshairs() && ((this.viewer.mainImage !== this) || this.viewer.toggleMainCrosshairs)) {
-            if (this.needsUpdateActivePlanes) {
-                this.needsUpdateActivePlanes = false;
-                this.bindActivePlanes(gl);
-            }
-
-            // draw crosshairs
-            gl.uniform1i(this.shaderProgram.crosshairs, 1);
-            gl.lineWidth(this.isMainView() ? 3.0 : 2.0);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineXBuffer);
-            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineXBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            gl.drawArrays(gl.LINES, 0, 2);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineYBuffer);
-            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineYBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            gl.drawArrays(gl.LINES, 0, 2);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineZBuffer);
-            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineZBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            gl.drawArrays(gl.LINES, 0, 2);
-
-            gl.uniform1i(this.shaderProgram.crosshairs, 0);
-        }
+        // if (this.viewer.isShowingCrosshairs() && ((this.viewer.mainImage !== this) || this.viewer.toggleMainCrosshairs)) {
+        //     if (this.needsUpdateActivePlanes) {
+        //         this.needsUpdateActivePlanes = false;
+        //         this.bindActivePlanes(gl);
+        //     }
+        //
+        //     // draw crosshairs
+        //     gl.uniform1i(this.shaderProgram.crosshairs, 1);
+        //     gl.lineWidth(this.isMainView() ? 3.0 : 2.0);
+        //
+        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineXBuffer);
+        //     gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineXBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        //     gl.drawArrays(gl.LINES, 0, 2);
+        //
+        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineYBuffer);
+        //     gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineYBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        //     gl.drawArrays(gl.LINES, 0, 2);
+        //
+        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineZBuffer);
+        //     gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineZBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        //     gl.drawArrays(gl.LINES, 0, 2);
+        //
+        //     gl.uniform1i(this.shaderProgram.crosshairs, 0);
+        // }
 
         // draw surface (secondpass)
         gl.enable(gl.DEPTH_TEST);
