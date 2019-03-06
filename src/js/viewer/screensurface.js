@@ -1026,6 +1026,41 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
 
 
     gl.useProgram(shaderProgram_1);
+    // ------------------------------------- Draw Borders --------------------------------------//
+    //gl.useProgram(shaderProgram_1);
+    // Border buffer object
+    let borderBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, borderBufferObject);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(border), gl.STATIC_DRAW);
+
+    let borderAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
+    let bcolorAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertColor');
+
+    gl.vertexAttribPointer(
+        borderAttribLocation, // Attribute location
+        2, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        0 // Offset from the beginning of a single vertex to this attribute
+    );
+
+    gl.vertexAttribPointer(
+        bcolorAttribLocation, // Attribute location
+        3, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
+    );
+
+    gl.enableVertexAttribArray(borderAttribLocation);
+    gl.enableVertexAttribArray(bcolorAttribLocation);
+
+    // Main render loop
+    //gl.useProgram(program);
+    gl.drawArrays(gl.POINTS, 0, 548);
+
     // ------------------------------------- Draw flatmap --------------------------------------//
 
     // triangle vertex buffer object
@@ -1066,41 +1101,6 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     // gl.useProgram(program);
     gl.drawElements(gl.TRIANGLES, triangleIndex.length, gl.UNSIGNED_SHORT, 0);
 
-
-    // ------------------------------------- Draw Borders --------------------------------------//
-    gl.useProgram(shaderProgram_1);
-    // Border buffer object
-    let borderBufferObject = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, borderBufferObject);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(border), gl.STATIC_DRAW);
-
-    let borderAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
-    //const colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
-
-    gl.vertexAttribPointer(
-        borderAttribLocation, // Attribute location
-        2, // Number of elements per attribute
-        gl.FLOAT, // Type of elements
-        false,
-        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-        0 // Offset from the beginning of a single vertex to this attribute
-    );
-
-    gl.vertexAttribPointer(
-        colorAttribLocation, // Attribute location
-        3, // Number of elements per attribute
-        gl.FLOAT, // Type of elements
-        false,
-        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-        2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
-    );
-
-    gl.enableVertexAttribArray(borderAttribLocation);
-    gl.enableVertexAttribArray(colorAttribLocation);
-
-    // Main render loop
-    //gl.useProgram(program);
-    gl.drawArrays(gl.POINTS, 0, border.length/5);
 
     // Switch to the original shader program
     var vertexShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderVert, gl.VERTEX_SHADER);
