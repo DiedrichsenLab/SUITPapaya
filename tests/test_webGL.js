@@ -1,4 +1,4 @@
-var vertexShaderText =
+let vertexShaderText =
     [
         'precision mediump float;',
         '',
@@ -14,7 +14,7 @@ var vertexShaderText =
         '}'
     ].join('\n');
 
-var fragmentShaderText =
+let fragmentShaderText =
     [
         'precision mediump float;',
         '',
@@ -25,12 +25,22 @@ var fragmentShaderText =
         '}'
     ].join('\n');
 
+let fragmentShaderText_1 =
+    [
+        'precision mediump float;',
+        '',
+        'varying vec3 fragColor;',
+        'void main()',
+        '{',
+        '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);',
+        '}'
+    ].join('\n');
 
-var InitDemo = function () {
+let InitDemo = function () {
     console.log('This is working');
 
-    var canvas = document.getElementById('flatmap-surface');
-    var gl = canvas.getContext('webgl');
+    let canvas = document.getElementById('flatmap-surface');
+    let gl = canvas.getContext('webgl');
 
     if (!gl) {
         console.log('WebGL not supported, falling back on experimental-webgl');
@@ -47,11 +57,13 @@ var InitDemo = function () {
     //
     // Create shaders
     //
-    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    let vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    let fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    let fragmentShader_1 = gl.createShader(gl.FRAGMENT_SHADER);
 
     gl.shaderSource(vertexShader, vertexShaderText);
     gl.shaderSource(fragmentShader, fragmentShaderText);
+    gl.shaderSource(fragmentShader_1, fragmentShaderText_1);
 
     gl.compileShader(vertexShader);
     if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
@@ -65,7 +77,13 @@ var InitDemo = function () {
         return;
     }
 
-    var program = gl.createProgram();
+    gl.compileShader(fragmentShader_1);
+    if (!gl.getShaderParameter(fragmentShader_1, gl.COMPILE_STATUS)) {
+        console.error('ERROR compiling fragment shader!', gl.getShaderInfoLog(fragmentShader_1));
+        return;
+    }
+
+    let program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
@@ -79,65 +97,77 @@ var InitDemo = function () {
         return;
     }
 
+    // Create the test program
+    let program_1 = gl.createProgram();
+    gl.attachShader(program_1, vertexShader);
+    gl.attachShader(program_1, fragmentShader_1);
+    gl.linkProgram(program_1);
+    if (!gl.getProgramParameter(program_1, gl.LINK_STATUS)) {
+        console.error('ERROR linking program!', gl.getProgramInfoLog(program_1));
+        return;
+    }
+    gl.validateProgram(program_1);
+    if (!gl.getProgramParameter(program_1, gl.VALIDATE_STATUS)) {
+        console.error('ERROR validating program!', gl.getProgramInfoLog(program_1));
+        return;
+    }
+
     // ------------ Load flatmap vertices information and transfer to array -------------//
+    let triangleVertices = [];
     $.ajax({
         url: "../tests/data/flatmap_vertices.csv",
         async: false,
         success: function (csvd) {
-            triangleData = $.csv.toArrays(csvd);
+            let triangleData = $.csv.toArrays(csvd);
+            //let triangleVertices = [];
+
+            for (let i = 0; i < triangleData.length; i++) {
+                triangleVertices.push(triangleData[i][0] / 100);
+                triangleVertices.push(triangleData[i][1] / 100);
+            }
         }
     });
 
-    console.log(triangleData);
-    var triangleVertices = [];
-
-    for (var i = 0; i < triangleData.length; i++) {
-        triangleVertices.push(triangleData[i][0] / 100);
-        triangleVertices.push(triangleData[i][1] / 100);
-    }
     console.log(triangleVertices);
 
     // ------------ Load flatmap border information and transfer to array -------------//
+    let border = [];
     $.ajax({
         url: "../tests/data/flatmap_border.csv",
         async: false,
         success: function (csvd) {
-            borderData = $.csv.toArrays(csvd);
+            let borderData = $.csv.toArrays(csvd);
+            for (let i = 0; i < borderData.length; i++) {
+                border.push(borderData[i][0] / 100);
+                border.push(borderData[i][1] / 100);
+                border.push(0.0);
+                border.push(0.0);
+                border.push(0.0);
+            }
         }
     });
 
-    console.log(borderData);
-    var border = [];
-
-    for (var i = 0; i < borderData.length; i++) {
-        border.push(borderData[i][0] / 100);
-        border.push(borderData[i][1] / 100);
-        border.push(0.0);
-        border.push(0.0);
-        border.push(0.0);
-    }
     console.log(border);
 
     // ------------ Load flatmap edges information and transfer to array -------------//
+    let triangleIndex = [];
     $.ajax({
         url: "../tests/data/flatmap_edges.csv",
         async: false,
         success: function (csvd) {
-            edgeData = $.csv.toArrays(csvd);
+            let edgeData = $.csv.toArrays(csvd);
+            for (let i = 0; i < edgeData.length; i++) {
+                triangleIndex.push(edgeData[i][0] - 1);
+                triangleIndex.push(edgeData[i][1] - 1);
+                triangleIndex.push(edgeData[i][2] - 1);
+            }
         }
     });
 
-    console.log(edgeData);
-    var triangleIndex = [];
-
-    for (var i = 0; i < edgeData.length; i++) {
-        triangleIndex.push(edgeData[i][0] - 1);
-        triangleIndex.push(edgeData[i][1] - 1);
-        triangleIndex.push(edgeData[i][2] - 1);
-    }
     console.log(triangleIndex);
 
     // ------------ Load jet-colormap -------------//
+    let colormap = [];
     $.ajax({
         url: "../tests/data/jet_colormap.csv",
         async: false,
@@ -149,6 +179,7 @@ var InitDemo = function () {
     console.log(colormap);
 
     // ------------ Load vertices color information -------------//
+    let verticesColor = [];
     $.ajax({
         url: "../tests/data/flatmap_verticesColor.csv",
         async: false,
@@ -160,15 +191,8 @@ var InitDemo = function () {
     console.log(verticesColor);
 
     // ------------ Load flatmap edges COLOR information and transfer to array -------------//
-    // var input = [0, 3, 2, 2, 6, 5, NaN];
-    // var colormap = [[0.0, 0.0, 0.5625],
-    //                 [0.0, 0.0, 0.6250],
-    //                 [0.0, 0.0, 0.6875],
-    //                 [0.0, 0.0, 0.7500],
-    //                 [0.0, 0.0, 0.8125]];
-
-    var indices = [];
-    for (var x in verticesColor) {
+    let indices = [];
+    for (let x in verticesColor) {
         indices.push([verticesColor[x][0], x]);
     }
     indices.sort(function (a, b) {
@@ -185,11 +209,11 @@ var InitDemo = function () {
         //return a[0] - b[0];
     });
 
-    var indices_color = [];
+    let indices_color = [];
     indices_color.push([indices[0][0], indices[0][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
     colormap.shift();
 
-    for (var i = 1; i < indices.length; i++) {
+    for (let i = 1; i < indices.length; i++) {
         if (isNaN(indices[i][0])) {
             indices_color.push([indices[i][0], indices[i][1], 0.9, 0.9, 0.9]);
         }
@@ -210,10 +234,10 @@ var InitDemo = function () {
     });
 
     // To Change: Set threshold to filter the middle range
-    var upper = 0.1;
-    var lower = -0.1;
+    let upper = 0.1;
+    let lower = -0.1;
 
-    for (var i = 0; i < indices_color.length; i++) {
+    for (let i = 0; i < indices_color.length; i++) {
         if (!isNaN(indices_color[i][0])){
             if(indices_color[i][0] >= lower && indices_color[i][0] <= upper) {
                 indices_color[i][2] = 0.9;
@@ -255,7 +279,7 @@ var InitDemo = function () {
         positionAttribLocation, // Attribute location
         2, // Number of elements per attribute
         gl.FLOAT, // Type of elements
-        gl.FALSE,
+        false,
         5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
         0 // Offset from the beginning of a single vertex to this attribute
     );
@@ -309,5 +333,5 @@ var InitDemo = function () {
 
     // Main render loop
     //gl.useProgram(program);
-    gl.drawArrays(gl.POINTS, 0, borderData.length);
+    gl.drawArrays(gl.POINTS, 0, border.length/5);
 };

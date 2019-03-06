@@ -10,28 +10,32 @@ papaya.viewer = papaya.viewer || {};
 
 
 /*** Shaders ***/
-var shaderVert_flat = [
-    "precision mediump float;",
+let vertexShaderText =
+    [
+        'precision mediump float;',
+        '',
+        'attribute vec2 vertPosition;',
+        'attribute vec3 vertColor;',
+        'varying vec3 fragColor;',
+        '',
+        'void main()',
+        '{',
+        '  fragColor = vertColor;',
+        '  gl_Position = vec4(vertPosition, 0.0, 1.0);',
+        '  gl_PointSize = 2.0;',
+        '}'
+    ].join('\n');
 
-    "attribute vec3 flat_vertPosition;",
-    "attribute vec3 vertColor;",
-    "varying vec3 fragColor;",
-
-    "void main(void) {",
-        "fragColor = vertColor;",
-        "gl_Position = vec4(flat_vertPosition, 0.0, 1.0);",
-    "}"
-].join("\n");
-
-var shaderFrag_flat = [
-    "precision mediump float;",
-
-    "varying vec3 fragColor;",
-
-    "void main(void) {",
-        "gl_FragColor = vec4(fragColor, 1.0);",
-    "}"
-].join("\n");
+let fragmentShaderText =
+    [
+        'precision mediump float;',
+        '',
+        'varying vec3 fragColor;',
+        'void main()',
+        '{',
+        '  gl_FragColor = vec4(fragColor, 1.0);',
+        '}'
+    ].join('\n');
 
 
 var shaderVert = [
@@ -336,6 +340,9 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
     this.context.viewportWidth = this.canvas.width;
     this.context.viewportHeight = this.canvas.height;
 
+    // this.context.clearColor(0.0, 0.0, 0.0, 1.0);
+    // this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
+
     this.zoom = this.volume.header.imageDimensions.yDim * this.volume.header.voxelDimensions.ySize * 1.5;
     this.initPerspective();
 
@@ -346,7 +353,7 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
     }
 
     this.calculateScaleFactor();
-    this.initActivePlaneBuffers(this.context);
+    //this.initActivePlaneBuffers(this.context);
     //this.initRulerBuffers(this.context);
 
     mat4.multiply(this.centerMat, papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION, this.tempMat);
@@ -416,18 +423,11 @@ papaya.viewer.ScreenSurface.prototype.draw = function () {
     }
 };
 
-// Create flat map geometry - data buffer
-var flatmap_vertices = [
-    0.0, 0.5, 0.0,
-    -0.5, -0.5, 0.0,
-    0.5, -0.5, 0.0
-];
-
 
 papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     surface.pointsBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, surface.pointsBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatmap_vertices), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, surface.pointData, gl.STATIC_DRAW);
     surface.pointsBuffer.itemSize = 3;
     surface.pointsBuffer.numItems = surface.numPoints;
 
@@ -603,7 +603,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     var ctr, xSlice, ySlice, zSlice, hasTranslucent = this.hasTranslucentSurfaces();
 
     // initialize
-    gl.clearColor(this.backgroundColor[0], this.backgroundColor[1], this.backgroundColor[2], 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -818,27 +818,303 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
         gl.uniform4f(this.shaderProgram.solidColor, this.surfaces[index].solidColor[0],
             this.surfaces[index].solidColor[1], this.surfaces[index].solidColor[2], 1.0);
     }
+    //
+    // gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].pointsBuffer);
+    // gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.surfaces[index].pointsBuffer.itemSize,
+    //     gl.FLOAT, false, 0, 0);
+    //
+    // gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].normalsBuffer);
+    // gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.surfaces[index].normalsBuffer.itemSize,
+    //     gl.FLOAT, false, 0, 0);
+    //
+    // if (this.surfaces[index].colorsData) {
+    //     gl.uniform1i(this.shaderProgram.hasColors, 1);
+    //     gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].colorsBuffer);
+    //     gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
+    //     gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, this.surfaces[index].colorsBuffer.itemSize,
+    //         gl.FLOAT, false, 0, 0);
+    // } else {
+    //     gl.disableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
+    // }
+    //
+    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[index].trianglesBuffer);
+    // gl.drawElements(gl.TRIANGLES, this.surfaces[index].trianglesBuffer.numItems, gl.UNSIGNED_INT, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].pointsBuffer);
-    gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.surfaces[index].pointsBuffer.itemSize,
-        gl.FLOAT, false, 0, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].normalsBuffer);
-    gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.surfaces[index].normalsBuffer.itemSize,
-        gl.FLOAT, false, 0, 0);
+    // New rendering //////////////////////////////////////////////////////////////////////////////////////////////////
+    //var vertexShader_1 = papaya.viewer.ScreenSurface.makeShader(gl, vertexShaderText, gl.VERTEX_SHADER);
+    //var fragmentShader_1 = papaya.viewer.ScreenSurface.makeShader(gl, fragmentShaderText, gl.FRAGMENT_SHADER);
 
-    if (this.surfaces[index].colorsData) {
-        gl.uniform1i(this.shaderProgram.hasColors, 1);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].colorsBuffer);
-        gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
-        gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, this.surfaces[index].colorsBuffer.itemSize,
-            gl.FLOAT, false, 0, 0);
-    } else {
-        gl.disableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
+    let vertexShader_1 = gl.createShader(gl.VERTEX_SHADER);
+    let fragmentShader_1 = gl.createShader(gl.FRAGMENT_SHADER);
+
+    gl.shaderSource(vertexShader_1, vertexShaderText);
+    gl.shaderSource(fragmentShader_1, fragmentShaderText);
+
+    gl.compileShader(vertexShader_1);
+    if (!gl.getShaderParameter(vertexShader_1, gl.COMPILE_STATUS)) {
+        console.error('ERROR compiling vertex shader!', gl.getShaderInfoLog(vertexShader_1));
+        return;
     }
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[index].trianglesBuffer);
-    gl.drawElements(gl.TRIANGLES, this.surfaces[index].trianglesBuffer.numItems, gl.UNSIGNED_INT, 0);
+    gl.compileShader(fragmentShader_1);
+    if (!gl.getShaderParameter(fragmentShader_1, gl.COMPILE_STATUS)) {
+        console.error('ERROR compiling vertex shader!', gl.getShaderInfoLog(fragmentShader_1));
+        return;
+    }
+
+    var shaderProgram_1 = gl.createProgram();
+    gl.attachShader(shaderProgram_1, vertexShader_1);
+    gl.attachShader(shaderProgram_1, fragmentShader_1);
+    gl.linkProgram(shaderProgram_1);
+
+    if (!gl.getProgramParameter(shaderProgram_1, gl.LINK_STATUS)) {
+        console.log("Could not initialise shaders");
+    }
+
+    gl.validateProgram(shaderProgram_1);
+    if (!gl.getProgramParameter(shaderProgram_1, gl.VALIDATE_STATUS)) {
+        console.error('ERROR validating program!', gl.getProgramInfoLog(shaderProgram_1));
+        return;
+    }
+
+    // ------------ Load flatmap vertices information and transfer to array -------------//
+    let triangleVertices = [];
+    $.ajax({
+        url: "../tests/data/flatmap_vertices.csv",
+        async: false,
+        success: function (csvd) {
+            let triangleData = $.csv.toArrays(csvd);
+            //let triangleVertices = [];
+
+            for (let i = 0; i < triangleData.length; i++) {
+                triangleVertices.push(triangleData[i][0] / 100);
+                triangleVertices.push(triangleData[i][1] / 100);
+            }
+        }
+    });
+
+    console.log(triangleVertices);
+
+    // ------------ Load flatmap border information and transfer to array -------------//
+    let border = [];
+    $.ajax({
+        url: "../tests/data/flatmap_border.csv",
+        async: false,
+        success: function (csvd) {
+            let borderData = $.csv.toArrays(csvd);
+            for (let i = 0; i < borderData.length; i++) {
+                border.push(borderData[i][0] / 100);
+                border.push(borderData[i][1] / 100);
+                border.push(0.0);
+                border.push(0.0);
+                border.push(0.0);
+            }
+        }
+    });
+
+    console.log(border);
+
+    // ------------ Load flatmap edges information and transfer to array -------------//
+    let triangleIndex = [];
+    $.ajax({
+        url: "../tests/data/flatmap_edges.csv",
+        async: false,
+        success: function (csvd) {
+            let edgeData = $.csv.toArrays(csvd);
+            for (let i = 0; i < edgeData.length; i++) {
+                triangleIndex.push(edgeData[i][0] - 1);
+                triangleIndex.push(edgeData[i][1] - 1);
+                triangleIndex.push(edgeData[i][2] - 1);
+            }
+        }
+    });
+
+    console.log(triangleIndex);
+
+    // ------------ Load jet-colormap -------------//
+    let colormap = [];
+    $.ajax({
+        url: "../tests/data/jet_colormap.csv",
+        async: false,
+        success: function (csvd) {
+            colormap = $.csv.toArrays(csvd);
+        }
+    });
+
+    console.log(colormap);
+
+    // ------------ Load vertices color information -------------//
+    let verticesColor = [];
+    $.ajax({
+        url: "../tests/data/flatmap_verticesColor.csv",
+        async: false,
+        success: function (csvd) {
+            verticesColor = $.csv.toArrays(csvd);
+        }
+    });
+
+    console.log(verticesColor);
+
+    // ------------ Load flatmap edges COLOR information and transfer to array -------------//
+    let indices = [];
+    for (let x in verticesColor) {
+        indices.push([verticesColor[x][0], x]);
+    }
+    indices.sort(function (a, b) {
+        if( !isFinite(a[0]) && !isFinite(b[0]) ) {
+            return 0;
+        }
+        if( !isFinite(a[0]) ) {
+            return 1;
+        }
+        if( !isFinite(b[0]) ) {
+            return -1;
+        }
+        return a[0]-b[0];
+        //return a[0] - b[0];
+    });
+
+    let indices_color = [];
+    indices_color.push([indices[0][0], indices[0][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
+    colormap.shift();
+
+    for (let i = 1; i < indices.length; i++) {
+        if (isNaN(indices[i][0])) {
+            indices_color.push([indices[i][0], indices[i][1], 0.9, 0.9, 0.9]);
+        }
+        else{
+            if (indices[i][0] === indices[i-1][0]) {
+                indices_color.push([indices[i][0], indices[i][1], indices_color[i-1][2], indices_color[i-1][3], indices_color[i-1][4]]);
+            }
+            else{
+                indices_color.push([indices[i][0], indices[i][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
+                colormap.shift();
+            }
+        }
+    }
+    console.log(indices_color);
+
+    indices_color.sort(function (a, b) {
+        return a[1] - b[1];
+    });
+
+    // To Change: Set threshold to filter the middle range
+    let upper = 0.1;
+    let lower = -0.1;
+
+    for (let i = 0; i < indices_color.length; i++) {
+        if (!isNaN(indices_color[i][0])){
+            if(indices_color[i][0] >= lower && indices_color[i][0] <= upper) {
+                indices_color[i][2] = 0.9;
+                indices_color[i][3] = 0.9;
+                indices_color[i][4] = 0.9;
+            }
+        }
+    }
+
+    let pos = 2;
+    let interval = 5;
+
+    while (pos < triangleVertices.length) {
+        triangleVertices.splice(pos, 0, indices_color[0][2], indices_color[0][3], indices_color[0][4]);
+        indices_color.shift();
+        pos += interval;
+    }
+
+    triangleVertices.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
+
+
+    gl.useProgram(shaderProgram_1);
+    // ------------------------------------- Draw flatmap --------------------------------------//
+
+    // triangle vertex buffer object
+    let triangleVertexBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVertices), gl.STATIC_DRAW);
+
+    // Triangle Index buffer object
+    let triangleIndexBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleIndexBufferObject);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(triangleIndex), gl.STATIC_DRAW);
+
+
+    let positionAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
+    let colorAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertColor');
+
+    gl.vertexAttribPointer(
+        positionAttribLocation, // Attribute location
+        2, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        0 // Offset from the beginning of a single vertex to this attribute
+    );
+    gl.vertexAttribPointer(
+        colorAttribLocation, // Attribute location
+        3, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
+    );
+
+    gl.enableVertexAttribArray(positionAttribLocation);
+    gl.enableVertexAttribArray(colorAttribLocation);
+
+    // Main render loop
+    // gl.useProgram(program);
+    gl.drawElements(gl.TRIANGLES, triangleIndex.length, gl.UNSIGNED_SHORT, 0);
+
+
+    // ------------------------------------- Draw Borders --------------------------------------//
+    gl.useProgram(shaderProgram_1);
+    // Border buffer object
+    let borderBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, borderBufferObject);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(border), gl.STATIC_DRAW);
+
+    let borderAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
+    //const colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
+
+    gl.vertexAttribPointer(
+        borderAttribLocation, // Attribute location
+        2, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        0 // Offset from the beginning of a single vertex to this attribute
+    );
+
+    gl.vertexAttribPointer(
+        colorAttribLocation, // Attribute location
+        3, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
+    );
+
+    gl.enableVertexAttribArray(borderAttribLocation);
+    gl.enableVertexAttribArray(colorAttribLocation);
+
+    // Main render loop
+    //gl.useProgram(program);
+    gl.drawArrays(gl.POINTS, 0, border.length/5);
+
+    // Switch to the original shader program
+    var vertexShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderVert, gl.VERTEX_SHADER);
+    var fragmentShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderFrag, gl.FRAGMENT_SHADER);
+    var shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        console.log("Could not initialise shaders");
+    }
+
+    gl.useProgram(shaderProgram);
 
     if (isTranslucent && (translucentFirstPass || translucentSecondPass)) {
         gl.disable(gl.BLEND);
