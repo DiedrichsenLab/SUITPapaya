@@ -1,9 +1,12 @@
 let vertexShaderText =
     [
         'precision mediump float;',
-        '',
+
         'attribute vec2 vertPosition;',
         'attribute vec3 vertColor;',
+
+        "uniform bool uCrosshairs;",
+
         'varying vec3 fragColor;',
         '',
         'void main()',
@@ -17,13 +20,21 @@ let vertexShaderText =
 let fragmentShaderText =
     [
         'precision mediump float;',
-        '',
+
+        "uniform bool uCrosshairs;",
+
         'varying vec3 fragColor;',
         'void main()',
         '{',
-        '  gl_FragColor = vec4(fragColor, 1.0);',
+        '    gl_FragColor = vec4(fragColor, 1.0);',
+        '    if (uCrosshairs) {',
+        '       gl_FragColor = vec4(0.10980392156863, 0.52549019607843, 0.93333333333333, 0.5);',
+        '    } else {',
+        '       gl_FragColor = vec4(fragColor, 1.0);',
+        '    }',
         '}'
     ].join('\n');
+
 
 let fragmentShaderText_1 =
     [
@@ -334,4 +345,52 @@ let InitDemo = function () {
     // Main render loop
     //gl.useProgram(program);
     gl.drawArrays(gl.POINTS, 0, border.length/5);
+
+
+    // ------------------------------------- Draw Crosshairs --------------------------------------//
+
+    // crosshair X
+    let x_crosshair = [];
+    x_crosshair[0] = -0.75;
+    x_crosshair[1] = 0.25;
+    //x_crosshair[2] = 0;
+
+    x_crosshair[2] = 0.75;
+    x_crosshair[3] = 0.25;
+    //x_crosshair[5] = 0;
+
+    // crosshair Y
+    let y_crosshair = [];
+    y_crosshair[0] = 0;
+    y_crosshair[1] = 0.75;
+    //y_crosshair[2] = 0;
+
+    y_crosshair[2] = 0;
+    y_crosshair[3] = -0.25;
+    //y_crosshair[5] = 0;
+
+    let crosshairsLocation = gl.getUniformLocation(program, "uCrosshairs");
+    gl.uniform1i(crosshairsLocation, 1);
+    gl.lineWidth(3.0);
+
+    let crosshairAttribLocation = gl.getAttribLocation(program, 'vertPosition');
+
+    // draw x crosshair
+    let LineXBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, LineXBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(x_crosshair), gl.DYNAMIC_DRAW);
+    gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(crosshairAttribLocation);
+    gl.drawArrays(gl.LINES, 0, 2);
+
+    // draw y crosshair
+    let LineYBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, LineYBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(y_crosshair), gl.DYNAMIC_DRAW);
+    gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(crosshairAttribLocation);
+    gl.drawArrays(gl.LINES, 0, 2);
+
+
+    gl.uniform1i(crosshairsLocation, 0);
 };

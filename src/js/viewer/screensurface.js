@@ -40,7 +40,7 @@ let fragmentShaderText =
         '{',
         '    gl_FragColor = vec4(fragColor, 1.0);',
         '    if (uCrosshairs) {',
-        '       gl_FragColor = vec4(0.10980392156863, 0.52549019607843, 0.93333333333333, 0.5);',
+        '       gl_FragColor = vec4(0.10980392156863, 0.52549019607843, 0.93333333333333, 1.0);',
         '    } else {',
         '       gl_FragColor = vec4(fragColor, 1.0);',
         '    }',
@@ -451,6 +451,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
         }
     });
 
+    surface.triangleVerticesMap = new Float32Array(triangleVertices);
     console.log(triangleVertices);
 
     // ------------ Load flatmap border information and transfer to array -------------//
@@ -580,42 +581,15 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     }
 
     triangleVertices.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
-
-
-    // gl.useProgram(shaderProgram_1);
-    // ------------------------------------- Draw Borders --------------------------------------//
-    //gl.useProgram(shaderProgram_1);
-    // Border buffer object
-    //surface.borderBuffer = gl.createBuffer();
-    //gl.bindBuffer(gl.ARRAY_BUFFER, surface.borderBuffer);
-    //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(border), gl.STATIC_DRAW);
+   
+    // Border buffer data
     surface.border = new Float32Array(border);
 
-    // Main render loop
-    // gl.useProgram(program);
-    // gl.drawArrays(gl.POINTS, 0, 548);
-
-    // ------------------------------------- Draw flatmap --------------------------------------//
-
-    // triangle vertex buffer object
-    // surface.pointsBuffer = gl.createBuffer();
-    // gl.bindBuffer(gl.ARRAY_BUFFER, surface.pointsBuffer);
-    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVertices), gl.STATIC_DRAW);
+    // Flat map rendering buffer data
     surface.triangleVertices = new Float32Array(triangleVertices);
-
-    // Triangle Index buffer object
-    // surface.trianglesBuffer = gl.createBuffer();
-    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, surface.trianglesBuffer);
-    // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(triangleIndex), gl.STATIC_DRAW);
     surface.triangleIndex = new Uint16Array(triangleIndex);
-    // surface.trianglesBuffer.numItems = triangleIndex.length;
 
-    // Main render loop
-    // gl.useProgram(program);
-    // gl.drawElements(gl.TRIANGLES, triangleIndex.length, gl.UNSIGNED_SHORT, 0);
-
-
-    // -------------------------------------------------------------------------------------- //
+    // ---------------------------------------- Original ---------------------------------------------- //
     // surface.pointsBuffer = gl.createBuffer();
     // gl.bindBuffer(gl.ARRAY_BUFFER, surface.pointsBuffer);
     // gl.bufferData(gl.ARRAY_BUFFER, surface.pointData, gl.STATIC_DRAW);
@@ -1073,42 +1047,56 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     gl.useProgram(shaderProgram_1);
 
     // ------------------------------------- Draw Crosshairs --------------------------------------//
-    let LineZBuffer = gl.createBuffer();
-
+    // Get the value at current coordinate
+    let val = this.viewer.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
 
     let xSlice = this.currentCoord.x + ((this.xDim / 2) - this.volume.header.origin.x);
     let ySlice = this.yDim - this.currentCoord.y - ((this.yDim / 2) - this.volume.header.origin.y);
     let zSlice = this.zDim - this.currentCoord.z - ((this.zDim / 2) - this.volume.header.origin.z);
 
-    // crosshairs Z
-    this.crosshairLineVertsZ[0] = ((xSlice * this.xSize) - this.xHalf);
-    this.crosshairLineVertsZ[1] = ((ySlice * this.ySize) - this.yHalf);
+    // print slice position
+    console.log("current slice at: " + "(" + xSlice + ", " + ySlice + ")");
+    var x_crosshair = [];
+    var y_crosshair = [];
+    if (val !== 0) {
+        var currentcenterX = this.surfaces[index].triangleVerticesMap[(val - 1) * 2];
+        var currentcenterY = this.surfaces[index].triangleVerticesMap[(val - 1) * 2 + 1];
 
-    this.crosshairLineVertsZ[2] = ((xSlice * this.xSize) - this.xHalf);
-    this.crosshairLineVertsZ[3] = ((ySlice * this.ySize) - this.yHalf);
+        // crosshair X
+        x_crosshair[0] = -this.xHalf/100 + currentcenterX;
+        x_crosshair[1] = currentcenterY;
 
-    // crosshair Y
-    this.crosshairLineVertsY[0] = ((xSlice * this.xSize) - this.xHalf) / 100;
-    this.crosshairLineVertsY[1] = (-this.yHalf + this.centerWorld.y) / 100;
-    this.crosshairLineVertsY[2] = 0;
+        x_crosshair[2] = this.xHalf/100 + currentcenterX;
+        x_crosshair[3] = currentcenterY;
 
-    this.crosshairLineVertsY[3] = ((xSlice * this.xSize) - this.xHalf) / 100;
-    this.crosshairLineVertsY[4] = (this.yHalf + this.centerWorld.y) / 100;
-    this.crosshairLineVertsY[5] = 0;
+        // crosshair Y
+        y_crosshair[0] = currentcenterX;
+        y_crosshair[1] = -this.yHalf/100 + currentcenterY;
 
-    // crosshair X
-    let x_crosshair = [];
-    x_crosshair[0] = (-this.xHalf + this.centerWorld.x)/100;
-    x_crosshair[1] = ((ySlice * this.ySize) - this.yHalf)/100;
-    x_crosshair[2] = 0;
+        y_crosshair[2] = currentcenterX;
+        y_crosshair[3] = this.yHalf/100 + currentcenterY;
 
-    x_crosshair[3] = (this.xHalf + this.centerWorld.x)/100;
-    x_crosshair[4] = ((ySlice * this.ySize) - this.yHalf)/100;
-    x_crosshair[5] = 0;
+    } else {
+        // crosshair X
+        x_crosshair[0] = 1;
+        x_crosshair[1] = 1;
 
+        x_crosshair[2] = 1;
+        x_crosshair[3] = 1;
 
-    shaderProgram_1.crosshairs = gl.getUniformLocation(shaderProgram_1, "uCrosshairs");
-    gl.uniform1i(shaderProgram_1.crosshairs, 1);
+        // crosshair Y
+        y_crosshair[0] = 1;
+        y_crosshair[1] = 1;
+
+        y_crosshair[2] = 1;
+        y_crosshair[3] = 1;
+    }
+
+    // print current cursor location
+    console.log("current cursor at: " + "(" + (x_crosshair[0] + x_crosshair[2])/2 + ", " + x_crosshair[3] + ")");
+
+    let crosshairsLocation = gl.getUniformLocation(shaderProgram_1, "uCrosshairs");
+    gl.uniform1i(crosshairsLocation, 1);
     gl.lineWidth(this.isMainView() ? 3.0 : 2.0);
 
     let crosshairAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
@@ -1117,45 +1105,21 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     let LineXBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, LineXBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(x_crosshair), gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 3, 0);
+    gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(crosshairAttribLocation);
     gl.drawArrays(gl.LINES, 0, 2);
 
     // draw y crosshair
     let LineYBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, LineYBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.crosshairLineVertsY, gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 3, 0);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(y_crosshair), gl.DYNAMIC_DRAW);
+    gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(crosshairAttribLocation);
     gl.drawArrays(gl.LINES, 0, 2);
 
-
-    gl.uniform1i(shaderProgram_1.crosshairs, 0);
+    gl.uniform1i(crosshairsLocation, 0);
 
     // ------------------------------------- Draw Borders --------------------------------------//
-
-    // gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].pointsBuffer);
-    // gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.surfaces[index].pointsBuffer.itemSize,
-    //     gl.FLOAT, false, 0, 0);
-    //
-    // gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].normalsBuffer);
-    // gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.surfaces[index].normalsBuffer.itemSize,
-    //     gl.FLOAT, false, 0, 0);
-    //
-    // if (this.surfaces[index].colorsData) {
-    //     gl.uniform1i(this.shaderProgram.hasColors, 1);
-    //     gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].colorsBuffer);
-    //     gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
-    //     gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, this.surfaces[index].colorsBuffer.itemSize,
-    //         gl.FLOAT, false, 0, 0);
-    // } else {
-    //     gl.disableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
-    // }
-    //
-    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[index].trianglesBuffer);
-    // gl.drawElements(gl.TRIANGLES, this.surfaces[index].trianglesBuffer.numItems, gl.UNSIGNED_INT, 0);
-
-
     // Border buffer object
     let borderBufferObject = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, borderBufferObject);
@@ -1190,7 +1154,6 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     gl.drawArrays(gl.POINTS, 0, 548);
 
     // ------------------------------------- Draw flatmap --------------------------------------//
-
     // triangle vertex buffer object
     let triangleVertexBufferObject = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject);
@@ -1229,7 +1192,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     gl.drawElements(gl.TRIANGLES, this.surfaces[index].triangleIndex.length, gl.UNSIGNED_SHORT, 0);
 
 
-    // Switch to the original shader program
+    // Switch to the original shader program (Manually)
     // var vertexShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderVert, gl.VERTEX_SHADER);
     // var fragmentShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderFrag, gl.FRAGMENT_SHADER);
     // var shaderProgram = gl.createProgram();
