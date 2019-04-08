@@ -187,7 +187,14 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.volume = baseVolume;
     this.surfaces = surfaces;
     this.viewer = viewer;
+    this.selectedSlice = viewer.selectedSlice;
     this.currentCoord = viewer.currentCoord;
+    this.cursorPosition = viewer.cursorPosition;
+    this.contextMenuMousePosition = viewer.contextMenuMousePosition;
+    this.contextMenuMousePositionX = viewer.contextMenuMousePositionX;
+    this.contextMenuMousePositionY = viewer.contextMenuMousePositionY;
+    this.previousMousePosition = viewer.previousMousePosition;
+    this.surfaceView = viewer.surfaceView;
     this.zoom = 0;
     this.sliceDirection = papaya.viewer.ScreenSlice.DIRECTION_SURFACE;
     this.dynamicStartX = -1;
@@ -581,7 +588,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     }
 
     triangleVertices.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
-   
+
     // Border buffer data
     surface.border = new Float32Array(border);
 
@@ -1048,50 +1055,97 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
 
     // ------------------------------------- Draw Crosshairs --------------------------------------//
     // Get the value at current coordinate
-    let val = this.viewer.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
 
-    let xSlice = this.currentCoord.x + ((this.xDim / 2) - this.volume.header.origin.x);
-    let ySlice = this.yDim - this.currentCoord.y - ((this.yDim / 2) - this.volume.header.origin.y);
-    let zSlice = this.zDim - this.currentCoord.z - ((this.zDim / 2) - this.volume.header.origin.z);
+    // var cPosX, cPosY;
+    // this.viewer.addEventListener("mousedown", function handler(evt) {
+    //     var x = evt.clientX;
+    //     var y = evt.clientY;
+    //     var rect = canvas.getBoundingClientRect();
+    //     x -= rect.left;
+    //     y -= rect.top;
+    //     var cursorPosX = (x - rect.width/2) / (rect.width/2);
+    //     var cursorPosY = -(y - rect.height/2) / (rect.height/2);
+    //
+    //     cPosX = cursorPosX;
+    //     cPosY = cursorPosY;
+    //     alert("canvas position: " + x + ", " + y);
+    // });
 
-    // print slice position
-    console.log("current slice at: " + "(" + xSlice + ", " + ySlice + ")");
-    var x_crosshair = [];
-    var y_crosshair = [];
-    if (val !== 0) {
-        var currentcenterX = this.surfaces[index].triangleVerticesMap[(val - 1) * 2];
-        var currentcenterY = this.surfaces[index].triangleVerticesMap[(val - 1) * 2 + 1];
+    //var currentCoor = papayaContainers[0].viewer.convertCoordinateToScreen(this.currentCoord);
+    //papaya.viewer.Viewer.prototype.findClickedSlice()
+    let x_crosshair = [];
+    let y_crosshair = [];
+
+    if (this.selectedSlice === this.surfaceView) {
+        var currentCoorX = this.contextMenuMousePosition.x - this.screenOffsetX;
+        var currentCoorY = this.contextMenuMousePosition.y - this.screenOffsetY;
+
+        console.log("current slice at: " + "(" + currentCoorX + ", " + currentCoorY + ")");
+
+        let xSlice = this.currentCoord.x + ((this.xDim / 2) - this.volume.header.origin.x);
+        let ySlice = this.yDim - this.currentCoord.y - ((this.yDim / 2) - this.volume.header.origin.y);
+        let zSlice = this.zDim - this.currentCoord.z - ((this.zDim / 2) - this.volume.header.origin.z);
+
+        // let currentPos_x = this.dynamicStartX;
+        // let currentPos_y = this.dynamicStartY;
+
+        let currentcenterX = (currentCoorX - this.screenDim / 2) / (this.screenDim / 2);
+        let currentcenterY = (this.screenDim / 2 - currentCoorY) / (this.screenDim / 2);
 
         // crosshair X
-        x_crosshair[0] = -this.xHalf/100 + currentcenterX;
+        x_crosshair[0] = -this.xHalf / 100 + currentcenterX;
         x_crosshair[1] = currentcenterY;
 
-        x_crosshair[2] = this.xHalf/100 + currentcenterX;
+        x_crosshair[2] = this.xHalf / 100 + currentcenterX;
         x_crosshair[3] = currentcenterY;
 
         // crosshair Y
         y_crosshair[0] = currentcenterX;
-        y_crosshair[1] = -this.yHalf/100 + currentcenterY;
+        y_crosshair[1] = -this.yHalf / 100 + currentcenterY;
 
         y_crosshair[2] = currentcenterX;
-        y_crosshair[3] = this.yHalf/100 + currentcenterY;
-
-    } else {
-        // crosshair X
-        x_crosshair[0] = 1;
-        x_crosshair[1] = 1;
-
-        x_crosshair[2] = 1;
-        x_crosshair[3] = 1;
-
-        // crosshair Y
-        y_crosshair[0] = 1;
-        y_crosshair[1] = 1;
-
-        y_crosshair[2] = 1;
-        y_crosshair[3] = 1;
+        y_crosshair[3] = this.yHalf / 100 + currentcenterY;
     }
+    else {
+        let val = this.viewer.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
 
+        // print slice position
+        // console.log("current slice at: " + "(" + currentPos_x + ", " + currentPos_y + ")");
+
+        if (val !== 0) {
+            let currentcenterX = this.surfaces[index].triangleVerticesMap[(val - 1) * 2];
+            let currentcenterY = this.surfaces[index].triangleVerticesMap[(val - 1) * 2 + 1];
+
+            // crosshair X
+            x_crosshair[0] = -this.xHalf/100 + currentcenterX;
+            x_crosshair[1] = currentcenterY;
+
+            x_crosshair[2] = this.xHalf/100 + currentcenterX;
+            x_crosshair[3] = currentcenterY;
+
+            // crosshair Y
+            y_crosshair[0] = currentcenterX;
+            y_crosshair[1] = -this.yHalf/100 + currentcenterY;
+
+            y_crosshair[2] = currentcenterX;
+            y_crosshair[3] = this.yHalf/100 + currentcenterY;
+
+        } else {
+            // crosshair X
+            x_crosshair[0] = 1;
+            x_crosshair[1] = 1;
+
+            x_crosshair[2] = 1;
+            x_crosshair[3] = 1;
+
+            // crosshair Y
+            y_crosshair[0] = 1;
+            y_crosshair[1] = 1;
+
+            y_crosshair[2] = 1;
+            y_crosshair[3] = 1;
+        }
+    }
     // print current cursor location
     console.log("current cursor at: " + "(" + (x_crosshair[0] + x_crosshair[2])/2 + ", " + x_crosshair[3] + ")");
 

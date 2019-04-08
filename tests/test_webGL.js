@@ -47,6 +47,55 @@ let fragmentShaderText_1 =
         '}'
     ].join('\n');
 
+// function getElementOfRect(element) {
+//     var rect = element.getBoundingClientRect();
+//     var eInfo = {
+//         width: rect.width,
+//         height: rect.height,
+//         top: rect.top,
+//         left: rect.left
+//     };
+//     return eInfo;
+// }
+//
+// function getMouseOnWindow(event) {
+//     var wPos = {
+//         wx : event.clientX,
+//         wy : event.clientY
+//     };
+//     return wPos;
+// }
+//
+// function windowToCanvas(canvas, wx, wy) {
+//     var eInfo = getElementOfRect(canvas);
+//     var cx = wx - eInfo.left;
+//     var cy = wy - eInfo.top;
+//
+//     var cPos = {
+//         cx : cx,
+//         cy : cy
+//     };
+//     return cPos;
+// }
+//
+// function cavasToWebGL(canvas, cx, cy) {
+//     var width = getElementOfRect(canvas).width;
+//     var height = getElementOfRect(canvas).height;
+//
+//     var gtx = cx - width/2;
+//     var gty = height/2 - cy;
+//
+//     var gsx = 2*gtx / width;
+//     var gsy = 2*gty / height;
+//
+//     var gPos = {
+//         gx : gsx,
+//         gy : gsy
+//     };
+//     return gPos;
+// }
+
+
 let InitDemo = function () {
     console.log('This is working');
 
@@ -122,6 +171,37 @@ let InitDemo = function () {
         console.error('ERROR validating program!', gl.getProgramInfoLog(program_1));
         return;
     }
+
+    // Get current mouse postions in webGL object
+    // canvas.addEventListener('mousedown', function(event) {
+    //
+    //     var width = getElementOfRect(canvas).width;
+    //     var height = getElementOfRect(canvas).height;
+    //     var top = getElementOfRect(canvas).top;
+    //     var left = getElementOfRect(canvas).left;
+    //
+    //     console.log("canvas element width and height" + width + ", " + height + "; top and left: " + top + ", " + left);
+    //
+    //     var wPos = getMouseOnWindow(event);
+    //     var cPos = windowToCanvas(canvas, wPos.wx, wPos.wy);
+    //     var gPos = cavasToWebGL(canvas, cPos.cx, cPos.cy);
+    //
+    //     console.log("Current WebGL position at: " + gPos.gx + ", " + gPos.gy);
+    //
+    // });
+
+    // canvas.addEventListener("mousemove", function __handler__(evt) {
+    //     var x = evt.clientX;
+    //     var y = evt.clientY;
+    //     var rect = canvas.getBoundingClientRect();
+    //     x -= rect.left;
+    //     y -= rect.top;
+    //     var cursorPosX = (x - rect.width/2) / (rect.width/2);
+    //     var cursorPosY = -(y - rect.height/2) / (rect.height/2);
+    //
+    //     alert("canvas position: " + cursorPosX + ", " + cursorPosY);
+    // });
+
 
     // ------------ Load flatmap vertices information and transfer to array -------------//
     let triangleVertices = [];
@@ -269,7 +349,6 @@ let InitDemo = function () {
 
     triangleVertices.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
 
-
     // ------------------------------------- Draw flatmap --------------------------------------//
     gl.useProgram(program);
     // triangle vertex buffer object
@@ -346,51 +425,142 @@ let InitDemo = function () {
     //gl.useProgram(program);
     gl.drawArrays(gl.POINTS, 0, border.length/5);
 
-
     // ------------------------------------- Draw Crosshairs --------------------------------------//
 
-    // crosshair X
-    let x_crosshair = [];
-    x_crosshair[0] = -0.75;
-    x_crosshair[1] = 0.25;
-    //x_crosshair[2] = 0;
+    canvas.addEventListener("mousedown", function handler(evt) {
+        canvas.addEventListener("mousemove", function updatePos(evt) {
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    x_crosshair[2] = 0.75;
-    x_crosshair[3] = 0.25;
-    //x_crosshair[5] = 0;
+            // ------------------------------------- Draw flatmap --------------------------------------//
+            gl.useProgram(program);
+            // triangle vertex buffer object
+            const triangleVertexBufferObject = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVertices), gl.STATIC_DRAW);
 
-    // crosshair Y
-    let y_crosshair = [];
-    y_crosshair[0] = 0;
-    y_crosshair[1] = 0.75;
-    //y_crosshair[2] = 0;
-
-    y_crosshair[2] = 0;
-    y_crosshair[3] = -0.25;
-    //y_crosshair[5] = 0;
-
-    let crosshairsLocation = gl.getUniformLocation(program, "uCrosshairs");
-    gl.uniform1i(crosshairsLocation, 1);
-    gl.lineWidth(3.0);
-
-    let crosshairAttribLocation = gl.getAttribLocation(program, 'vertPosition');
-
-    // draw x crosshair
-    let LineXBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, LineXBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(x_crosshair), gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(crosshairAttribLocation);
-    gl.drawArrays(gl.LINES, 0, 2);
-
-    // draw y crosshair
-    let LineYBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, LineYBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(y_crosshair), gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(crosshairAttribLocation);
-    gl.drawArrays(gl.LINES, 0, 2);
+            // Triangle Index buffer object
+            const triangleIndexBufferObject = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleIndexBufferObject);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(triangleIndex), gl.STATIC_DRAW);
 
 
-    gl.uniform1i(crosshairsLocation, 0);
+            const positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
+            const colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
+
+            gl.vertexAttribPointer(
+                positionAttribLocation, // Attribute location
+                2, // Number of elements per attribute
+                gl.FLOAT, // Type of elements
+                false,
+                5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+                0 // Offset from the beginning of a single vertex to this attribute
+            );
+            gl.vertexAttribPointer(
+                colorAttribLocation, // Attribute location
+                3, // Number of elements per attribute
+                gl.FLOAT, // Type of elements
+                false,
+                5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+                2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
+            );
+
+            gl.enableVertexAttribArray(positionAttribLocation);
+            gl.enableVertexAttribArray(colorAttribLocation);
+
+            // Main render loop
+            // gl.useProgram(program);
+            gl.drawElements(gl.TRIANGLES, triangleIndex.length, gl.UNSIGNED_SHORT, 0);
+
+
+            // ------------------------------------- Draw Borders --------------------------------------//
+            gl.useProgram(program);
+            // Border buffer object
+            const borderBufferObject = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, borderBufferObject);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(border), gl.STATIC_DRAW);
+
+            const borderAttribLocation = gl.getAttribLocation(program, 'vertPosition');
+            //const colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
+
+            gl.vertexAttribPointer(
+                borderAttribLocation, // Attribute location
+                2, // Number of elements per attribute
+                gl.FLOAT, // Type of elements
+                false,
+                5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+                0 // Offset from the beginning of a single vertex to this attribute
+            );
+
+            gl.vertexAttribPointer(
+                colorAttribLocation, // Attribute location
+                3, // Number of elements per attribute
+                gl.FLOAT, // Type of elements
+                false,
+                5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+                2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
+            );
+
+            gl.enableVertexAttribArray(borderAttribLocation);
+            gl.enableVertexAttribArray(colorAttribLocation);
+
+            // Main render loop
+            //gl.useProgram(program);
+            gl.drawArrays(gl.POINTS, 0, border.length / 5);
+
+            // ------------------------------------- Draw Crosshairs --------------------------------------//
+            var x = evt.clientX;
+            var y = evt.clientY;
+            var rect = canvas.getBoundingClientRect();
+            x -= rect.left;
+            y -= rect.top;
+            var cursorPosX = (x - rect.width / 2) / (rect.width / 2);
+            var cursorPosY = -(y - rect.height / 2) / (rect.height / 2);
+
+            let x_crosshair = [];
+            let y_crosshair = [];
+            // crosshair X
+            x_crosshair[0] = -1;
+            x_crosshair[1] = cursorPosY;
+
+            x_crosshair[2] = 1;
+            x_crosshair[3] = cursorPosY;
+
+            // crosshair Y
+            y_crosshair[0] = cursorPosX;
+            y_crosshair[1] = -1;
+
+            y_crosshair[2] = cursorPosX;
+            y_crosshair[3] = 1;
+
+            let crosshairsLocation = gl.getUniformLocation(program, "uCrosshairs");
+            gl.uniform1i(crosshairsLocation, 1);
+            gl.lineWidth(4.0);
+
+            let crosshairAttribLocation = gl.getAttribLocation(program, 'vertPosition');
+
+            // draw x crosshair
+            let LineXBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, LineXBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(x_crosshair), gl.DYNAMIC_DRAW);
+            gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(crosshairAttribLocation);
+            gl.drawArrays(gl.LINES, 0, 2);
+
+            // draw y crosshair
+            let LineYBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, LineYBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(y_crosshair), gl.DYNAMIC_DRAW);
+            gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(crosshairAttribLocation);
+            gl.drawArrays(gl.LINES, 0, 2);
+
+
+            gl.uniform1i(crosshairsLocation, 0);
+        });
+    });
+
+    canvas.addEventListener("mouseup", function stopDrawing(evt) {
+        canvas.removeEventListener("mousemove", function updatePos(evt){});
+    });
 };

@@ -68,6 +68,9 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.panAmountZ = 0;
     this.keyPressIgnored = false;
     this.previousMousePosition = new papaya.core.Point();
+    this.contextMenuMousePosition = new papaya.core.Point();
+    // this.contextMenuMousePositionX = 0;
+    // this.contextMenuMousePositionY = 0;
     this.isControlKeyDown = false;
     this.isAltKeyDown = false;
     this.isShiftKeyDown = false;
@@ -1951,6 +1954,12 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                 this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
                 this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
 
+                this.contextMenuMousePosition.x = this.contextMenuMousePositionX;
+                this.contextMenuMousePosition.y = this.contextMenuMousePositionY;
+
+                // this.contextMenuMousePosition.x = this.convertScreenToImageCoordinateX(this.previousMousePosition.x, this.surfaceView);
+                // this.contextMenuMousePosition.y = this.convertScreenToImageCoordinateY(this.previousMousePosition.y, this.surfaceView);
+
                 if (this.container.contextManager.prefersColorPicking && this.container.contextManager.prefersColorPicking()) {
                     pickedColor = this.surfaceView.pickColor(this.contextMenuMousePositionX, this.contextMenuMousePositionY);
                     menuData = this.container.contextManager.getContextAtColor(pickedColor[0], pickedColor[1], pickedColor[2]);
@@ -2020,6 +2029,11 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                         this.resetUpdateTimer(me);
                     }
                 } else if (this.selectedSlice && (this.selectedSlice === this.surfaceView)) {
+                    this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
+                    this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
+
+                    this.contextMenuMousePosition.x = this.contextMenuMousePositionX;
+                    this.contextMenuMousePosition.y = this.contextMenuMousePositionY;
                     if (this.surfaceView.findProximalRulerHandle(this.previousMousePosition.x - this.canvasRect.left,
                             this.previousMousePosition.y - this.canvasRect.top)) {
 
@@ -2221,6 +2235,9 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
             if (this.selectedSlice !== null) {
                 if (this.selectedSlice === this.surfaceView) {
+                    this.contextMenuMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me) - this.canvasRect.left;
+                    this.contextMenuMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me) - this.canvasRect.top;
+
                     if (this.surfaceView.grabbedRulerPoint !== -1) {
                         this.surfaceView.pickRuler(currentMouseX - this.canvasRect.left,
                             currentMouseY - this.canvasRect.top);
