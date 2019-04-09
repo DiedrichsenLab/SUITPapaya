@@ -253,6 +253,7 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.orientationContext = null;
     this.rulerPoints = null;
     this.grabbedRulerPoint = -1;
+    this.selectedFlag = false;
 
     this.processParams(params);
 };
@@ -1076,7 +1077,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     let x_crosshair = [];
     let y_crosshair = [];
 
-    if (this.selectedSlice === this.surfaceView) {
+    if (this.selectedFlag) { // when flatmap is clicked
         var currentCoorX = this.contextMenuMousePosition.x - this.screenOffsetX;
         var currentCoorY = this.contextMenuMousePosition.y - this.screenOffsetY;
 
@@ -1106,7 +1107,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
         y_crosshair[2] = currentcenterX;
         y_crosshair[3] = this.yHalf / 100 + currentcenterY;
     }
-    else {
+    else { // when the other three slices are clicked
         let val = this.viewer.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
 
         // print slice position

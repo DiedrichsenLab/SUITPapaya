@@ -1928,6 +1928,7 @@ papaya.viewer.Viewer.prototype.resetUpdateTimer = function (me) {
 
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
     var draggingStarted = true, menuData, menu, pickedColor;
+    this.surfaceView.selectedFlag = false;
 
     if (!papaya.Container.allowPropagation) {
         me.stopPropagation();
@@ -2029,6 +2030,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                         this.resetUpdateTimer(me);
                     }
                 } else if (this.selectedSlice && (this.selectedSlice === this.surfaceView)) {
+                    this.surfaceView.selectedFlag = true;
                     this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
                     this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
 
@@ -2175,6 +2177,7 @@ papaya.viewer.Viewer.prototype.findClickedSlice = function (viewer, xLoc, yLoc) 
 
 papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     me.preventDefault();
+    this.surfaceView.selectedFlag = false;
 
     if (this.showingContextMenu) {
         me.handled = true;
@@ -2235,6 +2238,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
             if (this.selectedSlice !== null) {
                 if (this.selectedSlice === this.surfaceView) {
+                    this.surfaceView.selectedFlag = true;
                     this.contextMenuMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me) - this.canvasRect.left;
                     this.contextMenuMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me) - this.canvasRect.top;
 
