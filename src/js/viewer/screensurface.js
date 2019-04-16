@@ -416,6 +416,22 @@ papaya.viewer.ScreenSurface.prototype.resize = function (screenDim) {
     this.canvas.height = this.screenDim;
     this.context.viewportWidth = this.canvas.width;
     this.context.viewportHeight = this.canvas.height;
+
+    // TODO: making the pixel -> 2d flatmap coordinates mapping
+    let x = [];
+    let mapping = new Array(Math.ceil(this.screenDim)).fill(0).map(() => new Array(Math.ceil(this.screenDim)).fill(0));
+    x[0][0] = this.surfaces[0].triangleVerticesMap[0];
+    x[0][1] = this.surfaces[0].triangleVerticesMap[1];
+    x[1][0] = this.surfaces[0].triangleVerticesMap[2];
+    x[1][1] = this.surfaces[0].triangleVerticesMap[3];
+
+    for (let i = 0; i < mapping.length; ++i) {
+        for (let j = 0; j < mapping.length; ++j) {
+
+        }
+    }
+    console.log(x);
+    this.flat_mapping = mapping;
 };
 
 
@@ -445,20 +461,26 @@ papaya.viewer.ScreenSurface.prototype.draw = function () {
 papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     // ------------ Load flatmap vertices information and transfer to array -------------//
     let triangleVertices = [];
+    let verticesIndex = [];
     $.ajax({
         url: "../tests/data/flatmap_vertices.csv",
         async: false,
         success: function (csvd) {
             let triangleData = $.csv.toArrays(csvd);
+            let Index = new Array(triangleData.length).fill(0).map(() => new Array(3).fill(0));
             //let triangleVertices = [];
 
             for (let i = 0; i < triangleData.length; i++) {
                 triangleVertices.push(triangleData[i][0] / 100);
                 triangleVertices.push(triangleData[i][1] / 100);
+                Index[i][0] = triangleData[i][0] / 100;
+                Index[i][1] = triangleData[i][1] / 100;
+                Index[i][2] = i + 1;
             }
+            verticesIndex = Index;
         }
     });
-
+    surface.verticesIndex = verticesIndex;
     surface.triangleVerticesMap = new Float32Array(triangleVertices);
     console.log(triangleVertices);
 
@@ -1077,9 +1099,14 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     let x_crosshair = [];
     let y_crosshair = [];
 
+    let test = this.flat_mapping;
+    console.log(test);
+
     if (this.selectedFlag) { // when flatmap is clicked
         var currentCoorX = this.contextMenuMousePosition.x - this.screenOffsetX;
         var currentCoorY = this.contextMenuMousePosition.y - this.screenOffsetY;
+
+        this.pickedCoordinate = this.findPickedCoordinate(gl, this.pickLocX, this.pickLocY);
 
         console.log("current slice at: " + "(" + currentCoorX + ", " + currentCoorY + ")");
 
@@ -1106,6 +1133,11 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
 
         y_crosshair[2] = currentcenterX;
         y_crosshair[3] = this.yHalf / 100 + currentcenterY;
+
+        // TODO: update the current 3D coordinates in the three viewers
+        this.viewer.currentCoord.x = 50;
+        this.viewer.currentCoord.y = 20;
+        this.viewer.currentCoord.z = 19;
     }
     else { // when the other three slices are clicked
         let val = this.viewer.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
