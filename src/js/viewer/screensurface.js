@@ -419,6 +419,8 @@ papaya.viewer.ScreenSurface.prototype.resize = function (screenDim) {
 
     // TODO: making the pixel -> 2d flatmap coordinates mapping
     let x = [];
+    let stride = 2 / Math.ceil(this.screenDim);
+    let indexSize = this.surfaces[0].verticesIndex.length;
     let mapping = new Array(Math.ceil(this.screenDim)).fill(0).map(() => new Array(Math.ceil(this.screenDim)).fill(0));
     x[0][0] = this.surfaces[0].triangleVerticesMap[0];
     x[0][1] = this.surfaces[0].triangleVerticesMap[1];
@@ -427,7 +429,14 @@ papaya.viewer.ScreenSurface.prototype.resize = function (screenDim) {
 
     for (let i = 0; i < mapping.length; ++i) {
         for (let j = 0; j < mapping.length; ++j) {
-
+            let index = this.surfaces[0].verticesIndex.find(function(points){
+                for(let k = 0;k < indexSize; ++k){
+                    if( points[k][0] >= (-1 + j*stride) && points[k][0] < (-1 + (j+1)*stride) && points[k][1] > (1 - (i+1)*stride) && points[k][1] <= (1 - i*stride) ){
+                        return points;
+                    }
+                }
+            });
+            mapping[i][j] = index;
         }
     }
     console.log(x);
