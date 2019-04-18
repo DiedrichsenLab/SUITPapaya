@@ -418,29 +418,26 @@ papaya.viewer.ScreenSurface.prototype.resize = function (screenDim) {
     this.context.viewportHeight = this.canvas.height;
 
     // TODO: making the pixel -> 2d flatmap coordinates mapping
-    let x = [];
-    let stride = 2 / Math.ceil(this.screenDim);
-    let indexSize = this.surfaces[0].verticesIndex.length;
-    let mapping = new Array(Math.ceil(this.screenDim)).fill(0).map(() => new Array(Math.ceil(this.screenDim)).fill(0));
-    x[0][0] = this.surfaces[0].triangleVerticesMap[0];
-    x[0][1] = this.surfaces[0].triangleVerticesMap[1];
-    x[1][0] = this.surfaces[0].triangleVerticesMap[2];
-    x[1][1] = this.surfaces[0].triangleVerticesMap[3];
-
-    for (let i = 0; i < mapping.length; ++i) {
-        for (let j = 0; j < mapping.length; ++j) {
-            let index = this.surfaces[0].verticesIndex.find(function(points){
-                for(let k = 0;k < indexSize; ++k){
-                    if( points[k][0] >= (-1 + j*stride) && points[k][0] < (-1 + (j+1)*stride) && points[k][1] > (1 - (i+1)*stride) && points[k][1] <= (1 - i*stride) ){
-                        return points;
-                    }
-                }
-            });
-            mapping[i][j] = index;
-        }
-    }
-    console.log(x);
-    this.flat_mapping = mapping;
+    // let stride = 2 / Math.ceil(this.screenDim);
+    // let indexSize = this.surfaces[0].verticesIndex.length;
+    // let mapping = new Array(Math.ceil(this.screenDim)).fill(0).map(() => new Array(Math.ceil(this.screenDim)).fill(0));
+    //
+    // for (let i = 0; i < mapping.length; ++i) {
+    //     for (let j = 0; j < mapping.length; ++j) {
+    //
+    //         let index = 0;
+    //         for(let k = 0;k < indexSize; ++k){
+    //             if( (this.surfaces[0].verticesIndex[k][0] >= (-1 + j*stride) && this.surfaces[0].verticesIndex[k][0] < (-1 + (j+1)*stride)) && (this.surfaces[0].verticesIndex[k][1] > (1 - (i+1)*stride) && this.surfaces[0].verticesIndex[k][1] <= (1 - i*stride)) ){
+    //                 index = this.surfaces[0].verticesIndex[k][2];
+    //                 break;
+    //             }
+    //         }
+    //
+    //         mapping[i][j] = index;
+    //     }
+    // }
+    //
+    // this.flat_mapping = mapping;
 };
 
 
@@ -468,6 +465,30 @@ papaya.viewer.ScreenSurface.prototype.draw = function () {
 
 
 papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
+    // ------------ Load pixel-wise mapping -------------//
+    let pixel_mapping = [];
+    $.ajax({
+        url: "../tests/data/mapping_250_rerefine.csv",
+        async: false,
+        success: function (csvd) {
+            pixel_mapping = $.csv.toArrays(csvd);
+        }
+    });
+    surface.pixelMapping = pixel_mapping;
+    console.log(pixel_mapping);
+
+    // ------------ Load index to coordinates mapping -------------//
+    let index2Coords = [];
+    $.ajax({
+        url: "../tests/data/index_3dCoord.csv",
+        async: false,
+        success: function (csvd) {
+            index2Coords = $.csv.toArrays(csvd);
+        }
+    });
+    surface.index2Coords = index2Coords;
+    console.log(index2Coords);
+
     // ------------ Load flatmap vertices information and transfer to array -------------//
     let triangleVertices = [];
     let verticesIndex = [];
@@ -1108,23 +1129,18 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     let x_crosshair = [];
     let y_crosshair = [];
 
-    let test = this.flat_mapping;
-    console.log(test);
+    //let test = this.flat_mapping;
+    //console.log(test);
 
     if (this.selectedFlag) { // when flatmap is clicked
-        var currentCoorX = this.contextMenuMousePosition.x - this.screenOffsetX;
-        var currentCoorY = this.contextMenuMousePosition.y - this.screenOffsetY;
+        let currentCoorX = this.contextMenuMousePosition.x - this.screenOffsetX;
+        let currentCoorY = this.contextMenuMousePosition.y - this.screenOffsetY;
 
-        this.pickedCoordinate = this.findPickedCoordinate(gl, this.pickLocX, this.pickLocY);
+        let resized_currentCoordX = Math.floor( currentCoorX*(this.surfaces[index].pixelMapping.length / this.screenDim));
+        let resized_currentCoordY = Math.floor( currentCoorY*(this.surfaces[index].pixelMapping.length / this.screenDim));
+        let idx = this.surfaces[index].pixelMapping[resized_currentCoordX][resized_currentCoordY];
 
         console.log("current slice at: " + "(" + currentCoorX + ", " + currentCoorY + ")");
-
-        let xSlice = this.currentCoord.x + ((this.xDim / 2) - this.volume.header.origin.x);
-        let ySlice = this.yDim - this.currentCoord.y - ((this.yDim / 2) - this.volume.header.origin.y);
-        let zSlice = this.zDim - this.currentCoord.z - ((this.zDim / 2) - this.volume.header.origin.z);
-
-        // let currentPos_x = this.dynamicStartX;
-        // let currentPos_y = this.dynamicStartY;
 
         let currentcenterX = (currentCoorX - this.screenDim / 2) / (this.screenDim / 2);
         let currentcenterY = (this.screenDim / 2 - currentCoorY) / (this.screenDim / 2);
@@ -1144,9 +1160,11 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
         y_crosshair[3] = this.yHalf / 100 + currentcenterY;
 
         // TODO: update the current 3D coordinates in the three viewers
-        this.viewer.currentCoord.x = 50;
-        this.viewer.currentCoord.y = 20;
-        this.viewer.currentCoord.z = 19;
+        if (idx > 0 && idx <= 28935) {
+            this.viewer.currentCoord.x = this.surfaces[index].index2Coords[idx - 1][1];
+            this.viewer.currentCoord.y = this.surfaces[index].index2Coords[idx - 1][2];
+            this.viewer.currentCoord.z = this.surfaces[index].index2Coords[idx - 1][3];
+        }
     }
     else { // when the other three slices are clicked
         let val = this.viewer.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);

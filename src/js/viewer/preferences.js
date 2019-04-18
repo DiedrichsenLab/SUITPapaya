@@ -31,7 +31,7 @@ papaya.viewer.Preferences.ALL_PREFS = ["showCrosshairs", "atlasLocks", "showOrie
     "smoothDisplay", "radiological", "showRuler", "surfaceBackgroundColor", "showSurfacePlanes"];
 papaya.viewer.Preferences.COOKIE_PREFIX = "papaya-";
 papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS = 365;
-papaya.viewer.Preferences.DEFAULT_SHOW_CROSSHAIRS = "No";
+papaya.viewer.Preferences.DEFAULT_SHOW_CROSSHAIRS = "Yes";
 papaya.viewer.Preferences.DEFAULT_ATLAS_LOCKS = "Mouse";
 papaya.viewer.Preferences.DEFAULT_SHOW_ORIENTATION = "No";
 papaya.viewer.Preferences.DEFAULT_SCROLL = "Increment Slice";
