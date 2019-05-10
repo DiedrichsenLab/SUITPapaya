@@ -1287,10 +1287,10 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
     } else {
         this.context.fillStyle = papaya.viewer.Viewer.BACKGROUND_COLOR;
         this.context.setTransform(1, 0, 0, 1, 0, 0);
-        this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim + (papaya.viewer.Viewer.GAP) * 20, slice.screenDim);
+        this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         this.context.save();
         this.context.beginPath();
-        this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim + (papaya.viewer.Viewer.GAP), slice.screenDim);
+        this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         this.context.clip();
         this.context.setTransform(slice.finalTransform[0][0], 0, 0, slice.finalTransform[1][1], slice.finalTransform[0][2], slice.finalTransform[1][2]);
         this.context.drawImage(slice.canvasMain, 0, 0);
@@ -1574,38 +1574,11 @@ papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
             this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
             this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
 
-            // this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 3);
-            // this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX = 2 * ((((this.viewerDim - papaya.viewer.Viewer.GAP) / 3) + (papaya.viewer.Viewer.GAP)));
-            // this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
-
             //TODO:
-            this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 0.667);
+            this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 0.6666667);
             this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX = this.viewerDim + papaya.viewer.Viewer.GAP;
             this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =  0;
         } else {
-            // this.viewerDim = this.canvas.height / 1.5;
-            //
-            // this.getTransformParameters(this.mainImage, this.viewerDim, false, 2);
-            // this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
-            // this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
-            //
-            // this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 2);
-            // this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX = 0;
-            // this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY = this.viewerDim + (papaya.viewer.Viewer.GAP);
-            //
-            // this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2);
-            // this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
-            // this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
-
-            // this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2);
-            // this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = this.viewerDim + (papaya.viewer.Viewer.GAP);
-            // this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY =  0;
-
-            // // TODO:
-            // this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 2);
-            // this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX = this.viewerDim + papaya.viewer.Viewer.GAP;
-            // this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =  0;
-
             this.viewerDim = this.canvas.height;
 
             this.getTransformParameters(this.mainImage, this.viewerDim, false, 2);
@@ -1928,7 +1901,7 @@ papaya.viewer.Viewer.prototype.resetUpdateTimer = function (me) {
 
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
     var draggingStarted = true, menuData, menu, pickedColor;
-    this.surfaceView.selectedFlag = false;
+    //this.surfaceView.selectedFlag = false;
 
     if (!papaya.Container.allowPropagation) {
         me.stopPropagation();
@@ -2030,7 +2003,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                         this.resetUpdateTimer(me);
                     }
                 } else if (this.selectedSlice && (this.selectedSlice === this.surfaceView)) {
-                    this.surfaceView.selectedFlag = true;
+                    //this.surfaceView.selectedFlag = true;
                     this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
                     this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
 
@@ -2177,7 +2150,7 @@ papaya.viewer.Viewer.prototype.findClickedSlice = function (viewer, xLoc, yLoc) 
 
 papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     me.preventDefault();
-    this.surfaceView.selectedFlag = false;
+    //this.surfaceView.selectedFlag = false;
 
     if (this.showingContextMenu) {
         me.handled = true;
@@ -2238,7 +2211,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
             if (this.selectedSlice !== null) {
                 if (this.selectedSlice === this.surfaceView) {
-                    this.surfaceView.selectedFlag = true;
+                    //this.surfaceView.selectedFlag = true;
                     this.contextMenuMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me) - this.canvasRect.left;
                     this.contextMenuMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me) - this.canvasRect.top;
 

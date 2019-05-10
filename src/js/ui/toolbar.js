@@ -88,13 +88,63 @@ papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
     "Slt0+kbYOuExiFuhng7JH2LFld0Ej2AeeCu6cF5cy3vs/XiDeAIWwS3Q298G8ZDoFuiBI7ACdKjegcZYSz2eBgjap1dAxafOkW9zyoUj7LnY/hCF" +
     "mNsByYQRzf9IR6L5XUKI/uXarHn/4Gvn/H5tQvqfi14rcXHzs6vPYh3RmT9N2ZHWxkYgt4/pN/LAOfka/AG9AAAAAElFTkSuQmCC";
 
-papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "File", "icons": null,
+papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
     "items": [
-        {"label": "Add Image...", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        {"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
-            "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
-        {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
+        {"label": "Add Nii", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        //{"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        // {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
+        //     "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
+        // {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
+
+        {"label": "MDTB contrast", "items": [
+                {"label": "Cond01_No-Go", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond02_Go", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond03_Theory_of_Mind", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond04_Video_Actions", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond05_Video_Knots", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond06_Unpleasant_Scenes", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond07_Pleasant_Scenes", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond08_Math", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond09_Digit_Judgement", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond10_Object_Viewing", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond11_Sad_Faces", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond12_Happy_Faces", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond13_Interval_Timing", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond14_Motor_Imagery", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond15_Finger_Simple", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond16_Finger_Sequence", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond17_Verbal_0back", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond18_Verbal_2back", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond19_Object_0back", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond20_Object_2back", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond21_Spatial_Navigation", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond22_Stroop_Incongruent", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond23_Stroop_Congruent", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond24_Verb_Generation", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond25_Word_Reading", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond26_Visual_Search_Small", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond27_Visual_Search_Medium", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond28_Visual_Search_Large", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond29_Rest.func", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond30_CPRO", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond31_Prediction", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond32_Prediction_Violated", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond33_Prediction_Scrambled", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond34_Spatial_Map_Easy", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond35_Spatial_Map_Medium", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond36_Spatial_Map_Hard", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond37_Nature_Movie", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond38_Animated_Movie", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond39_Landscape_Movie", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond40_Mental_Rotation_Easy", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond41_Mental_Rotation_Medium", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond42_Mental_Rotation_Hard", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond44_Scrambled_Motion", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond45_Response_Alternatives_Easy", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond46_Response_Alternatives_Medium", "action": "OpenSurface", "type": "file"},
+                {"label": "Cond47_Response_Alternatives_Hard", "action": "OpenSurface", "type": "file"}
+            ]},
+
         {"type": "spacer"},
         {"label": "Close All", "action": "CloseAllImages"}
     ]
@@ -109,28 +159,28 @@ papaya.ui.Toolbar.RGB_FILE_MENU_DATA = {"label": "File", "icons": null,
 papaya.ui.Toolbar.MENU_DATA = {
     "menus": [
         papaya.ui.Toolbar.FILE_MENU_DATA,
-        {"label": "View", "icons": null,
-            "items": [
-                {"label": "Orientation", "action": "ShowOrientation", "type": "checkbox", "method": "isShowingOrientation"},
-                {"label": "Crosshairs", "action": "ShowCrosshairs", "type": "checkbox", "method": "isShowingCrosshairs"},
-                {"label": "Ruler", "action": "ShowRuler", "type": "checkbox", "method": "isShowingRuler"},
-                {"type": "spacer", "required": "hasSurface"},
-                {"label": "Surface Planes", "action": "ShowSurfacePlanes", "type": "checkbox", "method": "isShowingSurfacePlanes", "required" : "hasSurface"}
-            ]
-        },
+        // {"label": "View", "icons": null,
+        //     "items": [
+        //         {"label": "Orientation", "action": "ShowOrientation", "type": "checkbox", "method": "isShowingOrientation"},
+        //         {"label": "Crosshairs", "action": "ShowCrosshairs", "type": "checkbox", "method": "isShowingCrosshairs"},
+        //         {"label": "Ruler", "action": "ShowRuler", "type": "checkbox", "method": "isShowingRuler"},
+        //         {"type": "spacer", "required": "hasSurface"},
+        //         {"label": "Surface Planes", "action": "ShowSurfacePlanes", "type": "checkbox", "method": "isShowingSurfacePlanes", "required" : "hasSurface"}
+        //     ]
+        // },
         {"label": "Settings", "icons": null,
             "items": [
                 {"label": "Viewer Preferences", "action": "Preferences"},
                 {"label": "Surface Preferences", "action": "SurfacePreferences", "required" : "hasSurface"}
             ]
         },
-        {"label": "Help", "icons": null,
-            "items": [
-                {"label": "Show Keyboard Reference", "action": "KeyboardRef"},
-                {"label": "Show Mouse Reference", "action": "MouseRef"},
-                {"label": "Show License", "action": "License"}
-            ]
-        },
+        // {"label": "Help", "icons": null,
+        //     "items": [
+        //         {"label": "Show Keyboard Reference", "action": "KeyboardRef"},
+        //         {"label": "Show Mouse Reference", "action": "MouseRef"},
+        //         {"label": "Show License", "action": "License"}
+        //     ]
+        // },
         {"label": "TITLE", "icons": null, "titleBar": "true" },
         {"label": "EXPAND", "icons": [papaya.ui.Toolbar.ICON_EXPAND, papaya.ui.Toolbar.ICON_COLLAPSE], "items": [],
             "method": "isCollapsable", "required": "isExpandable" },

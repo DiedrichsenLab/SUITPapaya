@@ -687,8 +687,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
             PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding && !this.nestedViewer ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
             (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
 
-        //width = papayaRoundFast(height / ratio);
-        width = parentWidth / 1.38;
+        width = papayaRoundFast(height * 1.6667);
 
         //width = parentWidth;
         //height = papayaRoundFast(width / ratio);
