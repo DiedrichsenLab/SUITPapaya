@@ -564,11 +564,17 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
 
     // ------------ Load vertices color information -------------//
     let verticesColor = [];
+    let colorData = [];
     $.ajax({
         url: "../tests/data/flatmap_verticesColor.csv",
         async: false,
         success: function (csvd) {
             verticesColor = $.csv.toArrays(csvd);
+            for (let i = 0; i < verticesColor.length; ++i) {
+                colorData.push(0.9);
+                colorData.push(0.9);
+                colorData.push(0.9);
+            }
         }
     });
 
@@ -644,6 +650,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
 
     // Border buffer data
     surface.border = new Float32Array(border);
+    surface.vColor = new Float32Array(colorData);
 
     // Flat map rendering buffer data
     surface.triangleVertices = new Float32Array(triangleVertices);
@@ -1208,7 +1215,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
         }
     }
     // print current cursor location
-    console.log("current cursor at: " + "(" + (x_crosshair[0] + x_crosshair[2])/2 + ", " + x_crosshair[3] + ")");
+    //console.log("current cursor at: " + "(" + (x_crosshair[0] + x_crosshair[2])/2 + ", " + x_crosshair[3] + ")");
 
     let crosshairsLocation = gl.getUniformLocation(shaderProgram_1, "uCrosshairs");
     gl.uniform1i(crosshairsLocation, 1);
@@ -1269,38 +1276,43 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     gl.drawArrays(gl.POINTS, 0, 548);
 
     // ------------------------------------- Draw flatmap --------------------------------------//
-    // triangle vertex buffer object
+
+    //---- triangle vertex buffer object
     let triangleVertexBufferObject = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject);
-    gl.bufferData(gl.ARRAY_BUFFER, this.surfaces[index].triangleVertices, gl.STATIC_DRAW);
-
-    // Triangle Index buffer object
-    let triangleIndexBufferObject = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleIndexBufferObject);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[index].triangleIndex, gl.STATIC_DRAW);
-
+    gl.bufferData(gl.ARRAY_BUFFER, this.surfaces[index].triangleVerticesMap, gl.STATIC_DRAW);
     let positionAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
-    let colorAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertColor');
-
     gl.vertexAttribPointer(
         positionAttribLocation, // Attribute location
         2, // Number of elements per attribute
         gl.FLOAT, // Type of elements
         false,
-        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        2 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
         0 // Offset from the beginning of a single vertex to this attribute
     );
+    gl.enableVertexAttribArray(positionAttribLocation);
+
+
+    //---- triangle vertex color buffer object
+    let triangleVertexColorBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBufferObject);
+    gl.bufferData(gl.ARRAY_BUFFER, this.surfaces[index].vColor, gl.STATIC_DRAW);
+    let colorAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertColor');
     gl.vertexAttribPointer(
         colorAttribLocation, // Attribute location
         3, // Number of elements per attribute
         gl.FLOAT, // Type of elements
         false,
-        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-        2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
+        3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        0 // Offset from the beginning of a single vertex to this attribute
     );
-
-    gl.enableVertexAttribArray(positionAttribLocation);
     gl.enableVertexAttribArray(colorAttribLocation);
+
+
+    //---- Triangle Index buffer object
+    let triangleIndexBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleIndexBufferObject);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[index].triangleIndex, gl.STATIC_DRAW);
 
     // Main render loop
     // gl.useProgram(program);

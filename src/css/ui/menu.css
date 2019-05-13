@@ -1,12 +1,15 @@
 
 .papaya-menu {
-    width: 220px;
+    width: 250px;
     background: #222;
     z-index: 100;
     position: absolute;
     border: solid 2px darkgray;
     padding: 4px;
     margin: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 400px;
 }
 
 

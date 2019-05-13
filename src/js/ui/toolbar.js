@@ -90,13 +90,13 @@ papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
 
 papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
     "items": [
-        {"label": "Add Nii", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        {"label": "Add .nii contrasts", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
         //{"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
         // {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
         //     "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
         // {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
 
-        {"label": "MDTB contrast", "items": [
+        {"label": "MDTB contrast - 47 conditions", "icons": null, "items": [
                 {"label": "Cond01_No-Go", "action": "OpenSurface", "type": "file"},
                 {"label": "Cond02_Go", "action": "OpenSurface", "type": "file"},
                 {"label": "Cond03_Theory_of_Mind", "action": "OpenSurface", "type": "file"},
