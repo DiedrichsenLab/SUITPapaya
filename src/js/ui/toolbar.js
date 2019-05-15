@@ -96,7 +96,7 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
         //     "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
         // {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
 
-        {"label": "MDTB contrast - 47 conditions", "icons": null, "items": [
+        {"label": "MDTB contrasts - 47 conditions", "icons": null, "items": [
                 {"label": "Cond01_No-Go", "action": "OpenSurface", "type": "file"},
                 {"label": "Cond02_Go", "action": "OpenSurface", "type": "file"},
                 {"label": "Cond03_Theory_of_Mind", "action": "OpenSurface", "type": "file"},

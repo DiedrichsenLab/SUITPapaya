@@ -939,8 +939,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
                 this.draggingSliceDir = papaya.viewer.ScreenSlice.DIRECTION_AXIAL;
             }
         }
-    } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(),
-            viewer.volume.getZDim())) {
+    } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getZDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_CORONAL)) {
             xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.coronalSlice);
             yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.coronalSlice);
@@ -951,8 +950,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
                 this.draggingSliceDir = papaya.viewer.ScreenSlice.DIRECTION_CORONAL;
             }
         }
-    } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(),
-            viewer.volume.getZDim())) {
+    } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(), viewer.volume.getZDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL)) {
             xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.sagittalSlice);
             yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.sagittalSlice);
