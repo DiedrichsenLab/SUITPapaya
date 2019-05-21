@@ -1175,7 +1175,8 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
 
     }
     else { // when the other three slices are clicked
-        let val = this.viewer.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
+        //let val = this.viewer.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
+        let val = papayaContainers[0].viewer.screenVolumes[1].volume.getVoxelAtMM(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z, 0, true);
 
         // print slice position
         // console.log("current slice at: " + "(" + currentPos_x + ", " + currentPos_y + ")");

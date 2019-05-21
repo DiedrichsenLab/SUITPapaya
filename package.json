@@ -21,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/rii-mango/Papaya/issues"
   },
-  "homepage": "https://github.com/rii-mango/Papaya"
+  "homepage": "https://github.com/rii-mango/Papaya",
+  "dependencies": {
+    "browserify": "^16.2.3",
+    "colormap": "^2.3.1",
+    "express": "^4.16.4"
+  }
 }

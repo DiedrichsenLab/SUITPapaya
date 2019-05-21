@@ -49,6 +49,11 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
             this.staticIcon = screenParams.icon;
         }
 
+        // Make this screen volume hidden
+        if (screenParams.hidden) {
+            this.hidden = screenParams.hidden;
+        }
+
         if (screenParams.interpolation !== undefined) {
             this.interpolation = screenParams.interpolation;
         }
