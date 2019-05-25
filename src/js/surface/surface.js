@@ -271,9 +271,9 @@ papaya.surface.Surface.prototype.finishedReading = function () {
             currentSurface.triangleData = this.fileFormat.getTriangleData(ctr);
             currentSurface.colorsData = this.fileFormat.getColorsData(ctr);
 
-            if (currentSurface.normalsData === null) {
-                this.generateNormals();
-            }
+            // if (currentSurface.normalsData === null) {
+            //     this.generateNormals();
+            // }
 
             if (this.fileFormat.getSolidColor(ctr)) {
                 currentSurface.solidColor = this.fileFormat.getSolidColor(ctr);

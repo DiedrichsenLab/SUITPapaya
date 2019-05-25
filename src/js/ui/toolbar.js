@@ -97,52 +97,52 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
         // {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
 
         {"label": "MDTB contrasts - 47 conditions", "icons": null, "items": [
-                {"label": "Cond01_No-Go", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond02_Go", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond03_Theory_of_Mind", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond04_Video_Actions", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond05_Video_Knots", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond06_Unpleasant_Scenes", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond07_Pleasant_Scenes", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond08_Math", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond09_Digit_Judgement", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond10_Object_Viewing", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond11_Sad_Faces", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond12_Happy_Faces", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond13_Interval_Timing", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond14_Motor_Imagery", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond15_Finger_Simple", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond16_Finger_Sequence", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond17_Verbal_0back", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond18_Verbal_2back", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond19_Object_0back", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond20_Object_2back", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond21_Spatial_Navigation", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond22_Stroop_Incongruent", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond23_Stroop_Congruent", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond24_Verb_Generation", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond25_Word_Reading", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond26_Visual_Search_Small", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond27_Visual_Search_Medium", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond28_Visual_Search_Large", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond29_Rest.func", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond30_CPRO", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond31_Prediction", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond32_Prediction_Violated", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond33_Prediction_Scrambled", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond34_Spatial_Map_Easy", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond35_Spatial_Map_Medium", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond36_Spatial_Map_Hard", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond37_Nature_Movie", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond38_Animated_Movie", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond39_Landscape_Movie", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond40_Mental_Rotation_Easy", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond41_Mental_Rotation_Medium", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond42_Mental_Rotation_Hard", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond44_Scrambled_Motion", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond45_Response_Alternatives_Easy", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond46_Response_Alternatives_Medium", "action": "OpenSurface", "type": "file"},
-                {"label": "Cond47_Response_Alternatives_Hard", "action": "OpenSurface", "type": "file"}
+                {"label": "Cond01_No-Go", "action": "OpenBoth-Cond01_No-Go"},
+                {"label": "Cond02_Go", "action": "OpenBoth-Cond02_Go"},
+                {"label": "Cond03_Theory_of_Mind", "action": "OpenBoth-Cond03_Theory_of_Mind"},
+                {"label": "Cond04_Video_Actions", "action": "OpenBoth-Cond04_Video_Actions"},
+                {"label": "Cond05_Video_Knots", "action": "OpenBoth-Cond05_Video_Knots"},
+                {"label": "Cond06_Unpleasant_Scenes", "action": "OpenBoth-Cond06_Unpleasant_Scenes"},
+                {"label": "Cond07_Pleasant_Scenes", "action": "OpenBoth-Cond07_Pleasant_Scenes"},
+                {"label": "Cond08_Math", "action": "OpenBoth-Cond08_Math"},
+                {"label": "Cond09_Digit_Judgement", "action": "OpenBoth-Cond09_Digit_Judgement"},
+                {"label": "Cond10_Object_Viewing", "action": "OpenBoth-Cond10_Object_Viewing"},
+                {"label": "Cond11_Sad_Faces", "action": "OpenBoth-Cond11_Sad_Faces"},
+                {"label": "Cond12_Happy_Faces", "action": "OpenBoth-Cond12_Happy_Faces"},
+                {"label": "Cond13_Interval_Timing", "action": "OpenBoth-Cond13_Interval_Timing"},
+                {"label": "Cond14_Motor_Imagery", "action": "OpenBoth-Cond14_Motor_Imagery"},
+                {"label": "Cond15_Finger_Simple", "action": "OpenBoth-Cond15_Finger_Simple"},
+                {"label": "Cond16_Finger_Sequence", "action": "OpenBoth-Cond16_Finger_Sequence"},
+                {"label": "Cond17_Verbal_0back", "action": "OpenBoth-Cond17_Verbal_0back"},
+                {"label": "Cond18_Verbal_2back", "action": "OpenBoth-Cond18_Verbal_2back"},
+                {"label": "Cond19_Object_0back", "action": "OpenBoth-Cond19_Object_0back"},
+                {"label": "Cond20_Object_2back", "action": "OpenBoth-Cond20_Object_2back"},
+                {"label": "Cond21_Spatial_Navigation", "action": "OpenBoth-Cond21_Spatial_Navigation"},
+                {"label": "Cond22_Stroop_Incongruent", "action": "OpenBoth-Cond22_Stroop_Incongruent"},
+                {"label": "Cond23_Stroop_Congruent", "action": "OpenBoth-Cond23_Stroop_Congruent"},
+                {"label": "Cond24_Verb_Generation", "action": "OpenBoth-Cond24_Verb_Generation"},
+                {"label": "Cond25_Word_Reading", "action": "OpenBoth-Cond25_Word_Reading"},
+                {"label": "Cond26_Visual_Search_Small", "action": "OpenBoth-Cond26_Visual_Search_Small"},
+                {"label": "Cond27_Visual_Search_Medium", "action": "OpenBoth-Cond27_Visual_Search_Medium"},
+                {"label": "Cond28_Visual_Search_Large", "action": "OpenBoth-Cond28_Visual_Search_Large"},
+                {"label": "Cond29_Rest", "action": "OpenBoth-Cond29_Rest"},
+                {"label": "Cond30_CPRO", "action": "OpenBoth-Cond30_CPRO"},
+                {"label": "Cond31_Prediction", "action": "OpenBoth-Cond31_Prediction"},
+                {"label": "Cond32_Prediction_Violated", "action": "OpenBoth-Cond32_Prediction_Violated"},
+                {"label": "Cond33_Prediction_Scrambled", "action": "OpenBoth-Cond33_Prediction_Scrambled"},
+                {"label": "Cond34_Spatial_Map_Easy", "action": "OpenBoth-Cond34_Spatial_Map_Easy"},
+                {"label": "Cond35_Spatial_Map_Medium", "action": "OpenBoth-Cond35_Spatial_Map_Medium"},
+                {"label": "Cond36_Spatial_Map_Hard", "action": "OpenBoth-Cond36_Spatial_Map_Hard"},
+                {"label": "Cond37_Nature_Movie", "action": "OpenBoth-Cond37_Nature_Movie"},
+                {"label": "Cond38_Animated_Movie", "action": "OpenBoth-Cond38_Animated_Movie"},
+                {"label": "Cond39_Landscape_Movie", "action": "OpenBoth-Cond39_Landscape_Movie"},
+                {"label": "Cond40_Mental_Rotation_Easy", "action": "OpenBoth-Cond40_Mental_Rotation_Easy"},
+                {"label": "Cond41_Mental_Rotation_Medium", "action": "OpenBoth-Cond41_Mental_Rotation_Medium"},
+                {"label": "Cond42_Mental_Rotation_Hard", "action": "OpenBoth-Cond42_Mental_Rotation_Hard"},
+                {"label": "Cond44_Scrambled_Motion", "action": "OpenBoth-Cond44_Scrambled_Motion"},
+                {"label": "Cond45_Response_Alternatives_Easy", "action": "OpenBoth-Cond45_Response_Alternatives_Easy"},
+                {"label": "Cond46_Response_Alternatives_Medium", "action": "OpenBoth-Cond46_Response_Alternatives_Medium"},
+                {"label": "Cond47_Response_Alternatives_Hard", "action": "OpenBoth-Cond47_Response_Alternatives_Hard"}
             ]},
 
         {"type": "spacer"},
@@ -758,12 +758,22 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
     if (!keepopen) {
         this.closeAllMenus();
     }
+    console.log("Action" + action);
 
     if (action) {
         if (action.startsWith("ImageButton")) {
             imageIndex = parseInt(action.substr(action.length - 2, 1), 10);
             this.viewer.setCurrentScreenVol(imageIndex);
             this.updateImageButtons();
+        } else if (action.startsWith("OpenBoth-")) {
+            if (this.container.viewer.screenVolumes.length > 2) {
+                this.container.viewer.removeOverlay(2); // Always remove the previous one, index = 2
+            }
+            imageName = action.substring(action.indexOf("-") + 1);
+            let NiifileName = ["data/onlineAtlas/" + imageName + ".nii"];
+            let GiifileName = "data/onlineAtlas/" + imageName + ".func.gii";
+            this.viewer.loadImage(NiifileName, true, false, false);
+            this.viewer.loadSurface(GiifileName, true, false);
         } else if (action.startsWith("OpenSurface-")) {
             imageName = action.substring(action.indexOf("-") + 1);
             this.viewer.loadSurface(imageName);

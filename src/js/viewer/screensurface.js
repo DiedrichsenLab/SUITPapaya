@@ -491,7 +491,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
 
     // ------------ Load flatmap vertices information and transfer to array -------------//
     let triangleVertices = [];
-    let verticesIndex = [];
+    //let verticesIndex = [];
     $.ajax({
         url: "../tests/data/flatmap_vertices.csv",
         async: false,
@@ -507,10 +507,10 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
                 Index[i][1] = triangleData[i][1] / 100;
                 Index[i][2] = i + 1;
             }
-            verticesIndex = Index;
+            //verticesIndex = Index;
         }
     });
-    surface.verticesIndex = verticesIndex;
+    //surface.verticesIndex = verticesIndex;
     surface.triangleVerticesMap = new Float32Array(triangleVertices);
     console.log(triangleVertices);
 
@@ -530,7 +530,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
             }
         }
     });
-
+    surface.border = new Float32Array(border);
     console.log(border);
 
     // ------------ Load flatmap edges information and transfer to array -------------//
@@ -547,7 +547,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
             }
         }
     });
-
+    surface.triangleIndex = new Uint16Array(triangleIndex);
     console.log(triangleIndex);
 
     // ------------ Load jet-colormap -------------//
@@ -563,22 +563,36 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     console.log(colormap);
 
     // ------------ Load vertices color information -------------//
+    // if (surface.colorsData) {
+    //     surface.colorsBuffer = gl.createBuffer();
+    //     gl.bindBuffer(gl.ARRAY_BUFFER, surface.colorsBuffer);
+    //     gl.bufferData(gl.ARRAY_BUFFER, surface.colorsData, gl.STATIC_DRAW);
+    //     surface.colorsBuffer.itemSize = 4;
+    //     surface.colorsBuffer.numItems = surface.numPoints;
+    // }
+
+
     let verticesColor = [];
     let colorData = [];
-    $.ajax({
-        url: "../tests/data/flatmap_verticesColor.csv",
-        async: false,
-        success: function (csvd) {
-            verticesColor = $.csv.toArrays(csvd);
-            for (let i = 0; i < verticesColor.length; ++i) {
-                colorData.push(0.9);
-                colorData.push(0.9);
-                colorData.push(0.9);
-            }
-        }
-    });
 
-    console.log(verticesColor);
+    if (surface.colorsData) {
+
+    } else {
+        $.ajax({
+            url: "../tests/data/flatmap_verticesColor.csv",
+            async: false,
+            success: function (csvd) {
+                verticesColor = $.csv.toArrays(csvd);
+                for (let i = 0; i < verticesColor.length; ++i) {
+                    colorData.push(0.9);
+                    colorData.push(0.9);
+                    colorData.push(0.9);
+                }
+            }
+        });
+    }
+    surface.vColor = new Float32Array(colorData);
+    //console.log(verticesColor);
 
     // ------------ Load flatmap edges COLOR information and transfer to array -------------//
     let indices = [];
@@ -648,13 +662,10 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
 
     triangleVertices.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
 
-    // Border buffer data
-    surface.border = new Float32Array(border);
-    surface.vColor = new Float32Array(colorData);
 
     // Flat map rendering buffer data
     surface.triangleVertices = new Float32Array(triangleVertices);
-    surface.triangleIndex = new Uint16Array(triangleIndex);
+
 
     // ---------------------------------------- Original ---------------------------------------------- //
     // surface.pointsBuffer = gl.createBuffer();

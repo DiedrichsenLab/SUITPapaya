@@ -36,7 +36,14 @@ papaya.surface.SurfaceGIFTI.prototype.readData = function (data, progress, onFin
     this.onFinishedRead = onFinishedRead;
     this.gii = gifti.parse(data);
 
-    setTimeout(function() { surf.readDataPoints(surf, progress); }, 0);
+    // Only get the cdata from the func.gii by parser
+    if(this.gii.dataArrays && (this.gii.dataArrays.length < 2)) {
+        surf.colorsData = this.gii.dataArrays[0].getData();
+        setTimeout(function() { surf.onFinishedRead(); }, 0);
+    } else {
+        //setTimeout(function() { surf.onFinishedRead(); }, 0);
+        setTimeout(function() { surf.readDataPoints(surf, progress); }, 0);
+    }
 };
 
 
