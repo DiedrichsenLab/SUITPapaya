@@ -563,19 +563,96 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     console.log(colormap);
 
     // ------------ Load vertices color information -------------//
-    // if (surface.colorsData) {
-    //     surface.colorsBuffer = gl.createBuffer();
-    //     gl.bindBuffer(gl.ARRAY_BUFFER, surface.colorsBuffer);
-    //     gl.bufferData(gl.ARRAY_BUFFER, surface.colorsData, gl.STATIC_DRAW);
-    //     surface.colorsBuffer.itemSize = 4;
-    //     surface.colorsBuffer.numItems = surface.numPoints;
-    // }
-
+    if (surface.colorsData && this.surfaces.length > 1) {
+        this.surfaces.shift();
+        //console.log("colorsData: " + surface.colorsData);
+    }
 
     let verticesColor = [];
     let colorData = [];
+    let counter = 0, interval;
+    let sparsity = 100;
+    let minValue = 0, maxValue = 0;
+
+    //-- Making look up color table
+    let knotPoint = papaya.viewer.ColorTable.TABLE_RED2WHITE.data;
+    interval = Math.floor(sparsity / (knotPoint.length - 1));
+
+
+
+    let red, green, blue;
+    let colorLookUpTable = [];
+
+    for (let curr = 0; curr < knotPoint.length - 1; ++curr) {
+        for (let index = 0; index < interval; ++index) {
+            red = knotPoint[curr][0] + index * ((knotPoint[curr+1][0] - knotPoint[curr][0]) / interval);
+            green = knotPoint[curr][1] + index * ((knotPoint[curr+1][1] - knotPoint[curr][1]) / interval);
+            blue = knotPoint[curr][2] + index * ((knotPoint[curr+1][2] - knotPoint[curr][2]) / interval);
+            colorLookUpTable.push([red, green, blue]);
+        }
+    }
+    colorLookUpTable.push([1,1,1]);
+    colorLookUpTable.push([1,1,1]);
+
 
     if (surface.colorsData) {
+        for (let i = 0; i <surface.colorsData.length; ++i) {
+            verticesColor.push([surface.colorsData[i], i]);
+            if (!isNaN(surface.colorsData[i])) {
+                counter += 1;
+                if (surface.colorsData[i] > maxValue) {
+                    maxValue = surface.colorsData[i];
+                } else if (surface.colorsData[i] < minValue) {
+                    minValue = surface.colorsData[i];
+                }
+            }
+        }
+
+        let stride = (maxValue - minValue) / sparsity;
+
+        verticesColor.sort(function (a, b) {
+            if( !isFinite(a[0]) && !isFinite(b[0]) ) {
+                return 0;
+            }
+            if( !isFinite(a[0]) ) {
+                return 1;
+            }
+            if( !isFinite(b[0]) ) {
+                return -1;
+            }
+            return a[0]-b[0];
+            //return a[0] - b[0];
+        });
+
+        //verticesColor = verticesColor.slice(0, counter);
+
+        for (let j = 0; j < verticesColor.length; ++j) {
+            if (!isNaN(verticesColor[j][0])) {
+                let currentBin = Math.floor((verticesColor[j][0] - minValue) / stride);
+                console.log("currentBin: " + currentBin + " index: " + j);
+                verticesColor[j][2] = colorLookUpTable[currentBin][0];
+                verticesColor[j][3] = colorLookUpTable[currentBin][1];
+                verticesColor[j][4] = colorLookUpTable[currentBin][2];
+            } else {
+                verticesColor[j][2] = 0.9;
+                verticesColor[j][3] = 0.9;
+                verticesColor[j][4] = 0.9;
+            }
+        }
+
+        // sort back by index
+        verticesColor.sort(function (a, b) {
+            return a[1] - b[1];
+        });
+
+        // The final colordata passed to opgnGL
+        for (let x = 0; x < verticesColor.length; ++x) {
+            colorData.push(verticesColor[x][2]);
+            colorData.push(verticesColor[x][3]);
+            colorData.push(verticesColor[x][4]);
+        }
+
+        console.log(verticesColor);
 
     } else {
         $.ajax({
@@ -591,80 +668,83 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
             }
         });
     }
+
     surface.vColor = new Float32Array(colorData);
     //console.log(verticesColor);
 
+
+
     // ------------ Load flatmap edges COLOR information and transfer to array -------------//
-    let indices = [];
-    for (let x in verticesColor) {
-        indices.push([verticesColor[x][0], x]);
-    }
-    indices.sort(function (a, b) {
-        if( !isFinite(a[0]) && !isFinite(b[0]) ) {
-            return 0;
-        }
-        if( !isFinite(a[0]) ) {
-            return 1;
-        }
-        if( !isFinite(b[0]) ) {
-            return -1;
-        }
-        return a[0]-b[0];
-        //return a[0] - b[0];
-    });
-
-    let indices_color = [];
-    indices_color.push([indices[0][0], indices[0][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
-    colormap.shift();
-
-    for (let i = 1; i < indices.length; i++) {
-        if (isNaN(indices[i][0])) {
-            indices_color.push([indices[i][0], indices[i][1], 0.9, 0.9, 0.9]);
-        }
-        else{
-            if (indices[i][0] === indices[i-1][0]) {
-                indices_color.push([indices[i][0], indices[i][1], indices_color[i-1][2], indices_color[i-1][3], indices_color[i-1][4]]);
-            }
-            else{
-                indices_color.push([indices[i][0], indices[i][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
-                colormap.shift();
-            }
-        }
-    }
-    console.log(indices_color);
-
-    indices_color.sort(function (a, b) {
-        return a[1] - b[1];
-    });
-
-    // To Change: Set threshold to filter the middle range
-    let upper = 0.5;
-    let lower = -0.1;
-
-    for (let i = 0; i < indices_color.length; i++) {
-        if (!isNaN(indices_color[i][0])){
-            if(indices_color[i][0] >= lower && indices_color[i][0] <= upper) {
-                indices_color[i][2] = 0.9;
-                indices_color[i][3] = 0.9;
-                indices_color[i][4] = 0.9;
-            }
-        }
-    }
-
-    let pos = 2;
-    let interval = 5;
-
-    while (pos < triangleVertices.length) {
-        triangleVertices.splice(pos, 0, indices_color[0][2], indices_color[0][3], indices_color[0][4]);
-        indices_color.shift();
-        pos += interval;
-    }
-
-    triangleVertices.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
-
-
-    // Flat map rendering buffer data
-    surface.triangleVertices = new Float32Array(triangleVertices);
+    // let indices = [];
+    // for (let x in verticesColor) {
+    //     indices.push([verticesColor[x][0], x]);
+    // }
+    // indices.sort(function (a, b) {
+    //     if( !isFinite(a[0]) && !isFinite(b[0]) ) {
+    //         return 0;
+    //     }
+    //     if( !isFinite(a[0]) ) {
+    //         return 1;
+    //     }
+    //     if( !isFinite(b[0]) ) {
+    //         return -1;
+    //     }
+    //     return a[0]-b[0];
+    //     //return a[0] - b[0];
+    // });
+    //
+    // let indices_color = [];
+    // indices_color.push([indices[0][0], indices[0][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
+    // colormap.shift();
+    //
+    // for (let i = 1; i < indices.length; i++) {
+    //     if (isNaN(indices[i][0])) {
+    //         indices_color.push([indices[i][0], indices[i][1], 0.9, 0.9, 0.9]);
+    //     }
+    //     else{
+    //         if (indices[i][0] === indices[i-1][0]) {
+    //             indices_color.push([indices[i][0], indices[i][1], indices_color[i-1][2], indices_color[i-1][3], indices_color[i-1][4]]);
+    //         }
+    //         else{
+    //             indices_color.push([indices[i][0], indices[i][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
+    //             colormap.shift();
+    //         }
+    //     }
+    // }
+    // console.log(indices_color);
+    //
+    // indices_color.sort(function (a, b) {
+    //     return a[1] - b[1];
+    // });
+    //
+    // // To Change: Set threshold to filter the middle range
+    // let upper = 0.5;
+    // let lower = -0.1;
+    //
+    // for (let i = 0; i < indices_color.length; i++) {
+    //     if (!isNaN(indices_color[i][0])){
+    //         if(indices_color[i][0] >= lower && indices_color[i][0] <= upper) {
+    //             indices_color[i][2] = 0.9;
+    //             indices_color[i][3] = 0.9;
+    //             indices_color[i][4] = 0.9;
+    //         }
+    //     }
+    // }
+    //
+    // let pos = 2;
+    // let interval = 5;
+    //
+    // while (pos < triangleVertices.length) {
+    //     triangleVertices.splice(pos, 0, indices_color[0][2], indices_color[0][3], indices_color[0][4]);
+    //     indices_color.shift();
+    //     pos += interval;
+    // }
+    //
+    // triangleVertices.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
+    //
+    //
+    // // Flat map rendering buffer data
+    // surface.triangleVertices = new Float32Array(triangleVertices);
 
 
     // ---------------------------------------- Original ---------------------------------------------- //
@@ -887,9 +967,16 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     // draw surfaces (first pass)
     gl.enable(gl.DEPTH_TEST);
 
-    for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
-        this.renderSurface(gl, ctr, this.surfaces[ctr].alpha < 1, true, false);
+    // rendering all loaded surfaces
+    // for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
+    //     this.renderSurface(gl, ctr, this.surfaces[ctr].alpha < 1, true, false);
+    // }
+
+    // TEST: Only rendering surface once
+    if (this.surfaces.length > 1) {
+        console.log("second surface has been loaded!");
     }
+    this.renderSurface(gl, 0, this.surfaces[0].alpha < 1, true, false);
 
     gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
     gl.uniform1i(this.shaderProgram.hasColors, 0);
@@ -977,13 +1064,13 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
         // }
 
         // draw surface (secondpass)
-        gl.enable(gl.DEPTH_TEST);
-
-        for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
-            if (hasTranslucent) {
-                this.renderSurface(gl, ctr, this.surfaces[ctr].alpha < 1, false, true);
-            }
-        }
+        // gl.enable(gl.DEPTH_TEST);
+        //
+        // for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
+        //     if (hasTranslucent) {
+        //         this.renderSurface(gl, ctr, this.surfaces[ctr].alpha < 1, false, true);
+        //     }
+        // }
 
         // // draw orientation
         // if ((this.viewer.mainImage === this.viewer.surfaceView) &&
@@ -1022,7 +1109,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     }
 
     // clean up
-    gl.disable(gl.DEPTH_TEST);
+    // gl.disable(gl.DEPTH_TEST);
 };
 
 
