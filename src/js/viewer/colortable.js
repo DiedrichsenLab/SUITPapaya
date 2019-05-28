@@ -87,8 +87,8 @@ papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES = [papaya.viewer.ColorTable.TAB
 
 papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
     papaya.viewer.ColorTable.TABLE_RED2WHITE,
-    papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
-    papaya.viewer.ColorTable.TABLE_BLUE2WHITE
+    //papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
+    //papaya.viewer.ColorTable.TABLE_BLUE2WHITE
 ];
 
 papaya.viewer.ColorTable.TABLE_ALL = [
