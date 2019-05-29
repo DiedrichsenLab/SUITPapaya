@@ -101,8 +101,10 @@
 
         var params = [];
         params["images"] = ["data/SUIT.nii", "data/SUIT_vertexvol.nii"];
-        params["SUIT_vertexvol.nii"] = {"hidden": true};
+        params["data/SUIT.nii"] = {"icon": false};
+        params["SUIT_vertexvol.nii"] = {"hidden": true, "icon": false};
         params["orthogonalTall"] = true;
+        //params["showImageButtons"] = false;
         //params["fullScreen"] = true;
         //params["kioskMode"] = true;
         params["showControls"] = false;

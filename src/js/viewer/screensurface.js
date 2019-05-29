@@ -1215,7 +1215,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
 
         let resized_currentCoordX = Math.floor( currentCoorX*(this.surfaces[index].pixelMapping.length / this.screenDim));
         let resized_currentCoordY = Math.floor( currentCoorY*(this.surfaces[index].pixelMapping.length / this.screenDim));
-        let idx = this.surfaces[index].pixelMapping[resized_currentCoordX][resized_currentCoordY];
+        let idx = this.surfaces[index].pixelMapping[resized_currentCoordY][resized_currentCoordX];
 
         console.log("current slice at: " + "(" + currentCoorX + ", " + currentCoorY + ")");
 
@@ -1238,9 +1238,10 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
 
         // TODO: update the current 3D coordinates in the three viewers
         if (idx > 0 && idx <= 28935) {
-            this.viewer.currentCoord.x = this.surfaces[index].index2Coords[idx - 1][1];
-            this.viewer.currentCoord.y = this.surfaces[index].index2Coords[idx - 1][2];
-            this.viewer.currentCoord.z = this.surfaces[index].index2Coords[idx - 1][3];
+            this.viewer.currentCoord.x = Number(this.surfaces[index].index2Coords[idx - 1][1]);
+            this.viewer.currentCoord.y = Number(this.surfaces[index].index2Coords[idx - 1][2]);
+            this.viewer.currentCoord.z = Number(this.surfaces[index].index2Coords[idx - 1][3]);
+            console.log(this.surfaces[index].index2Coords[idx - 1]);
         }
 
     }
@@ -1364,7 +1365,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     gl.enableVertexAttribArray(positionAttribLocation);
 
     //---- triangle vertex color buffer object
-    if (this.surfaces[index].colorsData && this.viewer.rangeChangedFlag) {
+    if (this.surfaces[index].colorsData && this.viewer.rangeChangedFlag) { // Dynamically change the flatmap color if range changed
         this.viewer.rangeChangedFlag = false;
 
         let upperThreshold, lowerThreshold;
@@ -1373,18 +1374,18 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
         upperThreshold = papayaContainers[0].viewer.screenVolumes[2].screenMax;
         lowerThreshold = papayaContainers[0].viewer.screenVolumes[2].screenMin;
 
-        for (let i = 0; i <surface.colorsData.length; ++i) {
-            if (!isNaN(surface.colorsData[i])) {
-                if (surface.colorsData[i] >= upperThreshold) { // White - max value
+        for (let i = 0; i <this.surfaces[index].colorsData.length; ++i) {
+            if (!isNaN(this.surfaces[index].colorsData[i])) {
+                if (this.surfaces[index].colorsData[i] >= upperThreshold) { // White - max value
                     colorData.push(this.surfaces[index].colorLookUpTable[99][0]);
                     colorData.push(this.surfaces[index].colorLookUpTable[99][1]);
                     colorData.push(this.surfaces[index].colorLookUpTable[99][2]);
-                } else if (surface.colorsData[i] < lowerThreshold) { // Gray - no show
+                } else if (this.surfaces[index].colorsData[i] < lowerThreshold) { // Gray - no show
                     colorData.push(0.9);
                     colorData.push(0.9);
                     colorData.push(0.9);
                 } else { // In between - interpolation
-                    let currIndex = Math.floor( (surface.colorsData[i]-lowerThreshold)/(upperThreshold-lowerThreshold)*100 );
+                    let currIndex = Math.floor( (this.surfaces[index].colorsData[i]-lowerThreshold)/(upperThreshold-lowerThreshold)*100 );
                     colorData.push(this.surfaces[index].colorLookUpTable[currIndex][0]);
                     colorData.push(this.surfaces[index].colorLookUpTable[currIndex][1]);
                     colorData.push(this.surfaces[index].colorLookUpTable[currIndex][2]);
