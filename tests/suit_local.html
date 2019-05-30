@@ -100,15 +100,15 @@
          DO NOT EDIT (end) */
 
         var params = [];
-        params["images"] = ["data/SUIT.nii", "data/SUIT_vertexvol.nii"];
-        params["data/SUIT.nii"] = {"icon": false};
-        params["SUIT_vertexvol.nii"] = {"hidden": true, "icon": false};
         params["orthogonalTall"] = true;
+        params["showControls"] = false;
+        params["images"] = ["data/SUIT.nii", "data/SUIT_vertexvol.nii"];
+        params["SUIT_vertexvol.nii"] = {"hidden": true};
+        params["surfaces"] = ["data/FLAT.surf.gii"];
+
         //params["showImageButtons"] = false;
         //params["fullScreen"] = true;
         //params["kioskMode"] = true;
-        params["showControls"] = false;
-        params.surfaces = ["data/FLAT.surf.gii"];
 
         //papaya.Container.addViewer("new_viewer", params);
         //papaya.Container.addViewer("imageDisplay", params, function(err, params){

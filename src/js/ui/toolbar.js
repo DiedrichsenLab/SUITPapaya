@@ -90,7 +90,7 @@ papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
 
 papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
     "items": [
-        {"label": "Add .nii contrasts", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        //{"label": "Add .nii contrasts", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
         //{"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
         // {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
         //     "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
@@ -525,18 +525,19 @@ papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, da
         if (menuData.label === "SPACE") {
             this.spaceMenu = menuData;
         }
-
-        if (!context) {
-            if (topLevelButtonId) {
-                menu.setMenuButton(topLevelButtonId);
-            } else {
-                topLevelButtonId = menu.buildMenuButton();
+        else {
+            if (!context) {
+                if (topLevelButtonId) {
+                    menu.setMenuButton(topLevelButtonId);
+                } else {
+                    topLevelButtonId = menu.buildMenuButton();
+                }
             }
-        }
 
-        items = menuData.items;
-        if (items) {
-            this.buildMenuItems(menu, items, topLevelButtonId, dataSource, modifier);
+            items = menuData.items;
+            if (items) {
+                this.buildMenuItems(menu, items, topLevelButtonId, dataSource, modifier);
+            }
         }
     }
 
@@ -628,9 +629,10 @@ papaya.ui.Toolbar.prototype.doUpdateImageButtons = function () {
 
     this.imageMenus = [];
 
-    if (this.container.showImageButtons) {
-        for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
-            screenVol = this.viewer.screenVolumes[ctr];
+    if (this.container.showImageButtons && (this.viewer.screenVolumes.length > 2) ) {
+        //for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
+        ctr = 2;
+        screenVol = this.viewer.screenVolumes[ctr];
             dataUrl = screenVol.icon;
 
             data = {
@@ -658,7 +660,7 @@ papaya.ui.Toolbar.prototype.doUpdateImageButtons = function () {
             if (!this.container.combineParametric || !screenVol.parametric) {
                 this.imageMenus.push((this.buildMenu(data.menus[0], null, screenVol, ctr.toString())));
             }
-        }
+        //}
     }
 };
 
@@ -669,7 +671,7 @@ papaya.ui.Toolbar.prototype.updateSurfaceButtons = function () {
 
     this.surfaceMenus = [];
 
-    if (this.container.showImageButtons) {
+    if (!this.container.showImageButtons) {
         for (ctr = this.viewer.surfaces.length - 1; ctr >= 0; ctr -= 1) {
             var surf = this.viewer.surfaces[ctr];
 
