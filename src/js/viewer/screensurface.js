@@ -627,21 +627,23 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
         }
         console.log(verticesColor);
     } else {
-        $.ajax({
-            url: "../tests/data/flatmap_verticesColor.csv",
-            async: false,
-            success: function (csvd) {
-                verticesColor = $.csv.toArrays(csvd);
-                for (let i = 0; i < verticesColor.length; ++i) {
-                    colorData.push(0.9);
-                    colorData.push(0.9);
-                    colorData.push(0.9);
-                }
-            }
-        });
+        for (let i = 0; i < surface.pointData.length/3; ++i) {
+            colorData.push(0.9);
+            colorData.push(0.9);
+            colorData.push(0.9);
+        }
     }
 
     surface.vColor = new Float32Array(colorData);
+
+    // Surface underlay color
+    let underlayColor = [];
+    for (let i = 0; i < 28935; ++i) {
+        underlayColor.push(0.9);
+        underlayColor.push(0.9);
+        underlayColor.push(0.9);
+    }
+    surface.underlayColor = new Float32Array(underlayColor);
     //console.log(verticesColor);
 
 
@@ -1399,6 +1401,10 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
         }
         this.surfaces[index].vColor = new Float32Array(colorData);
     }
+    else if (this.surfaces[index].colorsData === undefined || this.surfaces[index].colorsData === null){
+        this.surfaces[index].vColor = this.surfaces[index].underlayColor;
+    }
+
     let triangleVertexColorBufferObject = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBufferObject);
     gl.bufferData(gl.ARRAY_BUFFER, this.surfaces[index].vColor, gl.STATIC_DRAW);

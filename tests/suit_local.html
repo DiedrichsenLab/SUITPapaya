@@ -102,6 +102,8 @@
         var params = [];
         params["orthogonalTall"] = true;
         params["showControls"] = false;
+        params["worldSpace"] = true;
+        params["atlasURL"] = "data/Lobules-SUIT.nii.gz";
         params["images"] = ["data/SUIT.nii", "data/SUIT_vertexvol.nii"];
         params["SUIT_vertexvol.nii"] = {"hidden": true};
         params["surfaces"] = ["data/FLAT.surf.gii"];
@@ -121,6 +123,7 @@
     </script>
 
     <title>SUIT Local</title>
+    <script src="../build/papaya.js"></script>
 </head>
 
 <body>
