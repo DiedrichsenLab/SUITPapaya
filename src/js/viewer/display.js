@@ -179,177 +179,177 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
         }
 
         // atlas labels
-        // if (this.viewer.atlas && (!this.viewer.atlas.volume || this.viewer.atlas.volume.isLoaded)) {
-        //     if (papaya.Container.atlasWorldSpace) {
-        //         this.viewer.getWorldCoordinateAtIndex(xLoc, yLoc, zLoc, this.tempCoord);
-        //         atlasLabel = this.viewer.atlas.getLabelAtCoordinate(this.tempCoord.x, this.tempCoord.y, this.tempCoord.z, xLoc, yLoc, zLoc);
-        //     } else {
-        //         atlasLabel = this.viewer.atlas.getLabelAtCoordinate(xLoc, yLoc, zLoc, xLoc, yLoc, zLoc);
-        //     }
-        //
-        //     atlasNumLabels = atlasLabel.length;
-        //     labelColorThresh = Math.ceil(this.viewer.atlas.maxLabels / 2);
-        //
-        //     if ((halfWidth < 300) && (atlasNumLabels >= 2)) {
-        //         atlasLabelWidth = halfWidth * 0.75;
-        //
-        //         for (ctr = atlasNumLabels - 1; ctr >= 0; ctr -= 1) {
-        //             if (ctr === (atlasNumLabels - 2)) {
-        //                 this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
-        //                 this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
-        //                     papaya.viewer.Display.FONT_TYPE_ATLAS;
-        //             } else {
-        //                 this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_WHITE;
-        //                 this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
-        //                     papaya.viewer.Display.FONT_TYPE_ATLAS;
-        //             }
-        //
-        //             metricsAtlas = this.context.measureText(atlasLabel[ctr]);
-        //             if (metricsAtlas.width > (atlasLabelWidth - 2 * papaya.viewer.Display.PADDING)) {
-        //                 atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) + " ... " +
-        //                 atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
-        //             }
-        //
-        //             if (ctr === (atlasNumLabels - 2)) {
-        //                 this.context.fillText(atlasLabel[ctr], halfWidth + (halfWidth * 0.25),
-        //                     papaya.viewer.Display.PADDING * 1.5  + (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
-        //             } else if (ctr === (atlasNumLabels - 1)) {
-        //                 this.context.fillText(atlasLabel[ctr], halfWidth + (halfWidth * 0.25),
-        //                     papaya.viewer.Display.PADDING + (height / 2.0) +
-        //                     (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
-        //             }
-        //         }
-        //     } else if ((halfWidth < 600) && (atlasNumLabels > 2)) {
-        //         atlasLabelWidth = halfWidth / 2;
-        //
-        //         for (ctr = atlasNumLabels - 1; ctr >= 0; ctr -= 1) {
-        //             if (ctr < labelColorThresh) {
-        //                 this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
-        //                 this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
-        //                     papaya.viewer.Display.FONT_TYPE_ATLAS;
-        //             } else {
-        //                 this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_WHITE;
-        //                 this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
-        //                     papaya.viewer.Display.FONT_TYPE_ATLAS;
-        //             }
-        //
-        //             metricsAtlas = this.context.measureText(atlasLabel[ctr]);
-        //             if (metricsAtlas.width > (atlasLabelWidth - papaya.viewer.Display.PADDING * 6)) {
-        //                 atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) +
-        //                     " ... " + atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
-        //             }
-        //
-        //             if (ctr === 0) {
-        //                 this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING * 5,
-        //                     papaya.viewer.Display.PADDING * 1.5  + (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
-        //             } else if (ctr === 1) {
-        //                 this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING * 5,
-        //                     papaya.viewer.Display.PADDING + (height / 2.0) +
-        //                     (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
-        //             } else if (ctr === 2) {
-        //                 this.context.fillText(atlasLabel[ctr], halfWidth * 1.5 + papaya.viewer.Display.PADDING * 5,
-        //                     papaya.viewer.Display.PADDING * 1.5  + (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
-        //             } else if (ctr === 3) {
-        //                 this.context.fillText(atlasLabel[ctr], halfWidth * 1.5 + papaya.viewer.Display.PADDING * 5,
-        //                     papaya.viewer.Display.PADDING + (height / 2.0) +
-        //                     (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
-        //             }
-        //         }
-        //     } else if ((halfWidth < 800) && (atlasNumLabels > 3)) {
-        //         atlasLabelWidth = halfWidth / 3;
-        //
-        //         for (ctr = 0; ctr < 4; ctr += 1) {
-        //             if (ctr < 2) {
-        //                 if (ctr < labelColorThresh) {
-        //                     this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
-        //                     this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
-        //                         papaya.viewer.Display.FONT_TYPE_ATLAS;
-        //                 } else {
-        //                     this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_WHITE;
-        //                     this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
-        //                         papaya.viewer.Display.FONT_TYPE_ATLAS;
-        //                 }
-        //
-        //                 metricsAtlas = this.context.measureText(atlasLabel[ctr]);
-        //                 if (metricsAtlas.width > (atlasLabelWidth - papaya.viewer.Display.PADDING * 6)) {
-        //                     atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) +
-        //                         " ... " + atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
-        //                 }
-        //
-        //                 if (ctr === 0) {
-        //                     this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING * 5,
-        //                         papaya.viewer.Display.PADDING * 1.5  +
-        //                         (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
-        //                 } else if (ctr === 1) {
-        //                     this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING * 5,
-        //                         papaya.viewer.Display.PADDING + (height / 2.0) +
-        //                         (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
-        //                 } else if (ctr === 2) {
-        //                     this.context.fillText(atlasLabel[ctr], halfWidth * 1.5 + papaya.viewer.Display.PADDING * 5,
-        //                         papaya.viewer.Display.PADDING * 1.5  +
-        //                         (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
-        //                 } else if (ctr === 3) {
-        //                     this.context.fillText(atlasLabel[ctr], halfWidth * 1.5 + papaya.viewer.Display.PADDING * 5,
-        //                         papaya.viewer.Display.PADDING + (height / 2.0) +
-        //                         (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
-        //                 }
-        //             } else {
-        //                 locY = (height / 2.0) + (papaya.viewer.Display.FONT_SIZE_ATLAS / 2.0) -
-        //                     (papaya.viewer.Display.PADDING / 2.0);
-        //
-        //                 if (ctr < labelColorThresh) {
-        //                     this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
-        //                     this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS + "px " +
-        //                         papaya.viewer.Display.FONT_TYPE_ATLAS;
-        //                 } else {
-        //                     this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_WHITE;
-        //                     this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS + "px " +
-        //                         papaya.viewer.Display.FONT_TYPE_ATLAS;
-        //                 }
-        //
-        //                 metricsAtlas = this.context.measureText(atlasLabel[ctr]);
-        //                 if (metricsAtlas.width > (atlasLabelWidth - (2 * papaya.viewer.Display.PADDING))) {
-        //                     atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) +
-        //                         " ... " + atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
-        //                 }
-        //
-        //                 if (ctr === 2) {
-        //                     this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING +
-        //                         atlasLabelWidth, locY);
-        //                 } else if (ctr === 3) {
-        //                     this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING +
-        //                         (2 * atlasLabelWidth), locY);
-        //                 }
-        //             }
-        //         }
-        //     } else {
-        //         atlasLabelWidth = halfWidth / atlasNumLabels;
-        //         locY = (height / 2.0) + (papaya.viewer.Display.FONT_SIZE_ATLAS / 2.0) -
-        //             (papaya.viewer.Display.PADDING / 2.0);
-        //
-        //         for (ctr = 0; ctr < atlasNumLabels; ctr += 1) {
-        //             if (ctr < labelColorThresh) {
-        //                 this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
-        //                 this.context.font = (papaya.viewer.Display.FONT_SIZE_ATLAS - (smallViewer ? 4 : 0)) + "px " +
-        //                     papaya.viewer.Display.FONT_TYPE_ATLAS;
-        //             } else {
-        //                 this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_WHITE;
-        //                 this.context.font = (papaya.viewer.Display.FONT_SIZE_ATLAS - (smallViewer ? 4 : 0)) + "px " +
-        //                     papaya.viewer.Display.FONT_TYPE_ATLAS;
-        //             }
-        //
-        //             metricsAtlas = this.context.measureText(atlasLabel[ctr]);
-        //             if (metricsAtlas.width > (atlasLabelWidth - (2 * papaya.viewer.Display.PADDING)) -
-        //                     (halfWidth * 0.05 * Math.max(0, 3 - atlasNumLabels))) {
-        //                 atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) + " ... " +
-        //                     atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
-        //             }
-        //
-        //             this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING +
-        //                 (halfWidth * 0.05 * Math.max(0, 3 - atlasNumLabels)) + (ctr * atlasLabelWidth), locY);
-        //         }
-        //     }
-        // }
+        if (this.viewer.atlas && (!this.viewer.atlas.volume || this.viewer.atlas.volume.isLoaded)) {
+            if (papaya.Container.atlasWorldSpace) {
+                this.viewer.getWorldCoordinateAtIndex(xLoc, yLoc, zLoc, this.tempCoord);
+                atlasLabel = this.viewer.atlas.getLabelAtCoordinate(this.tempCoord.x, this.tempCoord.y, this.tempCoord.z, xLoc, yLoc, zLoc);
+            } else {
+                atlasLabel = this.viewer.atlas.getLabelAtCoordinate(xLoc, yLoc, zLoc, xLoc, yLoc, zLoc);
+            }
+
+            atlasNumLabels = atlasLabel.length;
+            labelColorThresh = Math.ceil(this.viewer.atlas.maxLabels / 2);
+
+            if ((halfWidth < 300) && (atlasNumLabels >= 2)) {
+                atlasLabelWidth = halfWidth * 0.75;
+
+                for (ctr = atlasNumLabels - 1; ctr >= 0; ctr -= 1) {
+                    if (ctr === (atlasNumLabels - 2)) {
+                        this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
+                        this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
+                            papaya.viewer.Display.FONT_TYPE_ATLAS;
+                    } else {
+                        this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_WHITE;
+                        this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
+                            papaya.viewer.Display.FONT_TYPE_ATLAS;
+                    }
+
+                    metricsAtlas = this.context.measureText(atlasLabel[ctr]);
+                    if (metricsAtlas.width > (atlasLabelWidth - 2 * papaya.viewer.Display.PADDING)) {
+                        atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) + " ... " +
+                        atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
+                    }
+
+                    if (ctr === (atlasNumLabels - 2)) {
+                        this.context.fillText(atlasLabel[ctr], halfWidth + (halfWidth * 0.25),
+                            papaya.viewer.Display.PADDING * 1.5  + (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
+                    } else if (ctr === (atlasNumLabels - 1)) {
+                        this.context.fillText(atlasLabel[ctr], halfWidth + (halfWidth * 0.25),
+                            papaya.viewer.Display.PADDING + (height / 2.0) +
+                            (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
+                    }
+                }
+            } else if ((halfWidth < 600) && (atlasNumLabels > 2)) {
+                atlasLabelWidth = halfWidth / 2;
+
+                for (ctr = atlasNumLabels - 1; ctr >= 0; ctr -= 1) {
+                    if (ctr < labelColorThresh) {
+                        this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
+                        this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
+                            papaya.viewer.Display.FONT_TYPE_ATLAS;
+                    } else {
+                        this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_WHITE;
+                        this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
+                            papaya.viewer.Display.FONT_TYPE_ATLAS;
+                    }
+
+                    metricsAtlas = this.context.measureText(atlasLabel[ctr]);
+                    if (metricsAtlas.width > (atlasLabelWidth - papaya.viewer.Display.PADDING * 6)) {
+                        atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) +
+                            " ... " + atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
+                    }
+
+                    if (ctr === 0) {
+                        this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING * 5,
+                            papaya.viewer.Display.PADDING * 1.5  + (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
+                    } else if (ctr === 1) {
+                        this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING * 5,
+                            papaya.viewer.Display.PADDING + (height / 2.0) +
+                            (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
+                    } else if (ctr === 2) {
+                        this.context.fillText(atlasLabel[ctr], halfWidth * 1.5 + papaya.viewer.Display.PADDING * 5,
+                            papaya.viewer.Display.PADDING * 1.5  + (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
+                    } else if (ctr === 3) {
+                        this.context.fillText(atlasLabel[ctr], halfWidth * 1.5 + papaya.viewer.Display.PADDING * 5,
+                            papaya.viewer.Display.PADDING + (height / 2.0) +
+                            (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
+                    }
+                }
+            } else if ((halfWidth < 800) && (atlasNumLabels > 3)) {
+                atlasLabelWidth = halfWidth / 3;
+
+                for (ctr = 0; ctr < 4; ctr += 1) {
+                    if (ctr < 2) {
+                        if (ctr < labelColorThresh) {
+                            this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
+                            this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
+                                papaya.viewer.Display.FONT_TYPE_ATLAS;
+                        } else {
+                            this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_WHITE;
+                            this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS_MINI + "px " +
+                                papaya.viewer.Display.FONT_TYPE_ATLAS;
+                        }
+
+                        metricsAtlas = this.context.measureText(atlasLabel[ctr]);
+                        if (metricsAtlas.width > (atlasLabelWidth - papaya.viewer.Display.PADDING * 6)) {
+                            atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) +
+                                " ... " + atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
+                        }
+
+                        if (ctr === 0) {
+                            this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING * 5,
+                                papaya.viewer.Display.PADDING * 1.5  +
+                                (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
+                        } else if (ctr === 1) {
+                            this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING * 5,
+                                papaya.viewer.Display.PADDING + (height / 2.0) +
+                                (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
+                        } else if (ctr === 2) {
+                            this.context.fillText(atlasLabel[ctr], halfWidth * 1.5 + papaya.viewer.Display.PADDING * 5,
+                                papaya.viewer.Display.PADDING * 1.5  +
+                                (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
+                        } else if (ctr === 3) {
+                            this.context.fillText(atlasLabel[ctr], halfWidth * 1.5 + papaya.viewer.Display.PADDING * 5,
+                                papaya.viewer.Display.PADDING + (height / 2.0) +
+                                (papaya.viewer.Display.FONT_SIZE_ATLAS_MINI / 2.0));
+                        }
+                    } else {
+                        locY = (height / 2.0) + (papaya.viewer.Display.FONT_SIZE_ATLAS / 2.0) -
+                            (papaya.viewer.Display.PADDING / 2.0);
+
+                        if (ctr < labelColorThresh) {
+                            this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
+                            this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS + "px " +
+                                papaya.viewer.Display.FONT_TYPE_ATLAS;
+                        } else {
+                            this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_WHITE;
+                            this.context.font = papaya.viewer.Display.FONT_SIZE_ATLAS + "px " +
+                                papaya.viewer.Display.FONT_TYPE_ATLAS;
+                        }
+
+                        metricsAtlas = this.context.measureText(atlasLabel[ctr]);
+                        if (metricsAtlas.width > (atlasLabelWidth - (2 * papaya.viewer.Display.PADDING))) {
+                            atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) +
+                                " ... " + atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
+                        }
+
+                        if (ctr === 2) {
+                            this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING +
+                                atlasLabelWidth, locY);
+                        } else if (ctr === 3) {
+                            this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING +
+                                (2 * atlasLabelWidth), locY);
+                        }
+                    }
+                }
+            } else {
+                atlasLabelWidth = halfWidth / atlasNumLabels;
+                locY = (height / 2.0) + (papaya.viewer.Display.FONT_SIZE_ATLAS / 2.0) -
+                    (papaya.viewer.Display.PADDING / 2.0);
+
+                for (ctr = 0; ctr < atlasNumLabels; ctr += 1) {
+                    if (ctr < labelColorThresh) {
+                        this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
+                        this.context.font = (papaya.viewer.Display.FONT_SIZE_ATLAS - (smallViewer ? 4 : 0)) + "px " +
+                            papaya.viewer.Display.FONT_TYPE_ATLAS;
+                    } else {
+                        this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_WHITE;
+                        this.context.font = (papaya.viewer.Display.FONT_SIZE_ATLAS - (smallViewer ? 4 : 0)) + "px " +
+                            papaya.viewer.Display.FONT_TYPE_ATLAS;
+                    }
+
+                    metricsAtlas = this.context.measureText(atlasLabel[ctr]);
+                    if (metricsAtlas.width > (atlasLabelWidth - (2 * papaya.viewer.Display.PADDING)) -
+                            (halfWidth * 0.05 * Math.max(0, 3 - atlasNumLabels))) {
+                        atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) + " ... " +
+                            atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
+                    }
+
+                    this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING +
+                        (halfWidth * 0.05 * Math.max(0, 3 - atlasNumLabels)) + (ctr * atlasLabelWidth), locY);
+                }
+            }
+        }
     } else if (this.drawError) {
         this.drawError(this.errorMessage);
     }

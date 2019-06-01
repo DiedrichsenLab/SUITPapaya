@@ -204,12 +204,12 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
         {"label": "Load Negatives", "action": "LoadNegatives", "required" : "canCurrentOverlayLoadNegatives" },
         {"label": "Transparency", "action": "alpha", "type": "range", "method": "getAlpha"},
-        {"label": "Color Table", "action": "ColorTable", "items": [], "required": "isNonParametricCombined" },
+        {"label": "Color Table", "action": "ColorTable", "items": [], "required": "canOpenInMango" },
         {"type": "spacer", "required": "isParametricCombined"},
         {"label": "DisplayRange", "action": "ChangeRangeNeg", "type": "displayrange", "method": "getRangeNegative", "required": "isParametricCombined"},
         {"label": "Transparency", "action": "alphaneg", "type": "range", "method": "getAlpha", "required": "isParametricCombined"},
         {"type": "spacer", "required": "isParametricCombined"},
-        {"label": "Hide Overlay", "action": "ToggleOverlay", "method": "getHiddenLabel" },
+        //{"label": "Hide Overlay", "action": "ToggleOverlay", "method": "getHiddenLabel" },
         {"label": "Close Overlay", "action": "CloseOverlay", "required": "isDesktopMode" },
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango" }
     ]
@@ -937,6 +937,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
         } else if (action.startsWith("CloseOverlay")) {
             imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
+            this.container.viewer.surfaces[0].colorsData = null;
             this.container.viewer.removeOverlay(imageIndex);
         } else if (action.startsWith("ToggleOverlay")) {
             imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
