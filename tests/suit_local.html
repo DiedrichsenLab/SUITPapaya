@@ -22,8 +22,8 @@
 
     <!-- JS debug start -->
     <script type="text/javascript" src="../src/js/data/sample-image.js"></script>
-    <script type="text/javascript" src="../src/js/data/talairach-atlas-image.js"></script>
-    <script type="text/javascript" src="../src/js/data/talairach-atlas.js"></script>
+    <!--<script type="text/javascript" src="../src/js/data/talairach-atlas-image.js"></script>-->
+    <!--<script type="text/javascript" src="../src/js/data/talairach-atlas.js"></script>-->
 
     <script type="text/javascript" src="../lib/base64-binary.js"></script>
     <script type="text/javascript" src="../lib/bowser.js"></script>
@@ -99,11 +99,20 @@
         ];
          DO NOT EDIT (end) */
 
+        var papayaLoadableImages = [{
+            hide: true,
+            name: "Cerebellar Atlas in SUIT space",
+            nicename: "Cerebellum_SUIT",
+            url: "data/Cerebellum-SUIT-maxprob-thr25.nii.gz"
+        }];
+
+
         var params = [];
         params["orthogonalTall"] = true;
         params["showControls"] = false;
         params["worldSpace"] = true;
-        params["atlasURL"] = "data/Lobules-SUIT.nii.gz";
+        //papaya.Container.atlasWorldSpace = false;
+        params["atlasURL"] = "data/Cerebellum-SUIT-maxprob-thr25.nii.gz";
         params["images"] = ["data/SUIT.nii", "data/SUIT_vertexvol.nii"];
         params["SUIT_vertexvol.nii"] = {"hidden": true};
         params["surfaces"] = ["data/FLAT.surf.gii"];
