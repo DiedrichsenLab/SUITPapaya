@@ -777,6 +777,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageName = action.substring(action.indexOf("-") + 1);
             let NiifileName = ["data/onlineAtlas/" + imageName + ".nii"];
             let GiifileName = "data/onlineAtlas/" + imageName + ".func.gii";
+            this.viewer.rangeClicked = false;
             this.viewer.loadImage(NiifileName, true, false, false);
             this.viewer.loadSurface(GiifileName, true, false);
         } else if (action.startsWith("OpenSurface-")) {

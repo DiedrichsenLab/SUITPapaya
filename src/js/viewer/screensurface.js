@@ -550,18 +550,6 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     surface.triangleIndex = new Uint16Array(triangleIndex);
     console.log(triangleIndex);
 
-    // ------------ Load jet-colormap -------------//
-    let colormap = [];
-    $.ajax({
-        url: "../tests/data/jet_colormap.csv",
-        async: false,
-        success: function (csvd) {
-            colormap = $.csv.toArrays(csvd);
-        }
-    });
-
-    console.log(colormap);
-
     // ------------ Load vertices color information -------------//
     if (surface.colorsData && this.surfaces.length > 1) {
         this.surfaces.shift();
