@@ -3,7 +3,6 @@
 .DS_Store
 build.sh
 release.sh
-/build/
 /tests/build/**/
 .jshint*
 juelich/
