@@ -468,7 +468,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     // ------------ Load pixel-wise mapping -------------//
     let pixel_mapping = [];
     $.ajax({
-        url: "../tests/data/mapping_250_rerefine.csv",
+        url: "data/mapping_250_rerefine.csv",
         async: false,
         success: function (csvd) {
             pixel_mapping = $.csv.toArrays(csvd);
@@ -480,7 +480,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     // ------------ Load index to coordinates mapping -------------//
     let index2Coords = [];
     $.ajax({
-        url: "../tests/data/index_3dCoord.csv",
+        url: "data/index_3dCoord.csv",
         async: false,
         success: function (csvd) {
             index2Coords = $.csv.toArrays(csvd);
@@ -493,7 +493,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     let triangleVertices = [];
     //let verticesIndex = [];
     $.ajax({
-        url: "../tests/data/flatmap_vertices.csv",
+        url: "data/flatmap_vertices.csv",
         async: false,
         success: function (csvd) {
             let triangleData = $.csv.toArrays(csvd);
@@ -517,7 +517,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     // ------------ Load flatmap border information and transfer to array -------------//
     let border = [];
     $.ajax({
-        url: "../tests/data/flatmap_border.csv",
+        url: "data/flatmap_border.csv",
         async: false,
         success: function (csvd) {
             let borderData = $.csv.toArrays(csvd);
@@ -536,7 +536,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     // ------------ Load flatmap edges information and transfer to array -------------//
     let triangleIndex = [];
     $.ajax({
-        url: "../tests/data/flatmap_edges.csv",
+        url: "data/flatmap_edges.csv",
         async: false,
         success: function (csvd) {
             let edgeData = $.csv.toArrays(csvd);
