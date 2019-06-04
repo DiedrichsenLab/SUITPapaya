@@ -1,6 +1,8 @@
-## Suit papaya
+## SuitPapaya
 is a project by the diedrichsen lab to build and html-based viewer for functional and other atlas data for the human cerebellum in SUIT or MNI space, including interactive visualization on the SUIT flatmap. 
-It is heavily based on (and forked from) rii-mango/Papaya
+The code is based on the repository rii-mango/Papaya
+
+For information on SUIT and an online version of the viewer, please visit diedrichsenlab.org/imaging/suit.htm 
 
 Papaya 
 ======
