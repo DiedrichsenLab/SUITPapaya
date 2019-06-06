@@ -884,7 +884,8 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     var ctr, xSlice, ySlice, zSlice, hasTranslucent = this.hasTranslucentSurfaces();
 
     // initialize
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(this.backgroundColor[0], this.backgroundColor[1], this.backgroundColor[2], 1.0);
+    //gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
