@@ -108,7 +108,7 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
                 {"label": "MDTB06_Unpleasant_Scenes", "action": "OpenBoth-MDTB06_Unpleasant_Scenes"},
                 {"label": "MDTB07_Pleasant_Scenes", "action": "OpenBoth-MDTB07_Pleasant_Scenes"},
                 {"label": "MDTB08_Math", "action": "OpenBoth-MDTB08_Math"},
-                {"label": "MDTB09_Digit_Judgement", "action": "OpenBoth-MDTB09_Digit_Judgement"},
+                {"label": "MDTB09_Digit_Judgment", "action": "OpenBoth-MDTB09_Digit_Judgement"},
                 {"label": "MDTB10_Object_Viewing", "action": "OpenBoth-MDTB10_Object_Viewing"},
                 {"label": "MDTB11_Sad_Faces", "action": "OpenBoth-MDTB11_Sad_Faces"},
                 {"label": "MDTB12_Happy_Faces", "action": "OpenBoth-MDTB12_Happy_Faces"},
@@ -120,7 +120,7 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
                 {"label": "MDTB18_Verbal_2back", "action": "OpenBoth-MDTB18_Verbal_2back"},
                 {"label": "MDTB19_Object_0back", "action": "OpenBoth-MDTB19_Object_0back"},
                 {"label": "MDTB20_Object_2back", "action": "OpenBoth-MDTB20_Object_2back"},
-                {"label": "MDTB21_Spatial_Navigation", "action": "OpenBoth-MDTB21_Spatial_Navigation"},
+                {"label": "MDTB21_Spatial_Imagery", "action": "OpenBoth-MDTB21_Spatial_Navigation"},
                 {"label": "MDTB22_Stroop_Incongruent", "action": "OpenBoth-MDTB22_Stroop_Incongruent"},
                 {"label": "MDTB23_Stroop_Congruent", "action": "OpenBoth-MDTB23_Stroop_Congruent"},
                 {"label": "MDTB24_Verb_Generation", "action": "OpenBoth-MDTB24_Verb_Generation"},
@@ -142,14 +142,16 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
                 {"label": "MDTB40_Mental_Rotation_Easy", "action": "OpenBoth-MDTB40_Mental_Rotation_Easy"},
                 {"label": "MDTB41_Mental_Rotation_Medium", "action": "OpenBoth-MDTB41_Mental_Rotation_Medium"},
                 {"label": "MDTB42_Mental_Rotation_Hard", "action": "OpenBoth-MDTB42_Mental_Rotation_Hard"},
+                {"label": "MDTB43_Biological_Motion", "action": "OpenBoth-MDTB43_Biological_Motion"},
                 {"label": "MDTB44_Scrambled_Motion", "action": "OpenBoth-MDTB44_Scrambled_Motion"},
                 {"label": "MDTB45_Response_Alternatives_Easy", "action": "OpenBoth-MDTB45_Response_Alternatives_Easy"},
                 {"label": "MDTB46_Response_Alternatives_Medium", "action": "OpenBoth-MDTB46_Response_Alternatives_Medium"},
                 {"label": "MDTB47_Response_Alternatives_Hard", "action": "OpenBoth-MDTB47_Response_Alternatives_Hard"}
             ]},
 
-        {"type": "spacer"},
-        {"label": "Close All", "action": "CloseAllImages"}
+        {"type": "spacer"}
+        //{"label": "Close Overlay", "action": "CloseOverlay", "required": "isDesktopMode" },
+        //{"label": "Close All", "action": "CloseAllImages"}
     ]
 };
 
@@ -177,13 +179,13 @@ papaya.ui.Toolbar.MENU_DATA = {
                 {"label": "Surface Preferences", "action": "SurfacePreferences", "required" : "hasSurface"}
             ]
         },
-        // {"label": "Help", "icons": null,
-        //     "items": [
-        //         {"label": "Show Keyboard Reference", "action": "KeyboardRef"},
-        //         {"label": "Show Mouse Reference", "action": "MouseRef"},
-        //         {"label": "Show License", "action": "License"}
-        //     ]
-        // },
+        {"label": "About", "icons": null,
+            "items": [
+                {"label": "Keyboard Reference", "action": "KeyboardRef"},
+                {"label": "Mouse Reference", "action": "MouseRef"},
+                {"label": "License", "action": "License"}
+            ]
+        },
         {"label": "TITLE", "icons": null, "titleBar": "true" },
         {"label": "EXPAND", "icons": [papaya.ui.Toolbar.ICON_EXPAND, papaya.ui.Toolbar.ICON_COLLAPSE], "items": [],
             "method": "isCollapsable", "required": "isExpandable" },

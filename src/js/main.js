@@ -69,13 +69,17 @@ papaya.Container = papaya.Container || function (containerHtml) {
 papaya.Container.LICENSE_TEXT = "<p>THIS PRODUCT IS NOT FOR CLINICAL USE.<br /><br />" +
     "This software is available for use, as is, free of charge.  The software and data derived from this software " +
     "may not be used for clinical purposes.<br /><br />" +
-    "The authors of this software make no representations or warranties about the suitability of the software, " +
-    "either express or implied, including but not limited to the implied warranties of merchantability, fitness for a " +
-    "particular purpose, non-infringement, or conformance to a specification or standard. The authors of this software " +
-    "shall not be liable for any damages suffered by licensee as a result of using or modifying this software or its " +
-    "derivatives.<br /><br />" +
-    "By using this software, you agree to be bounded by the terms of this license.  If you do not agree to the terms " +
-    "of this license, do not use this software.</p>";
+    "The SUIT Cerebellar Atlas Viewer was developed by Da Zhi (dzhi@uwo.ca) and other members of the Diedrichsenlab. " +
+    "It is extensively based on  <a href=\"github.com/rii-mango/Papaya\">github.com/rii-mango/Papaya</a>.<br /><br />" +
+    "For information about the cerebellar template, flatmap and functional data set, " +
+    "please see <a href=\"diedrichsenlab.org/imaging/suit.htm\">SUIT</a>.";
+    // "The authors of this software make no representations or warranties about the suitability of the software, " +
+    // "either express or implied, including but not limited to the implied warranties of merchantability, fitness for a " +
+    // "particular purpose, non-infringement, or conformance to a specification or standard. The authors of this software " +
+    // "shall not be liable for any damages suffered by licensee as a result of using or modifying this software or its " +
+    // "derivatives.<br /><br />" +
+    // "By using this software, you agree to be bounded by the terms of this license.  If you do not agree to the terms " +
+    // "of this license, do not use this software.</p>";
 
 papaya.Container.KEYBOARD_REF_TEXT = "<span style='color:#B5CBD3'>[Spacebar]</span> Cycle the main slice view in a clockwise rotation.<br /><br />" +
     "<span style='color:#B5CBD3'>[Page Up]</span> or <span style='color:#B5CBD3'>[']</span> Increment the axial slice.<br /><br />" +
@@ -93,8 +97,8 @@ papaya.Container.MOUSE_REF_TEXT = "<span style='color:#B5CBD3'>(Left-click and d
     "<span style='color:#B5CBD3'>[Alt](Left-click and drag)</span> Zoom in and out.<br /><br />" +
     "<span style='color:#B5CBD3'>[Alt](Double left-click)</span> Reset zoom.<br /><br />" +
     "<span style='color:#B5CBD3'>[Alt][Shift](Left-click and drag)</span> Pan zoomed image.<br /><br />" +
-    "<span style='color:#B5CBD3'>(Right-click and drag)</span> Window level controls.<br /><br />" +
-    "<span style='color:#B5CBD3'>(Scroll wheel)</span> See Preferences.<br /><br />";
+    "<span style='color:#B5CBD3'>(Right-click and drag)</span> Window level controls.<br /><br />";
+    //"<span style='color:#B5CBD3'>(Scroll wheel)</span> See Preferences.<br /><br />";
 
 papaya.Container.DICOM_SUPPORT = true;
 

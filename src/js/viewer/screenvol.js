@@ -303,8 +303,10 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric, sc
                     max = this.imageMin - (this.imageMin * 0.25);
                 }
             } else {
-                min = this.imageMax - (this.imageMax * 0.75);
-                max = this.imageMax - (this.imageMax * 0.25);
+                // min = this.imageMax - (this.imageMax * 0.75);
+                // max = this.imageMax - (this.imageMax * 0.25);
+                min = 0.025;
+                max = 0.2;
             }
         }
 

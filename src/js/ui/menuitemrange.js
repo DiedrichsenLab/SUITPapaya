@@ -64,11 +64,11 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     maxSliderId = this.id + "SliderMax";
     sliderId = this.id + "Slider";
 
-    if (!this.viewer.rangeClicked) {
-        range = [0.1, 0.3];
-    } else {
+    // if (!this.viewer.rangeClicked) {
+    //     range = [0.1, 0.3];
+    // } else {
         range = this.dataSource[this.method]();
-    }
+    // }
 
     menuItemRange = this;
 
