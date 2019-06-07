@@ -66,13 +66,19 @@ papaya.Container = papaya.Container || function (containerHtml) {
 
 /*** Static Pseudo-constants ***/
 
-papaya.Container.LICENSE_TEXT = "<p>THIS PRODUCT IS NOT FOR CLINICAL USE.<br /><br />" +
+papaya.Container.LICENSE_TEXT = "The SUIT Cerebellar Atlas Viewer was developed by Da Zhi (dzhi@uwo.ca) and other members of the Diedrichsenlab. " +
+    "It is extensively based on  <a href=\"https://github.com/rii-mango/Papaya\" target=\"_blank\">Papaya Medical Viewer</a>. For more information " +
+    "about the cerebellar template, flatmap and functional data set, " +
+    "please see <a href=\"http://www.diedrichsenlab.org/imaging/suit.htm\" target=\"_blank\">SUIT</a>.<br /><br />" +
     "This software is available for use, as is, free of charge.  The software and data derived from this software " +
     "may not be used for clinical purposes.<br /><br />" +
-    "The SUIT Cerebellar Atlas Viewer was developed by Da Zhi (dzhi@uwo.ca) and other members of the Diedrichsenlab. " +
-    "It is extensively based on  <a href=\"github.com/rii-mango/Papaya\">github.com/rii-mango/Papaya</a>.<br /><br />" +
-    "For information about the cerebellar template, flatmap and functional data set, " +
-    "please see <a href=\"diedrichsenlab.org/imaging/suit.htm\">SUIT</a>.";
+    "The authors of this software make no representations or warranties about the suitability of the software, " +
+    "either express or implied, including but not limited to the implied warranties of merchantability, fitness for a " +
+    "particular purpose, non-infringement, or conformance to a specification or standard. The authors of this software " +
+    "shall not be liable for any damages suffered by licensee as a result of using or modifying this software or its " +
+    "derivatives.<br /><br />" +
+    "By using this software, you agree to be bounded by the terms of this license.  If you do not agree to the terms " +
+    "of this license, do not use this software.</p>";
     // "The authors of this software make no representations or warranties about the suitability of the software, " +
     // "either express or implied, including but not limited to the implied warranties of merchantability, fitness for a " +
     // "particular purpose, non-infringement, or conformance to a specification or standard. The authors of this software " +
