@@ -1281,13 +1281,14 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     gl.lineWidth(this.isMainView() ? 3.0 : 2.0);
 
     let crosshairAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
+    gl.enableVertexAttribArray(crosshairAttribLocation);
 
     // draw x crosshair
     let LineXBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, LineXBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(x_crosshair), gl.DYNAMIC_DRAW);
     gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(crosshairAttribLocation);
+
     gl.drawArrays(gl.LINES, 0, 2);
 
     // draw y crosshair
@@ -1295,7 +1296,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     gl.bindBuffer(gl.ARRAY_BUFFER, LineYBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(y_crosshair), gl.DYNAMIC_DRAW);
     gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(crosshairAttribLocation);
+    //gl.enableVertexAttribArray(crosshairAttribLocation);
     gl.drawArrays(gl.LINES, 0, 2);
 
     gl.uniform1i(crosshairsLocation, 0);

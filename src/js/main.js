@@ -528,7 +528,7 @@ papaya.Container.startPapaya = function () {
 papaya.Container.resizePapaya = function (ev, force) {
     var ctr;
 
-    papaya.Container.updateOrthogonalState();
+    //papaya.Container.updateOrthogonalState();
 
     if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
         if (!papaya.utilities.PlatformUtils.smallScreen || force) {
@@ -690,14 +690,15 @@ papaya.Container.prototype.getViewerDimensions = function () {
     var parentWidth, height, width, ratio, maxHeight, maxWidth;
 
     parentWidth = this.containerHtml.parent().width() - (this.fullScreenPadding ? (2 * PAPAYA_PADDING) : 0);
-    ratio = (this.orthogonal ? (this.hasSurface() ? 1.333 : 1.5) : 1);
+    //ratio = (this.orthogonal ? (this.hasSurface() ? 1.333 : 1.5) : 1);
+    ratio = 1.6667;
 
     if (this.orthogonalTall || !this.orthogonal) {
         height = (this.collapsable ? window.innerHeight : this.containerHtml.parent().height()) - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
             PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding && !this.nestedViewer ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
             (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
 
-        width = papayaRoundFast(height * 1.6667);
+        width = papayaRoundFast(height * ratio);
 
         //width = parentWidth;
         //height = papayaRoundFast(width / ratio);
@@ -714,7 +715,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
             maxWidth = window.innerWidth - (this.fullScreenPadding ? (2 * PAPAYA_PADDING) : 0);
             if (width > maxWidth) {
                 width = maxWidth;
-                height = papayaRoundFast(width * ratio);
+                height = papayaRoundFast(width / ratio);
             }
         } else {
 
