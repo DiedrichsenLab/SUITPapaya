@@ -790,15 +790,15 @@ papaya.Container.prototype.readGlobalParams = function() {
         this.allowScroll = this.params.allowScroll;
     }
 
-    if (papaya.utilities.PlatformUtils.mobile || this.orthogonalDynamic) {
-        if (this.orthogonal) {
-            if ($(window).height() > $(window).width()) {
-                this.orthogonalTall = true;
-            } else {
-                this.orthogonalTall = false;
-            }
-        }
-    }
+    // if (papaya.utilities.PlatformUtils.mobile || this.orthogonalDynamic) {
+    //     if (this.orthogonal) {
+    //         if ($(window).height() > $(window).width()) {
+    //             this.orthogonalTall = true;
+    //         } else {
+    //             this.orthogonalTall = false;
+    //         }
+    //     }
+    // }
 
     if (this.params.syncOverlaySeries !== undefined) {  // default is true
         this.syncOverlaySeries = this.params.syncOverlaySeries;
