@@ -593,9 +593,9 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
                     colorData.push(colorLookUpTable[99][1]);
                     colorData.push(colorLookUpTable[99][2]);
                 } else if (surface.colorsData[i] < lowerThreshold) { // Gray - no show
-                    colorData.push(0.9);
-                    colorData.push(0.9);
-                    colorData.push(0.9);
+                    colorData.push(0.76);
+                    colorData.push(0.76);
+                    colorData.push(0.76);
                 } else { // In between - interpolation
                     let currIndex = Math.floor( (surface.colorsData[i]-lowerThreshold)/(upperThreshold-lowerThreshold)*100 );
                     colorData.push(colorLookUpTable[currIndex][0]);
@@ -604,17 +604,17 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
                 }
 
             } else {
-                colorData.push(0.9);
-                colorData.push(0.9);
-                colorData.push(0.9);
+                colorData.push(0.76);
+                colorData.push(0.76);
+                colorData.push(0.76);
             }
         }
         console.log(verticesColor);
     } else {
         for (let i = 0; i < surface.pointData.length/3; ++i) {
-            colorData.push(0.9);
-            colorData.push(0.9);
-            colorData.push(0.9);
+            colorData.push(0.76);
+            colorData.push(0.76);
+            colorData.push(0.76);
         }
     }
 
@@ -623,9 +623,9 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     // Surface underlay color
     let underlayColor = [];
     for (let i = 0; i < 28935; ++i) {
-        underlayColor.push(0.9);
-        underlayColor.push(0.9);
-        underlayColor.push(0.9);
+        underlayColor.push(0.76);
+        underlayColor.push(0.76);
+        underlayColor.push(0.76);
     }
     surface.underlayColor = new Float32Array(underlayColor);
     //console.log(verticesColor);
@@ -1369,9 +1369,9 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
                     colorData.push(this.surfaces[index].colorLookUpTable[99][1]);
                     colorData.push(this.surfaces[index].colorLookUpTable[99][2]);
                 } else if (this.surfaces[index].colorsData[i] < lowerThreshold) { // Gray - no show
-                    colorData.push(0.9);
-                    colorData.push(0.9);
-                    colorData.push(0.9);
+                    colorData.push(0.76);
+                    colorData.push(0.76);
+                    colorData.push(0.76);
                 } else { // In between - interpolation
                     let currIndex = Math.floor( (this.surfaces[index].colorsData[i]-lowerThreshold)/(upperThreshold-lowerThreshold)*100 );
                     colorData.push(this.surfaces[index].colorLookUpTable[currIndex][0]);
@@ -1380,9 +1380,9 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
                 }
 
             } else {
-                colorData.push(0.9);
-                colorData.push(0.9);
-                colorData.push(0.9);
+                colorData.push(0.76);
+                colorData.push(0.76);
+                colorData.push(0.76);
             }
         }
         this.surfaces[index].vColor = new Float32Array(colorData);

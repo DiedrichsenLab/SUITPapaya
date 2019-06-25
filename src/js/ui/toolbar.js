@@ -96,7 +96,8 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
         //     "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
         // {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
 
-        {"label": "MDTB contrasts", "icons": null, "items": [
+
+        {"label": "MDTB contrasts", "action": null, "icons": null, "items": [
                 {"label": "MDTB00_Left_Hand", "action": "OpenBoth-MDTB00_Left_Hand"},
                 {"label": "MDTB00_Right_Hand", "action": "OpenBoth-MDTB00_Right_Hand"},
                 {"label": "MDTB00_Saccades", "action": "OpenBoth-MDTB00_Saccades"},
@@ -149,6 +150,14 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
                 {"label": "MDTB47_Response_Alternatives_Hard", "action": "OpenBoth-MDTB47_Response_Alternatives_Hard"}
             ]},
 
+        // {"label": "MDTB labels", "action": null, "icons": null, "items": [
+        //         {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
+        //         {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"},
+        //         {"label": "Ji_10Networks", "action": "OpenLabel-Ji_10Networks"},
+        //         {"label": "Lobules-SUIT", "action": "OpenLabel-Lobules-SUIT"},
+        //         {"label": "MDTB_10Regions", "action": "OpenLabel-MDTB_10Regions"}
+        //     ]},
+
         {"type": "spacer"}
         //{"label": "Close Overlay", "action": "CloseOverlay", "required": "isDesktopMode" },
         //{"label": "Close All", "action": "CloseAllImages"}
@@ -181,6 +190,7 @@ papaya.ui.Toolbar.MENU_DATA = {
         },
         {"label": "About", "icons": null,
             "items": [
+                {"label": "General Info", "action": "GeneralInfo"},
                 {"label": "Keyboard Reference", "action": "KeyboardRef"},
                 {"label": "Mouse Reference", "action": "MouseRef"},
                 {"label": "License", "action": "License"}
@@ -332,6 +342,12 @@ papaya.ui.Toolbar.SURFACE_INFO_DATA = {
 papaya.ui.Toolbar.HEADER_DATA = {
     "items": [
         {"label": "", "field": "getHeaderDescription", "readonly": "true"}
+    ]
+};
+
+papaya.ui.Toolbar.GENERAL_INFO_DATA = {
+    "items": [
+        {"label": "", "field": "getGeneralInfo", "readonly": "true"}
     ]
 };
 
@@ -782,7 +798,17 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.viewer.rangeClicked = false;
             this.viewer.loadImage(NiifileName, true, false, false);
             this.viewer.loadSurface(GiifileName, true, false);
-        } else if (action.startsWith("OpenSurface-")) {
+        } else if (action.startsWith("OpenLabel-")) {
+            if (this.container.viewer.screenVolumes.length > 2) {
+                this.container.viewer.removeOverlay(2); // Always remove the previous one, index = 2
+            }
+            imageName = action.substring(action.indexOf("-") + 1);
+            let NiifileName = ["data/labelAtlas/" + imageName + ".nii"];
+            let GiifileName = "data/labelAtlas/" + imageName + ".label.gii";
+            this.viewer.rangeClicked = false;
+            this.viewer.loadImage(NiifileName, true, false, false);
+            this.viewer.loadSurface(GiifileName, true, false);
+        }else if (action.startsWith("OpenSurface-")) {
             imageName = action.substring(action.indexOf("-") + 1);
             this.viewer.loadSurface(imageName);
         } else if (action.startsWith("Open-")) {
@@ -849,6 +875,10 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
                     }
                 )
             );
+            dialog.showDialog();
+        } else if (action === "GeneralInfo") {
+            dialog = new papaya.ui.Dialog(this.container, "General Info", papaya.ui.Toolbar.GENERAL_INFO_DATA,
+                papaya.Container, null, null, null, true);
             dialog.showDialog();
         } else if (action === "License") {
             dialog = new papaya.ui.Dialog(this.container, "License", papaya.ui.Toolbar.LICENSE_DATA,
