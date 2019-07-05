@@ -97,7 +97,7 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
         // {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
 
 
-        {"label": "MDTB contrasts", "action": null, "icons": null, "items": [
+        // {"label": "MDTB contrasts", "icons": null, "items": [
                 {"label": "MDTB00_Left_Hand", "action": "OpenBoth-MDTB00_Left_Hand"},
                 {"label": "MDTB00_Right_Hand", "action": "OpenBoth-MDTB00_Right_Hand"},
                 {"label": "MDTB00_Saccades", "action": "OpenBoth-MDTB00_Saccades"},
@@ -148,17 +148,17 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
                 {"label": "MDTB45_Response_Alternatives_Easy", "action": "OpenBoth-MDTB45_Response_Alternatives_Easy"},
                 {"label": "MDTB46_Response_Alternatives_Medium", "action": "OpenBoth-MDTB46_Response_Alternatives_Medium"},
                 {"label": "MDTB47_Response_Alternatives_Hard", "action": "OpenBoth-MDTB47_Response_Alternatives_Hard"}
-            ]},
+            // ]},
 
-        // {"label": "MDTB labels", "action": null, "icons": null, "items": [
+        // {"label": "MDTB labels", "icons": null, "items": [
         //         {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
         //         {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"},
         //         {"label": "Ji_10Networks", "action": "OpenLabel-Ji_10Networks"},
         //         {"label": "Lobules-SUIT", "action": "OpenLabel-Lobules-SUIT"},
         //         {"label": "MDTB_10Regions", "action": "OpenLabel-MDTB_10Regions"}
-        //     ]},
+        //     ]}
 
-        {"type": "spacer"}
+        //{"type": "spacer"}
         //{"label": "Close Overlay", "action": "CloseOverlay", "required": "isDesktopMode" },
         //{"label": "Close All", "action": "CloseAllImages"}
     ]
@@ -182,6 +182,17 @@ papaya.ui.Toolbar.MENU_DATA = {
         //         {"label": "Surface Planes", "action": "ShowSurfacePlanes", "type": "checkbox", "method": "isShowingSurfacePlanes", "required" : "hasSurface"}
         //     ]
         // },
+
+        {"label": "Labels", "icons": null,
+            "items": [
+                {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
+                {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"},
+                {"label": "Ji_10Networks", "action": "OpenLabel-Ji_10Networks"},
+                {"label": "Lobules_SUIT", "action": "OpenLabel-Lobules_SUIT"},
+                {"label": "MDTB_10Regions", "action": "OpenLabel-MDTB_10Regions"}
+            ]
+        },
+
         {"label": "Settings", "icons": null,
             "items": [
                 {"label": "Viewer Preferences", "action": "Preferences"},
@@ -796,6 +807,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             let NiifileName = ["data/onlineAtlas/" + imageName + ".nii"];
             let GiifileName = "data/onlineAtlas/" + imageName + ".func.gii";
             this.viewer.rangeClicked = false;
+            this.viewer.isLabelGii = false;
             this.viewer.loadImage(NiifileName, true, false, false);
             this.viewer.loadSurface(GiifileName, true, false);
         } else if (action.startsWith("OpenLabel-")) {
@@ -806,6 +818,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             let NiifileName = ["data/labelAtlas/" + imageName + ".nii"];
             let GiifileName = "data/labelAtlas/" + imageName + ".label.gii";
             this.viewer.rangeClicked = false;
+            this.viewer.isLabelGii = true;
             this.viewer.loadImage(NiifileName, true, false, false);
             this.viewer.loadSurface(GiifileName, true, false);
         }else if (action.startsWith("OpenSurface-")) {

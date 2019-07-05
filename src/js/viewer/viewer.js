@@ -83,6 +83,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.tempCoor = new papaya.core.Coordinate();
     this.rangeChangedFlag = false;
     this.rangeClicked = false;
+    this.isLabelGii = false;
 
     this.listenerContextMenu = function (me) { me.preventDefault(); return false; };
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
@@ -771,9 +772,10 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
                 }
             }
         } else {
+
             overlay = new papaya.viewer.ScreenVolume(this.loadingVolume,
                 this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name :
-                    this.getNextColorTable()), false, false, this.currentCoord);
+                    this.getColorTable()), false, false, this.currentCoord);
 
             if (this.loadingDTI) {
                 this.loadingDTI = false;
@@ -2505,6 +2507,21 @@ papaya.viewer.Viewer.prototype.getIndexCoordinateAtWorld = function (ctrX, ctrY,
         -1 * ((ctrY / this.volume.header.voxelDimensions.ySize) - this.volume.header.origin.y),
         -1 * ((ctrZ / this.volume.header.voxelDimensions.zSize) - this.volume.header.origin.z), true);
     return coord;
+};
+
+
+
+papaya.viewer.Viewer.prototype.getColorTable = function () {
+    var filename;
+
+    for (let i = 0; i < papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES.length; ++i) {
+        filename = this.loadingVolume.fileName.substring(0, (this.loadingVolume.fileName.indexOf(".")));
+        if (filename === papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES[i].name) {
+            return filename;
+        }
+    }
+
+    return papaya.viewer.ColorTable.TABLE_RED2WHITE.name;
 };
 
 

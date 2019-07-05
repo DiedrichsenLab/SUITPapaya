@@ -20,6 +20,7 @@ papaya.surface.Surface = papaya.surface.Surface || function (progressMeter, para
     this.triangleData = null;
     this.normalsData = null;
     this.colorsData = null;
+    this.labelsData = null;
     this.numPoints = 0;
     this.numTriangles = 0;
     this.pointsBuffer = null;
@@ -270,6 +271,7 @@ papaya.surface.Surface.prototype.finishedReading = function () {
             currentSurface.normalsData = this.fileFormat.getNormalsData(ctr);
             currentSurface.triangleData = this.fileFormat.getTriangleData(ctr);
             currentSurface.colorsData = this.fileFormat.getColorsData(ctr);
+            currentSurface.labelsData = this.fileFormat.getLabelsData(ctr);
 
             // if (currentSurface.normalsData === null) {
             //     this.generateNormals();

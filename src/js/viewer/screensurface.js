@@ -254,6 +254,7 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.rulerPoints = null;
     this.grabbedRulerPoint = -1;
     this.selectedFlag = false;
+    this.isLabelGii = null;
 
     this.processParams(params);
 };
@@ -559,65 +560,81 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     let verticesColor = [];
     let colorData = [];
 
-    if (surface.colorsData) {
-        let interval, upperThreshold, lowerThreshold;
-        let sparsity = 100;
-
-
-        upperThreshold = papayaContainers[0].viewer.screenVolumes[1].screenMax;
-        lowerThreshold = papayaContainers[0].viewer.screenVolumes[1].screenMin;
-
-        //-- Making look up color table
-        //let knotPoint = [[0.75, 0, 0, 0], [1, 0.5, 0.5, 0], [1, 0.95, 1, 0], [1, 1, 1, 1]];
-        let knotPoint = [[1, 0, 0], [1, 1, 0], [1, 1, 1]];
-        interval = Math.floor(sparsity / (knotPoint.length - 1));
-
-        let red, green, blue;
-        let colorLookUpTable = [];
-
-        for (let curr = 0; curr < knotPoint.length - 1; ++curr) {
-            for (let index = 0; index < interval; ++index) {
-                red = knotPoint[curr][0] + index * ((knotPoint[curr+1][0] - knotPoint[curr][0]) / interval);
-                green = knotPoint[curr][1] + index * ((knotPoint[curr+1][1] - knotPoint[curr][1]) / interval);
-                blue = knotPoint[curr][2] + index * ((knotPoint[curr+1][2] - knotPoint[curr][2]) / interval);
-                colorLookUpTable.push([red, green, blue]);
-            }
-        }
-        colorLookUpTable.push([1,1,1]);
-        surface.colorLookUpTable = colorLookUpTable;
-
-        for (let i = 0; i <surface.colorsData.length; ++i) {
-            if (!isNaN(surface.colorsData[i])) {
-                if (surface.colorsData[i] >= upperThreshold) { // White - max value
-                    colorData.push(colorLookUpTable[99][0]);
-                    colorData.push(colorLookUpTable[99][1]);
-                    colorData.push(colorLookUpTable[99][2]);
-                } else if (surface.colorsData[i] < lowerThreshold) { // Gray - no show
-                    colorData.push(0.87);
-                    colorData.push(0.87);
-                    colorData.push(0.87);
-                } else { // In between - interpolation
-                    let currIndex = Math.floor( (surface.colorsData[i]-lowerThreshold)/(upperThreshold-lowerThreshold)*100 );
-                    colorData.push(colorLookUpTable[currIndex][0]);
-                    colorData.push(colorLookUpTable[currIndex][1]);
-                    colorData.push(colorLookUpTable[currIndex][2]);
-                }
-
+    if (surface.labelsData && surface.labelsData.length > 2) {
+        this.isLabelGii = true;
+        for (let i = 0; i < surface.colorsData.length; ++i) {
+            if (surface.colorsData[i] === 0) {
+                colorData.push(0.87);
+                colorData.push(0.87);
+                colorData.push(0.87);
             } else {
-                colorData.push(0.87);
-                colorData.push(0.87);
-                colorData.push(0.87);
+                colorData.push(surface.labelsData[surface.colorsData[i]].r);
+                colorData.push(surface.labelsData[surface.colorsData[i]].g);
+                colorData.push(surface.labelsData[surface.colorsData[i]].b);
             }
-        }
-        console.log(verticesColor);
-    } else {
-        for (let i = 0; i < surface.pointData.length/3; ++i) {
-            colorData.push(0.87);
-            colorData.push(0.87);
-            colorData.push(0.87);
         }
     }
+    else {
+        this.isLabelGii = false;
+        if (surface.colorsData) {
+            let interval, upperThreshold, lowerThreshold;
+            let sparsity = 100;
 
+
+            upperThreshold = papayaContainers[0].viewer.screenVolumes[1].screenMax;
+            lowerThreshold = papayaContainers[0].viewer.screenVolumes[1].screenMin;
+
+            //-- Making look up color table
+            //let knotPoint = [[0.75, 0, 0, 0], [1, 0.5, 0.5, 0], [1, 0.95, 1, 0], [1, 1, 1, 1]];
+            let knotPoint = [[1, 0, 0], [1, 1, 0], [1, 1, 1]];
+            interval = Math.floor(sparsity / (knotPoint.length - 1));
+
+            let red, green, blue;
+            let colorLookUpTable = [];
+
+            for (let curr = 0; curr < knotPoint.length - 1; ++curr) {
+                for (let index = 0; index < interval; ++index) {
+                    red = knotPoint[curr][0] + index * ((knotPoint[curr + 1][0] - knotPoint[curr][0]) / interval);
+                    green = knotPoint[curr][1] + index * ((knotPoint[curr + 1][1] - knotPoint[curr][1]) / interval);
+                    blue = knotPoint[curr][2] + index * ((knotPoint[curr + 1][2] - knotPoint[curr][2]) / interval);
+                    colorLookUpTable.push([red, green, blue]);
+                }
+            }
+            colorLookUpTable.push([1, 1, 1]);
+            surface.colorLookUpTable = colorLookUpTable;
+
+            for (let i = 0; i < surface.colorsData.length; ++i) {
+                if (!isNaN(surface.colorsData[i])) {
+                    if (surface.colorsData[i] >= upperThreshold) { // White - max value
+                        colorData.push(colorLookUpTable[99][0]);
+                        colorData.push(colorLookUpTable[99][1]);
+                        colorData.push(colorLookUpTable[99][2]);
+                    } else if (surface.colorsData[i] < lowerThreshold) { // Gray - no show
+                        colorData.push(0.87);
+                        colorData.push(0.87);
+                        colorData.push(0.87);
+                    } else { // In between - interpolation
+                        let currIndex = Math.floor((surface.colorsData[i] - lowerThreshold) / (upperThreshold - lowerThreshold) * 100);
+                        colorData.push(colorLookUpTable[currIndex][0]);
+                        colorData.push(colorLookUpTable[currIndex][1]);
+                        colorData.push(colorLookUpTable[currIndex][2]);
+                    }
+
+                } else {
+                    colorData.push(0.87);
+                    colorData.push(0.87);
+                    colorData.push(0.87);
+                }
+            }
+            console.log(verticesColor);
+        } else {
+            for (let i = 0; i < surface.pointData.length / 3; ++i) {
+                colorData.push(0.87);
+                colorData.push(0.87);
+                colorData.push(0.87);
+            }
+        }
+    }
     surface.vColor = new Float32Array(colorData);
 
     // Surface underlay color
@@ -798,26 +815,26 @@ papaya.viewer.ScreenSurface.prototype.initActivePlaneBuffers = function (gl) {
 
 
 
-papaya.viewer.ScreenSurface.prototype.initRulerBuffers = function (gl) {
-    this.rulerPointData = this.makeSphere(papaya.viewer.ScreenSurface.RULER_NUM_LINES,
-        papaya.viewer.ScreenSurface.RULER_NUM_LINES, papaya.viewer.ScreenSurface.RULER_RADIUS * this.scaleFactor);
-
-    this.sphereVertexPositionBuffer = gl.createBuffer();
-    this.sphereVertexPositionBuffer.itemSize = 3;
-    this.sphereVertexPositionBuffer.numItems = this.rulerPointData.vertices.length / 3;
-
-    this.sphereNormalsPositionBuffer = gl.createBuffer();
-    this.sphereNormalsPositionBuffer.itemSize = 3;
-    this.sphereNormalsPositionBuffer.numItems = this.rulerPointData.normals.length / 3;
-
-    this.sphereVertexIndexBuffer = gl.createBuffer();
-    this.sphereVertexIndexBuffer.itemSize = 1;
-    this.sphereVertexIndexBuffer.numItems = this.rulerPointData.indices.length;
-
-    this.rulerLineBuffer = gl.createBuffer();
-    this.rulerLineBuffer.itemSize = 3;
-    this.rulerLineBuffer.numItems = 2;
-};
+// papaya.viewer.ScreenSurface.prototype.initRulerBuffers = function (gl) {
+//     this.rulerPointData = this.makeSphere(papaya.viewer.ScreenSurface.RULER_NUM_LINES,
+//         papaya.viewer.ScreenSurface.RULER_NUM_LINES, papaya.viewer.ScreenSurface.RULER_RADIUS * this.scaleFactor);
+//
+//     this.sphereVertexPositionBuffer = gl.createBuffer();
+//     this.sphereVertexPositionBuffer.itemSize = 3;
+//     this.sphereVertexPositionBuffer.numItems = this.rulerPointData.vertices.length / 3;
+//
+//     this.sphereNormalsPositionBuffer = gl.createBuffer();
+//     this.sphereNormalsPositionBuffer.itemSize = 3;
+//     this.sphereNormalsPositionBuffer.numItems = this.rulerPointData.normals.length / 3;
+//
+//     this.sphereVertexIndexBuffer = gl.createBuffer();
+//     this.sphereVertexIndexBuffer.itemSize = 1;
+//     this.sphereVertexIndexBuffer.numItems = this.rulerPointData.indices.length;
+//  
+//     this.rulerLineBuffer = gl.createBuffer();
+//     this.rulerLineBuffer.itemSize = 3;
+//     this.rulerLineBuffer.numItems = 2;
+// };
 
 
 
@@ -1353,7 +1370,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
     gl.enableVertexAttribArray(positionAttribLocation);
 
     //---- triangle vertex color buffer object
-    if (this.surfaces[index].colorsData && this.viewer.rangeChangedFlag) { // Dynamically change the flatmap color if range changed
+    if (this.surfaces[index].colorsData && this.viewer.rangeChangedFlag && !this.isLabelGii) { // Dynamically change the flatmap color if range changed
         this.viewer.rangeChangedFlag = false;
 
         let upperThreshold, lowerThreshold;
