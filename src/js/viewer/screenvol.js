@@ -308,7 +308,8 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric, sc
                 // max = this.imageMax - (this.imageMax * 0.25);
                 if (papayaContainers[0].viewer.isLabelGii) {
                     min = this.imageMin;
-                    max = this.colorTable.lutData.length - 1;
+                    max = this.imageMax;
+                    //max = this.colorTable.lutData.length - 1;
                 } else {
                     min = 0.025;
                     max = 0.2;
