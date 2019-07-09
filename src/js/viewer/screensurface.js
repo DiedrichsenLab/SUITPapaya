@@ -1295,7 +1295,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
 
     let crosshairsLocation = gl.getUniformLocation(shaderProgram_1, "uCrosshairs");
     gl.uniform1i(crosshairsLocation, 1);
-    gl.lineWidth(this.isMainView() ? 3.0 : 2.0);
+    gl.lineWidth(this.isMainView() ? 2.0 : 1.5);
 
     let crosshairAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
     gl.enableVertexAttribArray(crosshairAttribLocation);
