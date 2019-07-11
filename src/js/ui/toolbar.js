@@ -183,7 +183,7 @@ papaya.ui.Toolbar.MENU_DATA = {
         //     ]
         // },
 
-        {"label": "Labels", "icons": null,
+        {"label": "Parcellations", "icons": null,
             "items": [
                 {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
                 {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"},
