@@ -50,7 +50,7 @@ papaya.data.Atlas.labels = {
                 summaryimagefile: "Cerebellum-SUIT-maxprob-thr25"
             },
             //transformedname: "MNI (Nearest Grey Matter)",
-            display: "*.*",
+            display: "*.",
             name: "Cerebellar Atlas in SUIT space",
             type: "Probabalistic"
         },
