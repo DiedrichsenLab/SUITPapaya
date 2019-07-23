@@ -355,8 +355,10 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
                             atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
                     }
 
-                    this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING +
-                        (halfWidth * 0.05 * Math.max(0, 3 - atlasNumLabels)) + (ctr * atlasLabelWidth), locY);
+                    this.context.fillText(atlasLabel[ctr], 1.25 * halfWidth + (halfWidth * 0.05 * Math.max(0, 2 - atlasNumLabels)), locY);
+
+                    // this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING +
+                    //     (halfWidth * 0.05 * Math.max(0, 3 - atlasNumLabels)) + (ctr * atlasLabelWidth), locY);
                 }
             }
         }

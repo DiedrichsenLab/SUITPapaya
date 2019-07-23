@@ -67,9 +67,9 @@ papaya.Container = papaya.Container || function (containerHtml) {
 /*** Static Pseudo-constants ***/
 
 papaya.Container.GENERAL_INFO = "The SUIT Cerebellar Atlas Viewer was developed by Da Zhi (dzhi@uwo.ca) and other members of the Diedrichsenlab. " +
-    "It is extensively based on  <a href=\"https://github.com/rii-mango/Papaya\" target=\"_blank\">Papaya Medical Viewer</a>. For more information " +
+    "It is extensively based on  <a href=\"https://github.com/rii-mango/Papaya\" style=\"color:#FFD700\" target=\"_blank\">Papaya Medical Viewer</a>. For more information " +
     "about the cerebellar template, flatmap and functional data set, " +
-    "please see <a href=\"http://www.diedrichsenlab.org/imaging/suit.htm\" target=\"_blank\">SUIT</a>.</p>";
+    "please see <a href=\"http://www.diedrichsenlab.org/imaging/suit.htm\" style=\"color:#FFD700\" target=\"_blank\">SUIT</a>.</p>";
 
 papaya.Container.LICENSE_TEXT = "<p>THIS PRODUCT IS NOT FOR CLINICAL USE.<br /><br />" +
     "This software is available for use, as is, free of charge.  The software and data derived from this software " +
