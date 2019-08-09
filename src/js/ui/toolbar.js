@@ -117,10 +117,10 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
                 {"label": "MDTB14_Motor_Imagery", "action": "OpenBoth-MDTB14_Motor_Imagery"},
                 {"label": "MDTB15_Finger_Simple", "action": "OpenBoth-MDTB15_Finger_Simple"},
                 {"label": "MDTB16_Finger_Sequence", "action": "OpenBoth-MDTB16_Finger_Sequence"},
-                {"label": "MDTB17_Verbal_0Back", "action": "OpenBoth-MDTB17_Verbal_0Back"},
-                {"label": "MDTB18_Verbal_2Back", "action": "OpenBoth-MDTB18_Verbal_2Back"},
-                {"label": "MDTB19_Object_0Back", "action": "OpenBoth-MDTB19_Object_0Back"},
-                {"label": "MDTB20_Object_2Back", "action": "OpenBoth-MDTB20_Object_2Back"},
+                {"label": "MDTB17_Verbal_2Back-", "action": "OpenBoth-MDTB17_Verbal_2Back-"},
+                {"label": "MDTB18_Verbal_2Back+", "action": "OpenBoth-MDTB18_Verbal_2Back"},
+                {"label": "MDTB19_Object_2Back-", "action": "OpenBoth-MDTB19_Object_2Back-"},
+                {"label": "MDTB20_Object_2Back+", "action": "OpenBoth-MDTB20_Object_2Back"},
                 {"label": "MDTB21_Spatial_Imagery", "action": "OpenBoth-MDTB21_Spatial_Imagery"},
                 {"label": "MDTB22_Stroop_Incongruent", "action": "OpenBoth-MDTB22_Stroop_Incongruent"},
                 {"label": "MDTB23_Stroop_Congruent", "action": "OpenBoth-MDTB23_Stroop_Congruent"},
@@ -131,7 +131,7 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
                 {"label": "MDTB28_Visual_Search_Large", "action": "OpenBoth-MDTB28_Visual_Search_Large"},
                 {"label": "MDTB29_Rest", "action": "OpenBoth-MDTB29_Rest"},
                 {"label": "MDTB30_CPRO", "action": "OpenBoth-MDTB30_CPRO"},
-                {"label": "MDTB31_Prediction", "action": "OpenBoth-MDTB31_Prediction"},
+                {"label": "MDTB31_Prediction_True", "action": "OpenBoth-MDTB31_Prediction_True"},
                 {"label": "MDTB32_Prediction_Violated", "action": "OpenBoth-MDTB32_Prediction_Violated"},
                 {"label": "MDTB33_Prediction_Scrambled", "action": "OpenBoth-MDTB33_Prediction_Scrambled"},
                 {"label": "MDTB34_Spatial_Map_Easy", "action": "OpenBoth-MDTB34_Spatial_Map_Easy"},
@@ -804,6 +804,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
                 this.container.viewer.removeOverlay(2); // Always remove the previous one, index = 2
             }
             imageName = action.substring(action.indexOf("-") + 1);
+            if (imageName === "MDTB18_Verbal_2Back" || imageName === "MDTB20_Object_2Back") {
+                imageName = imageName + "+";
+            }
             let NiifileName = ["data/onlineAtlas/" + imageName + ".nii"];
             let GiifileName = "data/onlineAtlas/" + imageName + ".func.gii";
             this.viewer.rangeClicked = false;
