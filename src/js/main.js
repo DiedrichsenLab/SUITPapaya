@@ -748,7 +748,7 @@ papaya.Container.prototype.getViewerPadding = function () {
 
 
 papaya.Container.prototype.readGlobalParams = function() {
-    this.kioskMode = (this.params.kioskMode === true) || papaya.utilities.PlatformUtils.smallScreen;
+    this.kioskMode = (this.params.kioskMode === true);
     this.combineParametric = (this.params.combineParametric === true);
 
     if (this.params.loadingComplete) {
