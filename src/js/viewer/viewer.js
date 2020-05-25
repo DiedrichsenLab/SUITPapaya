@@ -2242,8 +2242,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             }
         }
     } else {
-        this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
-            papaya.utilities.PlatformUtils.getMousePositionY(me));
+        //this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
         this.isZoomMode = false;
     }
 
@@ -2287,7 +2286,7 @@ papaya.viewer.Viewer.prototype.mouseOutEvent = function (me) {
         this.mouseUpEvent(me);
     } else {
         if (this.container.display) {
-            this.container.display.drawEmptyDisplay();
+            //this.container.display.drawEmptyDisplay();
         }
 
         this.grabbedHandle = null;
