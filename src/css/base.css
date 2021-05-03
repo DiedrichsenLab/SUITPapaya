@@ -24,3 +24,7 @@
 .papaya-fullscreen {
     height: 100%;
 }
+
+.hitcounter {
+    display: none;
+}

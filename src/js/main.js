@@ -44,7 +44,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
-    this.orthogonalTall = false;
+    this.orthogonalTall = true;
     this.orthogonalDynamic = false;
     this.kioskMode = false;
     this.noNewFiles = false;
@@ -65,6 +65,11 @@ papaya.Container = papaya.Container || function (containerHtml) {
 
 
 /*** Static Pseudo-constants ***/
+
+papaya.Container.GENERAL_INFO = "The SUIT Cerebellar Atlas Viewer was developed by Da Zhi (dzhi@uwo.ca) and other members of the Diedrichsenlab. " +
+    "It is extensively based on  <a href=\"https://github.com/rii-mango/Papaya\" style=\"color:#FFD700\" target=\"_blank\">Papaya Medical Viewer</a>. For more information " +
+    "about the cerebellar template, flatmap and functional data set, " +
+    "please see <a href=\"http://www.diedrichsenlab.org/imaging/suit.htm\" style=\"color:#FFD700\" target=\"_blank\">SUIT</a>.<br /><br /></p>";
 
 papaya.Container.LICENSE_TEXT = "<p>THIS PRODUCT IS NOT FOR CLINICAL USE.<br /><br />" +
     "This software is available for use, as is, free of charge.  The software and data derived from this software " +
@@ -93,8 +98,8 @@ papaya.Container.MOUSE_REF_TEXT = "<span style='color:#B5CBD3'>(Left-click and d
     "<span style='color:#B5CBD3'>[Alt](Left-click and drag)</span> Zoom in and out.<br /><br />" +
     "<span style='color:#B5CBD3'>[Alt](Double left-click)</span> Reset zoom.<br /><br />" +
     "<span style='color:#B5CBD3'>[Alt][Shift](Left-click and drag)</span> Pan zoomed image.<br /><br />" +
-    "<span style='color:#B5CBD3'>(Right-click and drag)</span> Window level controls.<br /><br />" +
-    "<span style='color:#B5CBD3'>(Scroll wheel)</span> See Preferences.<br /><br />";
+    "<span style='color:#B5CBD3'>(Right-click and drag)</span> Window level controls.<br /><br />";
+    //"<span style='color:#B5CBD3'>(Scroll wheel)</span> See Preferences.<br /><br />";
 
 papaya.Container.DICOM_SUPPORT = true;
 
@@ -518,7 +523,7 @@ papaya.Container.startPapaya = function () {
 papaya.Container.resizePapaya = function (ev, force) {
     var ctr;
 
-    papaya.Container.updateOrthogonalState();
+    //papaya.Container.updateOrthogonalState();
 
     if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
         if (!papaya.utilities.PlatformUtils.smallScreen || force) {
@@ -580,6 +585,11 @@ papaya.Container.setToFullPage = function () {
     document.body.style.overflow = 'hidden';
     document.body.style.width = "100%";
     document.body.style.height = "100%";
+};
+
+
+papaya.Container.getGeneralInfo = function () {
+    return papaya.Container.GENERAL_INFO;
 };
 
 
@@ -680,14 +690,18 @@ papaya.Container.prototype.getViewerDimensions = function () {
     var parentWidth, height, width, ratio, maxHeight, maxWidth;
 
     parentWidth = this.containerHtml.parent().width() - (this.fullScreenPadding ? (2 * PAPAYA_PADDING) : 0);
-    ratio = (this.orthogonal ? (this.hasSurface() ? 1.333 : 1.5) : 1);
+    //ratio = (this.orthogonal ? (this.hasSurface() ? 1.333 : 1.5) : 1);
+    ratio = 1.6667;
 
     if (this.orthogonalTall || !this.orthogonal) {
         height = (this.collapsable ? window.innerHeight : this.containerHtml.parent().height()) - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
             PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding && !this.nestedViewer ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
             (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
 
-        width = papayaRoundFast(height / ratio);
+        width = papayaRoundFast(height * ratio);
+
+        //width = parentWidth;
+        //height = papayaRoundFast(width / ratio);
     } else {
 
         width = parentWidth;
@@ -701,7 +715,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
             maxWidth = window.innerWidth - (this.fullScreenPadding ? (2 * PAPAYA_PADDING) : 0);
             if (width > maxWidth) {
                 width = maxWidth;
-                height = papayaRoundFast(width * ratio);
+                height = papayaRoundFast(width / ratio);
             }
         } else {
 
@@ -734,7 +748,7 @@ papaya.Container.prototype.getViewerPadding = function () {
 
 
 papaya.Container.prototype.readGlobalParams = function() {
-    this.kioskMode = (this.params.kioskMode === true) || papaya.utilities.PlatformUtils.smallScreen;
+    this.kioskMode = (this.params.kioskMode === true);
     this.combineParametric = (this.params.combineParametric === true);
 
     if (this.params.loadingComplete) {
@@ -776,15 +790,15 @@ papaya.Container.prototype.readGlobalParams = function() {
         this.allowScroll = this.params.allowScroll;
     }
 
-    if (papaya.utilities.PlatformUtils.mobile || this.orthogonalDynamic) {
-        if (this.orthogonal) {
-            if ($(window).height() > $(window).width()) {
-                this.orthogonalTall = true;
-            } else {
-                this.orthogonalTall = false;
-            }
-        }
-    }
+    // if (papaya.utilities.PlatformUtils.mobile || this.orthogonalDynamic) {
+    //     if (this.orthogonal) {
+    //         if ($(window).height() > $(window).width()) {
+    //             this.orthogonalTall = true;
+    //         } else {
+    //             this.orthogonalTall = false;
+    //         }
+    //     }
+    // }
 
     if (this.params.syncOverlaySeries !== undefined) {  // default is true
         this.syncOverlaySeries = this.params.syncOverlaySeries;
@@ -814,7 +828,7 @@ papaya.Container.prototype.reset = function () {
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
-    this.orthogonalTall = false;
+    this.orthogonalTall = true;
     this.orthogonalDynamic = false;
     this.kioskMode = false;
     this.noNewFiles = false;

@@ -174,8 +174,18 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
                 papaya.viewer.Display.FONT_TYPE_IMAGE_VALUE;
             precision = Math.min(papaya.viewer.Display.PRECISION_IMAGE_MAX,
                 Math.round(papaya.viewer.Display.PRECISION_IMAGE_VALUE * sizeRatio));
-            this.context.fillText(parseFloat(val.toString().substr(0, precision)), (2 * papaya.viewer.Display.PADDING) +
-                (3 * coordinateItemWidth), locY);
+
+            if (this.viewer.currentScreenVolume.lutName.search(/Networks/) !== -1) {
+                this.context.fillText("Network " + val.toString().substr(0, precision), (2 * papaya.viewer.Display.PADDING) +
+                    (3 * coordinateItemWidth), locY);
+            } else if (this.viewer.currentScreenVolume.lutName.search(/Regions/) !== -1) {
+                this.context.fillText("Region " + val.toString().substr(0, precision), (2 * papaya.viewer.Display.PADDING) +
+                    (3 * coordinateItemWidth), locY);
+            }
+            else {
+                this.context.fillText(parseFloat(val.toString().substr(0, precision)), (2 * papaya.viewer.Display.PADDING) +
+                    (3 * coordinateItemWidth), locY);
+            }
         }
 
         // atlas labels
@@ -345,8 +355,10 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
                             atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
                     }
 
-                    this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING +
-                        (halfWidth * 0.05 * Math.max(0, 3 - atlasNumLabels)) + (ctr * atlasLabelWidth), locY);
+                    this.context.fillText(atlasLabel[ctr], 1.25 * halfWidth + (halfWidth * 0.05 * Math.max(0, 2 - atlasNumLabels)), locY);
+
+                    // this.context.fillText(atlasLabel[ctr], halfWidth + papaya.viewer.Display.PADDING +
+                    //     (halfWidth * 0.05 * Math.max(0, 3 - atlasNumLabels)) + (ctr * atlasLabelWidth), locY);
                 }
             }
         }

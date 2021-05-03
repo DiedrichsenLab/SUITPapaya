@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<atlas version="1.0">
+  <header>
+    <name>Cerebellar Atlas in SUIT space</name>
+    <shortname>Cerebellum_SUIT</shortname>
+    <type>Probabalistic</type>
+    <images>
+      <imagefile>Cerebellum-SUIT-prob</imagefile>
+      <summaryimagefile>Cerebellum-SUIT-maxprob-thr25</summaryimagefile>
+    </images>
+  </header>
+  <data>
+<label index="0" x="60" y="37" z="52">Left I-IV</label>
+<label index="1" x="60" y="37" z="52">Right I-IV</label>
+<label index="2" x="70" y="58" z="40">Left V</label>
+<label index="3" x="70" y="58" z="40">Right V</label>
+<label index="4" x="56" y="42" z="41">Left VI</label>
+<label index="5" x="56" y="42" z="41">Vermis VI</label>
+<label index="6" x="56" y="42" z="41">Right VI</label>
+<label index="7" x="50" y="52" z="39">Left Crus I</label>
+<label index="8" x="50" y="52" z="39">Vermis Crus I</label>
+<label index="9" x="50" y="52" z="39">Right Crus I</label>
+<label index="10" x="51" y="70" z="40">Left Crus II</label>
+<label index="11" x="51" y="70" z="40">Vermis Crus II</label>
+<label index="12" x="51" y="70" z="40">Right Crus II</label>
+<label index="13" x="56" y="67" z="34">Left VIIb</label>
+<label index="14" x="56" y="67" z="34">Vermis VIIb</label>
+<label index="15" x="56" y="67" z="34">Right VIIb</label>
+<label index="16" x="54" y="62" z="35">Left VIIIa</label>
+<label index="17" x="54" y="62" z="35">Vermis VIIIa</label>
+<label index="18" x="54" y="62" z="35">Right VIIIa</label>
+<label index="19" x="44" y="50" z="20">Left VIIIb</label>
+<label index="20" x="44" y="50" z="20">Vermis VIIIb</label>
+<label index="21" x="44" y="50" z="20">Right VIIIb</label>
+<label index="22" x="59" y="55" z="26">Left IX</label>
+<label index="23" x="59" y="55" z="26">Vermis IX</label>
+<label index="24" x="59" y="55" z="26">Right IX</label>
+<label index="25" x="57" y="62" z="25">Left X</label>
+<label index="26" x="57" y="62" z="25">Vermis X</label>
+<label index="27" x="57" y="62" z="25">Right X</label>
+<label index="28" x="57" y="62" z="25">Left Dentate</label>
+<label index="29" x="57" y="62" z="25">Right Dentate</label>
+<label index="30" x="57" y="62" z="25">Left Interposed</label>  
+<label index="31" x="57" y="62" z="25">Right Interposed</label>
+<label index="32" x="57" y="62" z="25">Left Fastigial</label>  
+<label index="33" x="57" y="62" z="25">Right Fastigial</label>
+</data>
+</atlas>

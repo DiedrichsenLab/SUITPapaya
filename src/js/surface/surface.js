@@ -20,6 +20,7 @@ papaya.surface.Surface = papaya.surface.Surface || function (progressMeter, para
     this.triangleData = null;
     this.normalsData = null;
     this.colorsData = null;
+    this.labelsData = null;
     this.numPoints = 0;
     this.numTriangles = 0;
     this.pointsBuffer = null;
@@ -270,10 +271,11 @@ papaya.surface.Surface.prototype.finishedReading = function () {
             currentSurface.normalsData = this.fileFormat.getNormalsData(ctr);
             currentSurface.triangleData = this.fileFormat.getTriangleData(ctr);
             currentSurface.colorsData = this.fileFormat.getColorsData(ctr);
+            currentSurface.labelsData = this.fileFormat.getLabelsData(ctr);
 
-            if (currentSurface.normalsData === null) {
-                this.generateNormals();
-            }
+            // if (currentSurface.normalsData === null) {
+            //     this.generateNormals();
+            // }
 
             if (this.fileFormat.getSolidColor(ctr)) {
                 currentSurface.solidColor = this.fileFormat.getSolidColor(ctr);
@@ -281,7 +283,7 @@ papaya.surface.Surface.prototype.finishedReading = function () {
         }
     }
 
-    this.progressMeter.drawProgress(1, "Loading surface...");
+    this.progressMeter.drawProgress(1, "Loading flatmap...");
     this.onFinishedRead(this);
 };
 

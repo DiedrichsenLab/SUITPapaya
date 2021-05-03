@@ -10,6 +10,43 @@ papaya.viewer = papaya.viewer || {};
 
 
 /*** Shaders ***/
+let vertexShaderText =
+    [
+        'precision mediump float;',
+
+        'attribute vec2 vertPosition;',
+        'attribute vec3 vertColor;',
+
+        "uniform bool uCrosshairs;",
+
+        'varying vec3 fragColor;',
+        '',
+        'void main()',
+        '{',
+        '  fragColor = vertColor;',
+        '  gl_Position = vec4(vertPosition, 0.0, 1.0);',
+        '  gl_PointSize = 2.0;',
+        '}'
+    ].join('\n');
+
+let fragmentShaderText =
+    [
+        'precision mediump float;',
+
+        "uniform bool uCrosshairs;",
+
+        'varying vec3 fragColor;',
+        'void main()',
+        '{',
+        '    gl_FragColor = vec4(fragColor, 1.0);',
+        '    if (uCrosshairs) {',
+        '       gl_FragColor = vec4(0.10980392156863, 0.52549019607843, 0.93333333333333, 1.0);',
+        '    } else {',
+        '       gl_FragColor = vec4(fragColor, 1.0);',
+        '    }',
+        '}'
+    ].join('\n');
+
 
 var shaderVert = [
     "precision mediump float;",
@@ -150,7 +187,14 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.volume = baseVolume;
     this.surfaces = surfaces;
     this.viewer = viewer;
+    this.selectedSlice = viewer.selectedSlice;
     this.currentCoord = viewer.currentCoord;
+    this.cursorPosition = viewer.cursorPosition;
+    this.contextMenuMousePosition = viewer.contextMenuMousePosition;
+    this.contextMenuMousePositionX = viewer.contextMenuMousePositionX;
+    this.contextMenuMousePositionY = viewer.contextMenuMousePositionY;
+    this.previousMousePosition = viewer.previousMousePosition;
+    this.surfaceView = viewer.surfaceView;
     this.zoom = 0;
     this.sliceDirection = papaya.viewer.ScreenSlice.DIRECTION_SURFACE;
     this.dynamicStartX = -1;
@@ -193,7 +237,7 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.zSize = this.volume.header.voxelDimensions.zSize;
     this.zDim = this.volume.header.imageDimensions.zDim;
     this.zHalf = (this.zDim * this.zSize) / 2.0;
-    this.showSurfacePlanes = (viewer.container.preferences.showSurfacePlanes === "Yes");
+    this.showSurfacePlanes = false; // flag of surface plane
     this.backgroundColor = papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND;
     this.pickLocX = 0;
     this.pickLocY = 0;
@@ -209,6 +253,8 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.orientationContext = null;
     this.rulerPoints = null;
     this.grabbedRulerPoint = -1;
+    this.selectedFlag = false;
+    this.isLabelGii = null;
 
     this.processParams(params);
 };
@@ -222,7 +268,7 @@ papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION = [ -0.015552218963737041, 0.094
                                                     0.24400145970103732, 0.965822108594413, 0.0874693978960848, 0,
                                                     0, 0, 0, 1];
 papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY = 0.3;
-papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND = [0.5, 0.5, 0.5];
+papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND = [0, 0, 0]; // background color changes to black
 papaya.viewer.ScreenSurface.TEXT_SIZE = 50;
 papaya.viewer.ScreenSurface.ORIENTATION_SIZE = 10;
 papaya.viewer.ScreenSurface.RULER_COLOR = [1, 0.078, 0.576];
@@ -255,8 +301,8 @@ papaya.viewer.ScreenSurface.makeShader = function (gl, src, type) {
 
 
 papaya.viewer.ScreenSurface.initShaders = function (gl) {
-    var fragmentShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderVert, gl.VERTEX_SHADER);
-    var vertexShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderFrag, gl.FRAGMENT_SHADER);
+    var vertexShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderVert, gl.VERTEX_SHADER);
+    var fragmentShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderFrag, gl.FRAGMENT_SHADER);
     var shaderProgram = gl.createProgram();
     gl.attachShader(shaderProgram, vertexShader);
     gl.attachShader(shaderProgram, fragmentShader);
@@ -269,9 +315,9 @@ papaya.viewer.ScreenSurface.initShaders = function (gl) {
     gl.useProgram(shaderProgram);
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    //gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
-    gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+    //gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
     shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
 
@@ -313,6 +359,9 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
     this.context.viewportWidth = this.canvas.width;
     this.context.viewportHeight = this.canvas.height;
 
+    // this.context.clearColor(0.0, 0.0, 0.0, 1.0);
+    // this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
+
     this.zoom = this.volume.header.imageDimensions.yDim * this.volume.header.voxelDimensions.ySize * 1.5;
     this.initPerspective();
 
@@ -323,8 +372,8 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
     }
 
     this.calculateScaleFactor();
-    this.initActivePlaneBuffers(this.context);
-    this.initRulerBuffers(this.context);
+    //this.initActivePlaneBuffers(this.context);
+    //this.initRulerBuffers(this.context);
 
     mat4.multiply(this.centerMat, papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION, this.tempMat);
     mat4.multiply(this.tempMat, this.centerMatInv, this.mouseRotCurrent);
@@ -368,6 +417,28 @@ papaya.viewer.ScreenSurface.prototype.resize = function (screenDim) {
     this.canvas.height = this.screenDim;
     this.context.viewportWidth = this.canvas.width;
     this.context.viewportHeight = this.canvas.height;
+
+    // TODO: making the pixel -> 2d flatmap coordinates mapping
+    // let stride = 2 / Math.ceil(this.screenDim);
+    // let indexSize = this.surfaces[0].verticesIndex.length;
+    // let mapping = new Array(Math.ceil(this.screenDim)).fill(0).map(() => new Array(Math.ceil(this.screenDim)).fill(0));
+    //
+    // for (let i = 0; i < mapping.length; ++i) {
+    //     for (let j = 0; j < mapping.length; ++j) {
+    //
+    //         let index = 0;
+    //         for(let k = 0;k < indexSize; ++k){
+    //             if( (this.surfaces[0].verticesIndex[k][0] >= (-1 + j*stride) && this.surfaces[0].verticesIndex[k][0] < (-1 + (j+1)*stride)) && (this.surfaces[0].verticesIndex[k][1] > (1 - (i+1)*stride) && this.surfaces[0].verticesIndex[k][1] <= (1 - i*stride)) ){
+    //                 index = this.surfaces[0].verticesIndex[k][2];
+    //                 break;
+    //             }
+    //         }
+    //
+    //         mapping[i][j] = index;
+    //     }
+    // }
+    //
+    // this.flat_mapping = mapping;
 };
 
 
@@ -394,33 +465,289 @@ papaya.viewer.ScreenSurface.prototype.draw = function () {
 };
 
 
-
 papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
-    surface.pointsBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, surface.pointsBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, surface.pointData, gl.STATIC_DRAW);
-    surface.pointsBuffer.itemSize = 3;
-    surface.pointsBuffer.numItems = surface.numPoints;
+    // ------------ Load pixel-wise mapping -------------//
+    let pixel_mapping = [];
+    $.ajax({
+        url: "data/mapping_250_rerefine.csv",
+        async: false,
+        success: function (csvd) {
+            pixel_mapping = $.csv.toArrays(csvd);
+        }
+    });
+    surface.pixelMapping = pixel_mapping;
+    console.log(pixel_mapping);
 
-    surface.normalsBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, surface.normalsBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, surface.normalsData, gl.STATIC_DRAW);
-    surface.normalsBuffer.itemSize = 3;
-    surface.normalsBuffer.numItems = surface.numPoints;
+    // ------------ Load index to coordinates mapping -------------//
+    let index2Coords = [];
+    $.ajax({
+        url: "data/index_3dCoord.csv",
+        async: false,
+        success: function (csvd) {
+            index2Coords = $.csv.toArrays(csvd);
+        }
+    });
+    surface.index2Coords = index2Coords;
+    console.log(index2Coords);
 
-    if (surface.colorsData) {
-        surface.colorsBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, surface.colorsBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, surface.colorsData, gl.STATIC_DRAW);
-        surface.colorsBuffer.itemSize = 4;
-        surface.colorsBuffer.numItems = surface.numPoints;
+    // ------------ Load flatmap vertices information and transfer to array -------------//
+    let triangleVertices = [];
+    //let verticesIndex = [];
+    $.ajax({
+        url: "data/flatmap_vertices.csv",
+        async: false,
+        success: function (csvd) {
+            let triangleData = $.csv.toArrays(csvd);
+            let Index = new Array(triangleData.length).fill(0).map(() => new Array(3).fill(0));
+            //let triangleVertices = [];
+
+            for (let i = 0; i < triangleData.length; i++) {
+                triangleVertices.push(triangleData[i][0] / 100);
+                triangleVertices.push(triangleData[i][1] / 100);
+                Index[i][0] = triangleData[i][0] / 100;
+                Index[i][1] = triangleData[i][1] / 100;
+                Index[i][2] = i + 1;
+            }
+            //verticesIndex = Index;
+        }
+    });
+    //surface.verticesIndex = verticesIndex;
+    surface.triangleVerticesMap = new Float32Array(triangleVertices);
+    console.log(triangleVertices);
+
+    // ------------ Load flatmap border information and transfer to array -------------//
+    let border = [];
+    $.ajax({
+        url: "data/flatmap_border.csv",
+        async: false,
+        success: function (csvd) {
+            let borderData = $.csv.toArrays(csvd);
+            for (let i = 0; i < borderData.length; i++) {
+                border.push(borderData[i][0] / 100);
+                border.push(borderData[i][1] / 100);
+                border.push(0.0);
+                border.push(0.0);
+                border.push(0.0);
+            }
+        }
+    });
+    surface.border = new Float32Array(border);
+    console.log(border);
+
+    // ------------ Load flatmap edges information and transfer to array -------------//
+    let triangleIndex = [];
+    $.ajax({
+        url: "data/flatmap_edges.csv",
+        async: false,
+        success: function (csvd) {
+            let edgeData = $.csv.toArrays(csvd);
+            for (let i = 0; i < edgeData.length; i++) {
+                triangleIndex.push(edgeData[i][0] - 1);
+                triangleIndex.push(edgeData[i][1] - 1);
+                triangleIndex.push(edgeData[i][2] - 1);
+            }
+        }
+    });
+    surface.triangleIndex = new Uint16Array(triangleIndex);
+    console.log(triangleIndex);
+
+    // ------------ Load vertices color information -------------//
+    if (surface.colorsData && this.surfaces.length > 1) {
+        this.surfaces.shift();
+        //console.log("colorsData: " + surface.colorsData);
     }
 
-    surface.trianglesBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, surface.trianglesBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, surface.triangleData, gl.STATIC_DRAW);
-    surface.trianglesBuffer.itemSize = 1;
-    surface.trianglesBuffer.numItems = surface.numTriangles * 3;
+    let verticesColor = [];
+    let colorData = [];
+
+    if (surface.labelsData && surface.labelsData.length > 2) {
+        this.isLabelGii = true;
+        for (let i = 0; i < surface.colorsData.length; ++i) {
+            if (surface.colorsData[i] === 0) {
+                colorData.push(0.87);
+                colorData.push(0.87);
+                colorData.push(0.87);
+            } else {
+                colorData.push(surface.labelsData[surface.colorsData[i]].r);
+                colorData.push(surface.labelsData[surface.colorsData[i]].g);
+                colorData.push(surface.labelsData[surface.colorsData[i]].b);
+            }
+        }
+    }
+    else {
+        this.isLabelGii = false;
+        if (surface.colorsData) {
+            let interval, upperThreshold, lowerThreshold;
+            let sparsity = 100;
+
+
+            upperThreshold = papayaContainers[0].viewer.screenVolumes[1].screenMax;
+            lowerThreshold = papayaContainers[0].viewer.screenVolumes[1].screenMin;
+
+            //-- Making look up color table
+            //let knotPoint = [[0.75, 0, 0, 0], [1, 0.5, 0.5, 0], [1, 0.95, 1, 0], [1, 1, 1, 1]];
+            let knotPoint = [[1, 0, 0], [1, 1, 0], [1, 1, 1]];
+            interval = Math.floor(sparsity / (knotPoint.length - 1));
+
+            let red, green, blue;
+            let colorLookUpTable = [];
+
+            for (let curr = 0; curr < knotPoint.length - 1; ++curr) {
+                for (let index = 0; index < interval; ++index) {
+                    red = knotPoint[curr][0] + index * ((knotPoint[curr + 1][0] - knotPoint[curr][0]) / interval);
+                    green = knotPoint[curr][1] + index * ((knotPoint[curr + 1][1] - knotPoint[curr][1]) / interval);
+                    blue = knotPoint[curr][2] + index * ((knotPoint[curr + 1][2] - knotPoint[curr][2]) / interval);
+                    colorLookUpTable.push([red, green, blue]);
+                }
+            }
+            colorLookUpTable.push([1, 1, 1]);
+            surface.colorLookUpTable = colorLookUpTable;
+
+            for (let i = 0; i < surface.colorsData.length; ++i) {
+                if (!isNaN(surface.colorsData[i])) {
+                    if (surface.colorsData[i] >= upperThreshold) { // White - max value
+                        colorData.push(colorLookUpTable[99][0]);
+                        colorData.push(colorLookUpTable[99][1]);
+                        colorData.push(colorLookUpTable[99][2]);
+                    } else if (surface.colorsData[i] < lowerThreshold) { // Gray - no show
+                        colorData.push(0.87);
+                        colorData.push(0.87);
+                        colorData.push(0.87);
+                    } else { // In between - interpolation
+                        let currIndex = Math.floor((surface.colorsData[i] - lowerThreshold) / (upperThreshold - lowerThreshold) * 100);
+                        colorData.push(colorLookUpTable[currIndex][0]);
+                        colorData.push(colorLookUpTable[currIndex][1]);
+                        colorData.push(colorLookUpTable[currIndex][2]);
+                    }
+
+                } else {
+                    colorData.push(0.87);
+                    colorData.push(0.87);
+                    colorData.push(0.87);
+                }
+            }
+            console.log(verticesColor);
+        } else {
+            for (let i = 0; i < surface.pointData.length / 3; ++i) {
+                colorData.push(0.87);
+                colorData.push(0.87);
+                colorData.push(0.87);
+            }
+        }
+    }
+    surface.vColor = new Float32Array(colorData);
+
+    // Surface underlay color
+    let underlayColor = [];
+    for (let i = 0; i < 28935; ++i) {
+        underlayColor.push(0.87);
+        underlayColor.push(0.87);
+        underlayColor.push(0.87);
+    }
+    surface.underlayColor = new Float32Array(underlayColor);
+    //console.log(verticesColor);
+
+
+
+    // ------------ Load flatmap edges COLOR information and transfer to array -------------//
+    // let indices = [];
+    // for (let x in verticesColor) {
+    //     indices.push([verticesColor[x][0], x]);
+    // }
+    // indices.sort(function (a, b) {
+    //     if( !isFinite(a[0]) && !isFinite(b[0]) ) {
+    //         return 0;
+    //     }
+    //     if( !isFinite(a[0]) ) {
+    //         return 1;
+    //     }
+    //     if( !isFinite(b[0]) ) {
+    //         return -1;
+    //     }
+    //     return a[0]-b[0];
+    //     //return a[0] - b[0];
+    // });
+    //
+    // let indices_color = [];
+    // indices_color.push([indices[0][0], indices[0][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
+    // colormap.shift();
+    //
+    // for (let i = 1; i < indices.length; i++) {
+    //     if (isNaN(indices[i][0])) {
+    //         indices_color.push([indices[i][0], indices[i][1], 0.9, 0.9, 0.9]);
+    //     }
+    //     else{
+    //         if (indices[i][0] === indices[i-1][0]) {
+    //             indices_color.push([indices[i][0], indices[i][1], indices_color[i-1][2], indices_color[i-1][3], indices_color[i-1][4]]);
+    //         }
+    //         else{
+    //             indices_color.push([indices[i][0], indices[i][1], colormap[0][0], colormap[0][1], colormap[0][2]]);
+    //             colormap.shift();
+    //         }
+    //     }
+    // }
+    // console.log(indices_color);
+    //
+    // indices_color.sort(function (a, b) {
+    //     return a[1] - b[1];
+    // });
+    //
+    // // To Change: Set threshold to filter the middle range
+    // let upper = 0.5;
+    // let lower = -0.1;
+    //
+    // for (let i = 0; i < indices_color.length; i++) {
+    //     if (!isNaN(indices_color[i][0])){
+    //         if(indices_color[i][0] >= lower && indices_color[i][0] <= upper) {
+    //             indices_color[i][2] = 0.9;
+    //             indices_color[i][3] = 0.9;
+    //             indices_color[i][4] = 0.9;
+    //         }
+    //     }
+    // }
+    //
+    // let pos = 2;
+    // let interval = 5;
+    //
+    // while (pos < triangleVertices.length) {
+    //     triangleVertices.splice(pos, 0, indices_color[0][2], indices_color[0][3], indices_color[0][4]);
+    //     indices_color.shift();
+    //     pos += interval;
+    // }
+    //
+    // triangleVertices.push(indices_color[0][2], indices_color[0][3], indices_color[0][4]);
+    //
+    //
+    // // Flat map rendering buffer data
+    // surface.triangleVertices = new Float32Array(triangleVertices);
+
+
+    // ---------------------------------------- Original ---------------------------------------------- //
+    // surface.pointsBuffer = gl.createBuffer();
+    // gl.bindBuffer(gl.ARRAY_BUFFER, surface.pointsBuffer);
+    // gl.bufferData(gl.ARRAY_BUFFER, surface.pointData, gl.STATIC_DRAW);
+    // surface.pointsBuffer.itemSize = 3;
+    // surface.pointsBuffer.numItems = surface.numPoints;
+    //
+    // surface.normalsBuffer = gl.createBuffer();
+    // gl.bindBuffer(gl.ARRAY_BUFFER, surface.normalsBuffer);
+    // gl.bufferData(gl.ARRAY_BUFFER, surface.normalsData, gl.STATIC_DRAW);
+    // surface.normalsBuffer.itemSize = 3;
+    // surface.normalsBuffer.numItems = surface.numPoints;
+    //
+    // if (surface.colorsData) {
+    //     surface.colorsBuffer = gl.createBuffer();
+    //     gl.bindBuffer(gl.ARRAY_BUFFER, surface.colorsBuffer);
+    //     gl.bufferData(gl.ARRAY_BUFFER, surface.colorsData, gl.STATIC_DRAW);
+    //     surface.colorsBuffer.itemSize = 4;
+    //     surface.colorsBuffer.numItems = surface.numPoints;
+    // }
+    //
+    // surface.trianglesBuffer = gl.createBuffer();
+    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, surface.trianglesBuffer);
+    // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, surface.triangleData, gl.STATIC_DRAW);
+    // surface.trianglesBuffer.itemSize = 1;
+
 };
 
 
@@ -488,26 +815,26 @@ papaya.viewer.ScreenSurface.prototype.initActivePlaneBuffers = function (gl) {
 
 
 
-papaya.viewer.ScreenSurface.prototype.initRulerBuffers = function (gl) {
-    this.rulerPointData = this.makeSphere(papaya.viewer.ScreenSurface.RULER_NUM_LINES,
-        papaya.viewer.ScreenSurface.RULER_NUM_LINES, papaya.viewer.ScreenSurface.RULER_RADIUS * this.scaleFactor);
-
-    this.sphereVertexPositionBuffer = gl.createBuffer();
-    this.sphereVertexPositionBuffer.itemSize = 3;
-    this.sphereVertexPositionBuffer.numItems = this.rulerPointData.vertices.length / 3;
-
-    this.sphereNormalsPositionBuffer = gl.createBuffer();
-    this.sphereNormalsPositionBuffer.itemSize = 3;
-    this.sphereNormalsPositionBuffer.numItems = this.rulerPointData.normals.length / 3;
-
-    this.sphereVertexIndexBuffer = gl.createBuffer();
-    this.sphereVertexIndexBuffer.itemSize = 1;
-    this.sphereVertexIndexBuffer.numItems = this.rulerPointData.indices.length;
-
-    this.rulerLineBuffer = gl.createBuffer();
-    this.rulerLineBuffer.itemSize = 3;
-    this.rulerLineBuffer.numItems = 2;
-};
+// papaya.viewer.ScreenSurface.prototype.initRulerBuffers = function (gl) {
+//     this.rulerPointData = this.makeSphere(papaya.viewer.ScreenSurface.RULER_NUM_LINES,
+//         papaya.viewer.ScreenSurface.RULER_NUM_LINES, papaya.viewer.ScreenSurface.RULER_RADIUS * this.scaleFactor);
+//
+//     this.sphereVertexPositionBuffer = gl.createBuffer();
+//     this.sphereVertexPositionBuffer.itemSize = 3;
+//     this.sphereVertexPositionBuffer.numItems = this.rulerPointData.vertices.length / 3;
+//
+//     this.sphereNormalsPositionBuffer = gl.createBuffer();
+//     this.sphereNormalsPositionBuffer.itemSize = 3;
+//     this.sphereNormalsPositionBuffer.numItems = this.rulerPointData.normals.length / 3;
+//
+//     this.sphereVertexIndexBuffer = gl.createBuffer();
+//     this.sphereVertexIndexBuffer.itemSize = 1;
+//     this.sphereVertexIndexBuffer.numItems = this.rulerPointData.indices.length;
+//  
+//     this.rulerLineBuffer = gl.createBuffer();
+//     this.rulerLineBuffer.itemSize = 3;
+//     this.rulerLineBuffer.numItems = 2;
+// };
 
 
 
@@ -575,6 +902,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
 
     // initialize
     gl.clearColor(this.backgroundColor[0], this.backgroundColor[1], this.backgroundColor[2], 1.0);
+    //gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -583,8 +911,8 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     mat4.multiply(this.mouseTransDrag, this.mouseTransCurrent, this.mouseTransTemp);
     mat4.multiply(this.mouseTransTemp, this.mouseRotTemp, this.tempMat);
     mat4.set(this.tempMat, this.mvMatrix);
-    this.updatePerspective();
-    this.applyMatrixUniforms(gl);
+    //this.updatePerspective();
+    //this.applyMatrixUniforms(gl);
 
     gl.uniform3f(this.shaderProgram.ambientColorUniform, 0.2, 0.2, 0.2);
     gl.uniform3f(this.shaderProgram.pointLightingLocationUniform, 0, 0, 300 * this.scaleFactor);
@@ -615,9 +943,16 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     // draw surfaces (first pass)
     gl.enable(gl.DEPTH_TEST);
 
-    for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
-        this.renderSurface(gl, ctr, this.surfaces[ctr].alpha < 1, true, false);
+    // rendering all loaded surfaces
+    // for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
+    //     this.renderSurface(gl, ctr, this.surfaces[ctr].alpha < 1, true, false);
+    // }
+
+    // TEST: Only rendering surface once
+    if (this.surfaces.length > 1) {
+        console.log("second surface has been loaded!");
     }
+    this.renderSurface(gl, 0, this.surfaces[0].alpha < 1, true, false);
 
     gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
     gl.uniform1i(this.shaderProgram.hasColors, 0);
@@ -679,78 +1014,78 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
             gl.uniform1i(this.shaderProgram.activePlaneEdge, 0);
         }
 
-        if (this.viewer.isShowingCrosshairs() && ((this.viewer.mainImage !== this) || this.viewer.toggleMainCrosshairs)) {
-            if (this.needsUpdateActivePlanes) {
-                this.needsUpdateActivePlanes = false;
-                this.bindActivePlanes(gl);
-            }
+        // if (this.viewer.isShowingCrosshairs() && ((this.viewer.mainImage !== this) || this.viewer.toggleMainCrosshairs)) {
+        //     if (this.needsUpdateActivePlanes) {
+        //         this.needsUpdateActivePlanes = false;
+        //         this.bindActivePlanes(gl);
+        //     }
 
-            // draw crosshairs
-            gl.uniform1i(this.shaderProgram.crosshairs, 1);
-            gl.lineWidth(this.isMainView() ? 3.0 : 2.0);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineXBuffer);
-            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineXBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            gl.drawArrays(gl.LINES, 0, 2);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineYBuffer);
-            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineYBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            gl.drawArrays(gl.LINES, 0, 2);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineZBuffer);
-            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineZBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            gl.drawArrays(gl.LINES, 0, 2);
-
-            gl.uniform1i(this.shaderProgram.crosshairs, 0);
-        }
+            // // draw crosshairs
+            // gl.uniform1i(this.shaderProgram.crosshairs, 1);
+            // gl.lineWidth(this.isMainView() ? 3.0 : 2.0);
+            //
+            // gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineXBuffer);
+            // gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineXBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            // gl.drawArrays(gl.LINES, 0, 2);
+            //
+            // gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineYBuffer);
+            // gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineYBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            // gl.drawArrays(gl.LINES, 0, 2);
+            //
+            // gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineZBuffer);
+            // gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineZBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            // gl.drawArrays(gl.LINES, 0, 2);
+            //
+            // gl.uniform1i(this.shaderProgram.crosshairs, 0);
+        // }
 
         // draw surface (secondpass)
-        gl.enable(gl.DEPTH_TEST);
+        // gl.enable(gl.DEPTH_TEST);
+        //
+        // for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
+        //     if (hasTranslucent) {
+        //         this.renderSurface(gl, ctr, this.surfaces[ctr].alpha < 1, false, true);
+        //     }
+        // }
 
-        for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
-            if (hasTranslucent) {
-                this.renderSurface(gl, ctr, this.surfaces[ctr].alpha < 1, false, true);
-            }
-        }
-
-        // draw orientation
-        if ((this.viewer.mainImage === this.viewer.surfaceView) &&
-            (this.viewer.container.preferences.showOrientation === "Yes")) {
-            xSlice = this.currentCoord.x + ((this.xDim / 2) - this.volume.header.origin.x);
-            ySlice = this.yDim - this.currentCoord.y - ((this.yDim / 2) - this.volume.header.origin.y);
-            zSlice = this.zDim - this.currentCoord.z - ((this.zDim / 2) - this.volume.header.origin.z);
-
-            this.drawOrientedText(gl, "S", papaya.viewer.ScreenSurface.TEXT_SIZE, [(xSlice * this.xSize) - this.xHalf, (ySlice * this.ySize) - this.yHalf,
-                this.zHalf + papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.zDim / 2) -
-                this.volume.header.origin.z) * this.zSize]);
-            this.drawOrientedText(gl, "I", papaya.viewer.ScreenSurface.TEXT_SIZE,[(xSlice * this.xSize) - this.xHalf, (ySlice * this.ySize) - this.yHalf,
-                -this.zHalf - papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.zDim / 2) -
-                this.volume.header.origin.z) * this.zSize]);
-            this.drawOrientedText(gl, "P", papaya.viewer.ScreenSurface.TEXT_SIZE, [(xSlice * this.xSize) - this.xHalf, -this.yHalf -
-            papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.yDim / 2) -
-            this.volume.header.origin.y) * this.ySize, (zSlice * this.zSize) - this.zHalf]);
-            this.drawOrientedText(gl, "A", papaya.viewer.ScreenSurface.TEXT_SIZE, [(xSlice * this.xSize) - this.xHalf, this.yHalf +
-            papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.yDim / 2) -
-            this.volume.header.origin.y) * this.ySize, (zSlice * this.zSize) - this.zHalf]);
-            this.drawOrientedText(gl, "L", papaya.viewer.ScreenSurface.TEXT_SIZE, [-this.xHalf - papaya.viewer.ScreenSurface.ORIENTATION_SIZE *
-            this.scaleFactor + ((this.xDim / 2) - this.volume.header.origin.x) * this.xSize,
-                (ySlice * this.ySize) - this.yHalf, (zSlice * this.zSize) - this.zHalf]);
-            this.drawOrientedText(gl, "R", papaya.viewer.ScreenSurface.TEXT_SIZE, [this.xHalf + papaya.viewer.ScreenSurface.ORIENTATION_SIZE *
-            this.scaleFactor + ((this.xDim / 2) - this.volume.header.origin.x) * this.xSize,
-                (ySlice * this.ySize) - this.yHalf, (zSlice * this.zSize) - this.zHalf]);
-        }
-
-        if (this.viewer.container.preferences.showRuler === "Yes") {
-            if (this.isMainView()) {
-                this.drawRuler(gl);
-            }
-        } else {
-            this.rulerPoints = null;
-        }
+        // // draw orientation
+        // if ((this.viewer.mainImage === this.viewer.surfaceView) &&
+        //     (this.viewer.container.preferences.showOrientation === "Yes")) {
+        //     xSlice = this.currentCoord.x + ((this.xDim / 2) - this.volume.header.origin.x);
+        //     ySlice = this.yDim - this.currentCoord.y - ((this.yDim / 2) - this.volume.header.origin.y);
+        //     zSlice = this.zDim - this.currentCoord.z - ((this.zDim / 2) - this.volume.header.origin.z);
+        //
+        //     this.drawOrientedText(gl, "S", papaya.viewer.ScreenSurface.TEXT_SIZE, [(xSlice * this.xSize) - this.xHalf, (ySlice * this.ySize) - this.yHalf,
+        //         this.zHalf + papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.zDim / 2) -
+        //         this.volume.header.origin.z) * this.zSize]);
+        //     this.drawOrientedText(gl, "I", papaya.viewer.ScreenSurface.TEXT_SIZE,[(xSlice * this.xSize) - this.xHalf, (ySlice * this.ySize) - this.yHalf,
+        //         -this.zHalf - papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.zDim / 2) -
+        //         this.volume.header.origin.z) * this.zSize]);
+        //     this.drawOrientedText(gl, "P", papaya.viewer.ScreenSurface.TEXT_SIZE, [(xSlice * this.xSize) - this.xHalf, -this.yHalf -
+        //     papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.yDim / 2) -
+        //     this.volume.header.origin.y) * this.ySize, (zSlice * this.zSize) - this.zHalf]);
+        //     this.drawOrientedText(gl, "A", papaya.viewer.ScreenSurface.TEXT_SIZE, [(xSlice * this.xSize) - this.xHalf, this.yHalf +
+        //     papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.yDim / 2) -
+        //     this.volume.header.origin.y) * this.ySize, (zSlice * this.zSize) - this.zHalf]);
+        //     this.drawOrientedText(gl, "L", papaya.viewer.ScreenSurface.TEXT_SIZE, [-this.xHalf - papaya.viewer.ScreenSurface.ORIENTATION_SIZE *
+        //     this.scaleFactor + ((this.xDim / 2) - this.volume.header.origin.x) * this.xSize,
+        //         (ySlice * this.ySize) - this.yHalf, (zSlice * this.zSize) - this.zHalf]);
+        //     this.drawOrientedText(gl, "R", papaya.viewer.ScreenSurface.TEXT_SIZE, [this.xHalf + papaya.viewer.ScreenSurface.ORIENTATION_SIZE *
+        //     this.scaleFactor + ((this.xDim / 2) - this.volume.header.origin.x) * this.xSize,
+        //         (ySlice * this.ySize) - this.yHalf, (zSlice * this.zSize) - this.zHalf]);
+        // }
+        //
+        // if (this.viewer.container.preferences.showRuler === "Yes") {
+        //     if (this.isMainView()) {
+        //         this.drawRuler(gl);
+        //     }
+        // } else {
+        //     this.rulerPoints = null;
+        // }
     }
 
     // clean up
-    gl.disable(gl.DEPTH_TEST);
+    // gl.disable(gl.DEPTH_TEST);
 };
 
 
@@ -790,26 +1125,330 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
             this.surfaces[index].solidColor[1], this.surfaces[index].solidColor[2], 1.0);
     }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].pointsBuffer);
-    gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.surfaces[index].pointsBuffer.itemSize,
-        gl.FLOAT, false, 0, 0);
+    // gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].pointsBuffer);
+    // gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.surfaces[index].pointsBuffer.itemSize,
+    //     gl.FLOAT, false, 0, 0);
+    //
+    // gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].normalsBuffer);
+    // gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.surfaces[index].normalsBuffer.itemSize,
+    //     gl.FLOAT, false, 0, 0);
+    //
+    // if (this.surfaces[index].colorsData) {
+    //     gl.uniform1i(this.shaderProgram.hasColors, 1);
+    //     gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].colorsBuffer);
+    //     gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
+    //     gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, this.surfaces[index].colorsBuffer.itemSize,
+    //         gl.FLOAT, false, 0, 0);
+    // } else {
+    //     gl.disableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
+    // }
+    //
+    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[index].trianglesBuffer);
+    // gl.drawElements(gl.TRIANGLES, this.surfaces[index].trianglesBuffer.numItems, gl.UNSIGNED_INT, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].normalsBuffer);
-    gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.surfaces[index].normalsBuffer.itemSize,
-        gl.FLOAT, false, 0, 0);
 
-    if (this.surfaces[index].colorsData) {
-        gl.uniform1i(this.shaderProgram.hasColors, 1);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[index].colorsBuffer);
-        gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
-        gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, this.surfaces[index].colorsBuffer.itemSize,
-            gl.FLOAT, false, 0, 0);
-    } else {
-        gl.disableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
+    // New rendering //////////////////////////////////////////////////////////////////////////////////////////////////
+    //var vertexShader_1 = papaya.viewer.ScreenSurface.makeShader(gl, vertexShaderText, gl.VERTEX_SHADER);
+    //var fragmentShader_1 = papaya.viewer.ScreenSurface.makeShader(gl, fragmentShaderText, gl.FRAGMENT_SHADER);
+
+    // ------------------------------------ Switch program ----------------------------------------- //
+    let vertexShader_1 = gl.createShader(gl.VERTEX_SHADER);
+    let fragmentShader_1 = gl.createShader(gl.FRAGMENT_SHADER);
+
+    gl.shaderSource(vertexShader_1, vertexShaderText);
+    gl.shaderSource(fragmentShader_1, fragmentShaderText);
+
+    gl.compileShader(vertexShader_1);
+    if (!gl.getShaderParameter(vertexShader_1, gl.COMPILE_STATUS)) {
+        console.error('ERROR compiling vertex shader!', gl.getShaderInfoLog(vertexShader_1));
+        return;
     }
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[index].trianglesBuffer);
-    gl.drawElements(gl.TRIANGLES, this.surfaces[index].trianglesBuffer.numItems, gl.UNSIGNED_INT, 0);
+    gl.compileShader(fragmentShader_1);
+    if (!gl.getShaderParameter(fragmentShader_1, gl.COMPILE_STATUS)) {
+        console.error('ERROR compiling vertex shader!', gl.getShaderInfoLog(fragmentShader_1));
+        return;
+    }
+
+    var shaderProgram_1 = gl.createProgram();
+    gl.attachShader(shaderProgram_1, vertexShader_1);
+    gl.attachShader(shaderProgram_1, fragmentShader_1);
+    gl.linkProgram(shaderProgram_1);
+
+    if (!gl.getProgramParameter(shaderProgram_1, gl.LINK_STATUS)) {
+        console.log("Could not initialise shaders");
+    }
+
+    gl.validateProgram(shaderProgram_1);
+    if (!gl.getProgramParameter(shaderProgram_1, gl.VALIDATE_STATUS)) {
+        console.error('ERROR validating program!', gl.getProgramInfoLog(shaderProgram_1));
+        return;
+    }
+
+    gl.useProgram(shaderProgram_1);
+
+    // ------------------------------------- Draw Crosshairs --------------------------------------//
+    // Get the value at current coordinate
+
+    // var cPosX, cPosY;
+    // this.viewer.addEventListener("mousedown", function handler(evt) {
+    //     var x = evt.clientX;
+    //     var y = evt.clientY;
+    //     var rect = canvas.getBoundingClientRect();
+    //     x -= rect.left;
+    //     y -= rect.top;
+    //     var cursorPosX = (x - rect.width/2) / (rect.width/2);
+    //     var cursorPosY = -(y - rect.height/2) / (rect.height/2);
+    //
+    //     cPosX = cursorPosX;
+    //     cPosY = cursorPosY;
+    //     alert("canvas position: " + x + ", " + y);
+    // });
+
+    //var currentCoor = papayaContainers[0].viewer.convertCoordinateToScreen(this.currentCoord);
+    //papaya.viewer.Viewer.prototype.findClickedSlice()
+    let x_crosshair = [];
+    let y_crosshair = [];
+
+    //let test = this.flat_mapping;
+    //console.log(test);
+
+    if (this.viewer.selectedSlice && (this.viewer.selectedSlice === this.viewer.surfaceView)) { // when flatmap is clicked
+        let currentCoorX = this.contextMenuMousePosition.x - this.screenOffsetX;
+        let currentCoorY = this.contextMenuMousePosition.y - this.screenOffsetY;
+
+        let resized_currentCoordX = Math.floor( currentCoorX*(this.surfaces[index].pixelMapping.length / this.screenDim));
+        let resized_currentCoordY = Math.floor( currentCoorY*(this.surfaces[index].pixelMapping.length / this.screenDim));
+        let idx = this.surfaces[index].pixelMapping[resized_currentCoordY][resized_currentCoordX];
+
+        console.log("current slice at: " + "(" + currentCoorX + ", " + currentCoorY + ")");
+
+        let currentcenterX = (currentCoorX - this.screenDim / 2) / (this.screenDim / 2);
+        let currentcenterY = (this.screenDim / 2 - currentCoorY) / (this.screenDim / 2);
+
+        // crosshair X
+        x_crosshair[0] = -this.xHalf / 100 + currentcenterX;
+        x_crosshair[1] = currentcenterY;
+
+        x_crosshair[2] = this.xHalf / 100 + currentcenterX;
+        x_crosshair[3] = currentcenterY;
+
+        // crosshair Y
+        y_crosshair[0] = currentcenterX;
+        y_crosshair[1] = -this.yHalf / 100 + currentcenterY;
+
+        y_crosshair[2] = currentcenterX;
+        y_crosshair[3] = this.yHalf / 100 + currentcenterY;
+
+        // TODO: update the current 3D coordinates in the three viewers
+        if (idx > 0 && idx <= 28935) {
+            this.viewer.currentCoord.x = Number(this.surfaces[index].index2Coords[idx - 1][1]);
+            this.viewer.currentCoord.y = Number(this.surfaces[index].index2Coords[idx - 1][2]);
+            this.viewer.currentCoord.z = Number(this.surfaces[index].index2Coords[idx - 1][3]);
+            console.log(this.surfaces[index].index2Coords[idx - 1]);
+        }
+
+    }
+    else { // when the other three slices are clicked
+        //let val = this.viewer.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
+        let val = papayaContainers[0].viewer.screenVolumes[1].volume.getVoxelAtMM(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z, 0, true);
+
+        // print slice position
+        // console.log("current slice at: " + "(" + currentPos_x + ", " + currentPos_y + ")");
+
+        if (val !== 0) {
+            let currentcenterX = this.surfaces[index].triangleVerticesMap[(val - 1) * 2];
+            let currentcenterY = this.surfaces[index].triangleVerticesMap[(val - 1) * 2 + 1];
+
+            // crosshair X
+            x_crosshair[0] = -this.xHalf/100 + currentcenterX;
+            x_crosshair[1] = currentcenterY;
+
+            x_crosshair[2] = this.xHalf/100 + currentcenterX;
+            x_crosshair[3] = currentcenterY;
+
+            // crosshair Y
+            y_crosshair[0] = currentcenterX;
+            y_crosshair[1] = -this.yHalf/100 + currentcenterY;
+
+            y_crosshair[2] = currentcenterX;
+            y_crosshair[3] = this.yHalf/100 + currentcenterY;
+
+        } else {
+            // crosshair X
+            x_crosshair[0] = 1;
+            x_crosshair[1] = 1;
+
+            x_crosshair[2] = 1;
+            x_crosshair[3] = 1;
+
+            // crosshair Y
+            y_crosshair[0] = 1;
+            y_crosshair[1] = 1;
+
+            y_crosshair[2] = 1;
+            y_crosshair[3] = 1;
+        }
+    }
+    // print current cursor location
+    //console.log("current cursor at: " + "(" + (x_crosshair[0] + x_crosshair[2])/2 + ", " + x_crosshair[3] + ")");
+
+    let crosshairsLocation = gl.getUniformLocation(shaderProgram_1, "uCrosshairs");
+    gl.uniform1i(crosshairsLocation, 1);
+    gl.lineWidth(this.isMainView() ? 2.0 : 1.5);
+
+    let crosshairAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
+    gl.enableVertexAttribArray(crosshairAttribLocation);
+
+    // draw x crosshair
+    let LineXBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, LineXBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(x_crosshair), gl.DYNAMIC_DRAW);
+    gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
+
+    gl.drawArrays(gl.LINES, 0, 2);
+
+    // draw y crosshair
+    let LineYBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, LineYBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(y_crosshair), gl.DYNAMIC_DRAW);
+    gl.vertexAttribPointer(crosshairAttribLocation, 2, gl.FLOAT, false, 0, 0);
+    //gl.enableVertexAttribArray(crosshairAttribLocation);
+    gl.drawArrays(gl.LINES, 0, 2);
+
+    gl.uniform1i(crosshairsLocation, 0);
+
+    // ------------------------------------- Draw Borders --------------------------------------//
+    // Border buffer object
+    let borderBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, borderBufferObject);
+    gl.bufferData(gl.ARRAY_BUFFER, this.surfaces[index].border, gl.STATIC_DRAW);
+
+    let borderAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
+    let bcolorAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertColor');
+
+    gl.vertexAttribPointer(
+        borderAttribLocation, // Attribute location
+        2, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        0 // Offset from the beginning of a single vertex to this attribute
+    );
+
+    gl.vertexAttribPointer(
+        bcolorAttribLocation, // Attribute location
+        3, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
+    );
+
+    gl.enableVertexAttribArray(borderAttribLocation);
+    gl.enableVertexAttribArray(bcolorAttribLocation);
+
+    // Main render loop
+    //gl.useProgram(program);
+    gl.drawArrays(gl.POINTS, 0, 548);
+
+    // ------------------------------------- Draw flatmap --------------------------------------//
+
+    //---- triangle vertex buffer object
+    let triangleVertexBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject);
+    gl.bufferData(gl.ARRAY_BUFFER, this.surfaces[index].triangleVerticesMap, gl.STATIC_DRAW);
+    let positionAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertPosition');
+    gl.vertexAttribPointer(
+        positionAttribLocation, // Attribute location
+        2, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        2 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        0 // Offset from the beginning of a single vertex to this attribute
+    );
+    gl.enableVertexAttribArray(positionAttribLocation);
+
+    //---- triangle vertex color buffer object
+    if (this.surfaces[index].colorsData && this.viewer.rangeChangedFlag && !this.isLabelGii) { // Dynamically change the flatmap color if range changed
+        this.viewer.rangeChangedFlag = false;
+
+        let upperThreshold, lowerThreshold;
+        let colorData = [];
+
+        upperThreshold = papayaContainers[0].viewer.screenVolumes[2].screenMax;
+        lowerThreshold = papayaContainers[0].viewer.screenVolumes[2].screenMin;
+
+        for (let i = 0; i <this.surfaces[index].colorsData.length; ++i) {
+            if (!isNaN(this.surfaces[index].colorsData[i])) {
+                if (this.surfaces[index].colorsData[i] >= upperThreshold) { // White - max value
+                    colorData.push(this.surfaces[index].colorLookUpTable[99][0]);
+                    colorData.push(this.surfaces[index].colorLookUpTable[99][1]);
+                    colorData.push(this.surfaces[index].colorLookUpTable[99][2]);
+                } else if (this.surfaces[index].colorsData[i] < lowerThreshold) { // Gray - no show
+                    colorData.push(0.87);
+                    colorData.push(0.87);
+                    colorData.push(0.87);
+                } else { // In between - interpolation
+                    let currIndex = Math.floor( (this.surfaces[index].colorsData[i]-lowerThreshold)/(upperThreshold-lowerThreshold)*100 );
+                    colorData.push(this.surfaces[index].colorLookUpTable[currIndex][0]);
+                    colorData.push(this.surfaces[index].colorLookUpTable[currIndex][1]);
+                    colorData.push(this.surfaces[index].colorLookUpTable[currIndex][2]);
+                }
+
+            } else {
+                colorData.push(0.87);
+                colorData.push(0.87);
+                colorData.push(0.87);
+            }
+        }
+        this.surfaces[index].vColor = new Float32Array(colorData);
+    }
+    else if (this.surfaces[index].colorsData === undefined || this.surfaces[index].colorsData === null){
+        this.surfaces[index].vColor = this.surfaces[index].underlayColor;
+    }
+
+    let triangleVertexColorBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBufferObject);
+    gl.bufferData(gl.ARRAY_BUFFER, this.surfaces[index].vColor, gl.STATIC_DRAW);
+    let colorAttribLocation = gl.getAttribLocation(shaderProgram_1, 'vertColor');
+    gl.vertexAttribPointer(
+        colorAttribLocation, // Attribute location
+        3, // Number of elements per attribute
+        gl.FLOAT, // Type of elements
+        false,
+        3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        0 // Offset from the beginning of a single vertex to this attribute
+    );
+    gl.enableVertexAttribArray(colorAttribLocation);
+
+
+    //---- Triangle Index buffer object
+    let triangleIndexBufferObject = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleIndexBufferObject);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[index].triangleIndex, gl.STATIC_DRAW);
+
+    // Main render loop
+    // gl.useProgram(program);
+    gl.drawElements(gl.TRIANGLES, this.surfaces[index].triangleIndex.length, gl.UNSIGNED_SHORT, 0);
+
+
+    // Switch to the original shader program (Manually)
+    // var vertexShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderVert, gl.VERTEX_SHADER);
+    // var fragmentShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderFrag, gl.FRAGMENT_SHADER);
+    // var shaderProgram = gl.createProgram();
+    // gl.attachShader(shaderProgram, vertexShader);
+    // gl.attachShader(shaderProgram, fragmentShader);
+    // gl.linkProgram(shaderProgram);
+    //
+    // if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+    //     console.log("Could not initialise shaders");
+    // }
+    //
+    // gl.useProgram(shaderProgram);
+
+    // Switch back to original program
+    this.shaderProgram = papaya.viewer.ScreenSurface.initShaders(this.context);
 
     if (isTranslucent && (translucentFirstPass || translucentSecondPass)) {
         gl.disable(gl.BLEND);
@@ -819,69 +1458,69 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
 
 
 
-papaya.viewer.ScreenSurface.prototype.drawRuler = function (gl) {
-    var found = true;
-
-    if (this.rulerPoints === null) {
-        this.rulerPoints = new Float32Array(6);
-        found = this.findInitialRulerPoints(gl);
-        this.drawScene(gl);  // need to redraw since pick
-    }
-
-    if (found) {
-        gl.uniform1i(this.shaderProgram.ruler, 1);
-
-        // draw endpoints
-        this.drawRulerPoint(gl, this.rulerPoints[0], this.rulerPoints[1], this.rulerPoints[2]);
-        this.drawRulerPoint(gl, this.rulerPoints[3], this.rulerPoints[4], this.rulerPoints[5]);
-
-        // draw line
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.rulerLineBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.rulerPoints, gl.DYNAMIC_DRAW);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.rulerLineBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.rulerLineBuffer.itemSize, gl.FLOAT,
-            false, 0, 0);
-        gl.drawArrays(gl.LINES, 0, 2);
-        gl.uniform1i(this.shaderProgram.ruler, 0);
-    }
-};
-
-
-
-papaya.viewer.ScreenSurface.prototype.drawRulerPoint = function (gl, xLoc, yLoc, zLoc) {
-    this.sphereVertexPositionBuffer.numItems = this.rulerPointData.vertices.length / 3;
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereVertexPositionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.rulerPointData.vertices), gl.STATIC_DRAW);
-
-    this.sphereNormalsPositionBuffer.numItems = this.rulerPointData.normals.length / 3;
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereNormalsPositionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.rulerPointData.normals), gl.STATIC_DRAW);
-
-    this.sphereVertexIndexBuffer.numItems = this.rulerPointData.indices.length;
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.sphereVertexIndexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.rulerPointData.indices), gl.STATIC_DRAW);
-
-    gl.uniform1i(this.shaderProgram.hasSolidColor, 1);
-    gl.uniform4f(this.shaderProgram.solidColor, papaya.viewer.ScreenSurface.RULER_COLOR[0],
-        papaya.viewer.ScreenSurface.RULER_COLOR[1], papaya.viewer.ScreenSurface.RULER_COLOR[2], 1.0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereVertexPositionBuffer);
-    gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.sphereVertexPositionBuffer.itemSize,
-        gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereNormalsPositionBuffer);
-    gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.sphereNormalsPositionBuffer.itemSize,
-        gl.FLOAT, false, 0, 0);
-
-    mat4.set(this.mvMatrix, this.tempMat);
-    mat4.translate(this.mvMatrix, [xLoc, yLoc, zLoc]);
-    this.applyMatrixUniforms(gl);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.sphereVertexIndexBuffer);
-    gl.drawElements(gl.TRIANGLES, this.sphereVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-    mat4.set(this.tempMat, this.mvMatrix);
-    this.applyMatrixUniforms(gl);
-};
+// papaya.viewer.ScreenSurface.prototype.drawRuler = function (gl) {
+//     var found = true;
+//
+//     if (this.rulerPoints === null) {
+//         this.rulerPoints = new Float32Array(6);
+//         found = this.findInitialRulerPoints(gl);
+//         this.drawScene(gl);  // need to redraw since pick
+//     }
+//
+//     if (found) {
+//         gl.uniform1i(this.shaderProgram.ruler, 1);
+//
+//         // draw endpoints
+//         this.drawRulerPoint(gl, this.rulerPoints[0], this.rulerPoints[1], this.rulerPoints[2]);
+//         this.drawRulerPoint(gl, this.rulerPoints[3], this.rulerPoints[4], this.rulerPoints[5]);
+//
+//         // draw line
+//         gl.bindBuffer(gl.ARRAY_BUFFER, this.rulerLineBuffer);
+//         gl.bufferData(gl.ARRAY_BUFFER, this.rulerPoints, gl.DYNAMIC_DRAW);
+//
+//         gl.bindBuffer(gl.ARRAY_BUFFER, this.rulerLineBuffer);
+//         gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.rulerLineBuffer.itemSize, gl.FLOAT,
+//             false, 0, 0);
+//         gl.drawArrays(gl.LINES, 0, 2);
+//         gl.uniform1i(this.shaderProgram.ruler, 0);
+//     }
+// };
+//
+//
+//
+// papaya.viewer.ScreenSurface.prototype.drawRulerPoint = function (gl, xLoc, yLoc, zLoc) {
+//     this.sphereVertexPositionBuffer.numItems = this.rulerPointData.vertices.length / 3;
+//     gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereVertexPositionBuffer);
+//     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.rulerPointData.vertices), gl.STATIC_DRAW);
+//
+//     this.sphereNormalsPositionBuffer.numItems = this.rulerPointData.normals.length / 3;
+//     gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereNormalsPositionBuffer);
+//     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.rulerPointData.normals), gl.STATIC_DRAW);
+//
+//     this.sphereVertexIndexBuffer.numItems = this.rulerPointData.indices.length;
+//     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.sphereVertexIndexBuffer);
+//     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.rulerPointData.indices), gl.STATIC_DRAW);
+//
+//     gl.uniform1i(this.shaderProgram.hasSolidColor, 1);
+//     gl.uniform4f(this.shaderProgram.solidColor, papaya.viewer.ScreenSurface.RULER_COLOR[0],
+//         papaya.viewer.ScreenSurface.RULER_COLOR[1], papaya.viewer.ScreenSurface.RULER_COLOR[2], 1.0);
+//
+//     gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereVertexPositionBuffer);
+//     gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.sphereVertexPositionBuffer.itemSize,
+//         gl.FLOAT, false, 0, 0);
+//
+//     gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereNormalsPositionBuffer);
+//     gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.sphereNormalsPositionBuffer.itemSize,
+//         gl.FLOAT, false, 0, 0);
+//
+//     mat4.set(this.mvMatrix, this.tempMat);
+//     mat4.translate(this.mvMatrix, [xLoc, yLoc, zLoc]);
+//     this.applyMatrixUniforms(gl);
+//     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.sphereVertexIndexBuffer);
+//     gl.drawElements(gl.TRIANGLES, this.sphereVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+//     mat4.set(this.tempMat, this.mvMatrix);
+//     this.applyMatrixUniforms(gl);
+// };
 
 
 
@@ -1301,7 +1940,7 @@ papaya.viewer.ScreenSurface.prototype.updateActivePlanes = function () {
     this.crosshairLineVertsY[4] = this.yHalf + this.centerWorld.y;
     this.crosshairLineVertsY[5] = ((zSlice * this.zSize) - this.zHalf);
 
-    // crosshair X
+    // crosshair Z
     this.crosshairLineVertsX[0] = -this.xHalf + this.centerWorld.x;
     this.crosshairLineVertsX[1] = ((ySlice * this.ySize) - this.yHalf);
     this.crosshairLineVertsX[2] = ((zSlice * this.zSize) - this.zHalf);

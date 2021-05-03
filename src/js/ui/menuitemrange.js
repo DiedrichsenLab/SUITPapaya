@@ -63,7 +63,12 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     minSliderId = this.id + "SliderMin";
     maxSliderId = this.id + "SliderMax";
     sliderId = this.id + "Slider";
-    range = this.dataSource[this.method]();
+
+    // if (!this.viewer.rangeClicked) {
+    //     range = [0.1, 0.3];
+    // } else {
+        range = this.dataSource[this.method]();
+    // }
 
     menuItemRange = this;
 
@@ -207,8 +212,11 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
 
 
 papaya.ui.MenuItemRange.prototype.rangeChanged = function (focusMax) {
+    this.viewer.rangeChangedFlag = true;
+    this.viewer.rangeClicked = true;
     this.updateDataSource(focusMax);
     this.viewer.drawViewer(true);
+
     this.resetSlider();
 };
 

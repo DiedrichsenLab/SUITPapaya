@@ -18,6 +18,7 @@ papaya.surface.SurfaceGIFTI = papaya.surface.SurfaceGIFTI || function () {
     this.normalsData = null;
     this.colorsData = null;
     this.onFinishedRead = null;
+    this.labelsData = null;
 };
 
 
@@ -36,7 +37,15 @@ papaya.surface.SurfaceGIFTI.prototype.readData = function (data, progress, onFin
     this.onFinishedRead = onFinishedRead;
     this.gii = gifti.parse(data);
 
-    setTimeout(function() { surf.readDataPoints(surf, progress); }, 0);
+    // Only get the cdata from the func.gii by parser
+    if(this.gii.dataArrays && (this.gii.dataArrays.length < 2)) {
+        surf.colorsData = this.gii.dataArrays[0].getData();
+        surf.labelsData = this.gii.labelTable;
+        setTimeout(function() { surf.onFinishedRead(); }, 0);
+    } else {
+        //setTimeout(function() { surf.onFinishedRead(); }, 0);
+        setTimeout(function() { surf.readDataPoints(surf, progress); }, 0);
+    }
 };
 
 
@@ -131,6 +140,12 @@ papaya.surface.SurfaceGIFTI.prototype.getTriangleData = function () {
 
 papaya.surface.SurfaceGIFTI.prototype.getColorsData = function () {
     return this.colorsData;
+};
+
+
+
+papaya.surface.SurfaceGIFTI.prototype.getLabelsData = function () {
+    return this.labelsData;
 };
 
 

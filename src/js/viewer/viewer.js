@@ -68,6 +68,9 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.panAmountZ = 0;
     this.keyPressIgnored = false;
     this.previousMousePosition = new papaya.core.Point();
+    this.contextMenuMousePosition = new papaya.core.Point();
+    // this.contextMenuMousePositionX = 0;
+    // this.contextMenuMousePositionY = 0;
     this.isControlKeyDown = false;
     this.isAltKeyDown = false;
     this.isShiftKeyDown = false;
@@ -78,6 +81,9 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.loadingDTI = false;
     this.loadingDTIModRef = null;
     this.tempCoor = new papaya.core.Coordinate();
+    this.rangeChangedFlag = false;
+    this.rangeClicked = false;
+    this.isLabelGii = false;
 
     this.listenerContextMenu = function (me) { me.preventDefault(); return false; };
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
@@ -766,9 +772,10 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
                 }
             }
         } else {
+
             overlay = new papaya.viewer.ScreenVolume(this.loadingVolume,
                 this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name :
-                    this.getNextColorTable()), false, false, this.currentCoord);
+                    this.getColorTable()), false, false, this.currentCoord);
 
             if (this.loadingDTI) {
                 this.loadingDTI = false;
@@ -936,8 +943,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
                 this.draggingSliceDir = papaya.viewer.ScreenSlice.DIRECTION_AXIAL;
             }
         }
-    } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(),
-            viewer.volume.getZDim())) {
+    } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getZDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_CORONAL)) {
             xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.coronalSlice);
             yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.coronalSlice);
@@ -948,8 +954,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
                 this.draggingSliceDir = papaya.viewer.ScreenSlice.DIRECTION_CORONAL;
             }
         }
-    } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(),
-            viewer.volume.getZDim())) {
+    } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(), viewer.volume.getZDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL)) {
             xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.sagittalSlice);
             yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.sagittalSlice);
@@ -1101,9 +1106,10 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
             this.cursorPosition.y = yImageLoc;
             this.cursorPosition.z = zImageLoc;
             this.container.display.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
-        } else {
-            this.container.display.drawEmptyDisplay();
         }
+        // else {
+        //     this.container.display.drawEmptyDisplay();
+        // }
     }
 };
 
@@ -1556,62 +1562,62 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
     if (this.container.orthogonalTall) {
         if (this.container.hasSurface()) {
-            this.viewerDim = this.canvas.height / 1.333;
-
-            this.getTransformParameters(this.mainImage, this.viewerDim, false, 3);
-            this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
-            this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
-
-            this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 3);
-            this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = 0;
-            this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = this.viewerDim + (papaya.viewer.Viewer.GAP);
-
-            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 3);
-            this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 3) + (papaya.viewer.Viewer.GAP));
-            this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
-
-            this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 3);
-            this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX = 2 * ((((this.viewerDim - papaya.viewer.Viewer.GAP) / 3) + (papaya.viewer.Viewer.GAP)));
-            this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
-        } else {
+            //this.viewerDim = this.canvas.height / 1.333;
             this.viewerDim = this.canvas.height / 1.5;
 
             this.getTransformParameters(this.mainImage, this.viewerDim, false, 2);
             this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
             this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
 
-            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 2);
-            this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX = 0;
-            this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY = this.viewerDim + (papaya.viewer.Viewer.GAP);
-
             this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2);
-            this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
-            this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
-        }
-    } else {
-        this.viewerDim = this.canvas.height;
+            this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = 0;
+            this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = this.viewerDim + (papaya.viewer.Viewer.GAP);
 
-        if (this.container.hasSurface()) {
-            this.getTransformParameters(this.mainImage, this.viewerDim, false, 3);
+            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 2);
+            this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
+            this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
+
+            //TODO:
+            this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 0.6666667);
+            this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX = this.viewerDim + papaya.viewer.Viewer.GAP;
+            this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =  0;
+        } else {
+            this.viewerDim = this.canvas.height;
+
+            this.getTransformParameters(this.mainImage, this.viewerDim, false, 2);
             this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
             this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
 
-            this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 3);
-            this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX =
-                (this.viewerDim + (papaya.viewer.Viewer.GAP));
+            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 2);
+            this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX = (this.viewerDim + (papaya.viewer.Viewer.GAP) * 31);
+            this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
+
+            this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2);
+            this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = (this.viewerDim + (papaya.viewer.Viewer.GAP) * 31);
             this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = 0;
+        }
+    } else {
+        //this.viewerDim = this.canvas.height / 1.5;
 
-            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 3);
-            this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX =
-                (this.viewerDim + (papaya.viewer.Viewer.GAP));
-            this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY =
-                (((this.viewerDim - papaya.viewer.Viewer.GAP) / 3) + (papaya.viewer.Viewer.GAP));
+        if (this.container.hasSurface()) {
+            this.viewerDim = this.canvas.height / 1.5;
 
-            this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 3);
-            this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX =
-                (this.viewerDim + (papaya.viewer.Viewer.GAP));
-            this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =
-                (((this.viewerDim - papaya.viewer.Viewer.GAP) / 3) * 2 + (papaya.viewer.Viewer.GAP) * 2);
+            this.getTransformParameters(this.mainImage, this.viewerDim, false, 2);
+            this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
+            this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
+
+            this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2);
+            this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = 0;
+            this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = this.viewerDim + (papaya.viewer.Viewer.GAP);
+
+            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 2);
+            this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
+            this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
+
+            //TODO:
+            this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 0.6666667);
+            this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX = this.viewerDim + papaya.viewer.Viewer.GAP;
+            this.lowerImageBot2.screenTransform[1][2] += this.lowerImageBot2.screenOffsetY =  0;
         } else {
             this.getTransformParameters(this.mainImage, this.viewerDim, false, 2);
             this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
@@ -1896,6 +1902,7 @@ papaya.viewer.Viewer.prototype.resetUpdateTimer = function (me) {
 
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
     var draggingStarted = true, menuData, menu, pickedColor;
+    //this.surfaceView.selectedFlag = false;
 
     if (!papaya.Container.allowPropagation) {
         me.stopPropagation();
@@ -1921,6 +1928,12 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
             if (((me.button === 2) || this.isControlKeyDown || this.isLongTouch) && this.container.contextManager && (this.selectedSlice === this.mainImage) && (this.mainImage === this.surfaceView)) {
                 this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
                 this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
+
+                this.contextMenuMousePosition.x = this.contextMenuMousePositionX;
+                this.contextMenuMousePosition.y = this.contextMenuMousePositionY;
+
+                // this.contextMenuMousePosition.x = this.convertScreenToImageCoordinateX(this.previousMousePosition.x, this.surfaceView);
+                // this.contextMenuMousePosition.y = this.convertScreenToImageCoordinateY(this.previousMousePosition.y, this.surfaceView);
 
                 if (this.container.contextManager.prefersColorPicking && this.container.contextManager.prefersColorPicking()) {
                     pickedColor = this.surfaceView.pickColor(this.contextMenuMousePositionX, this.contextMenuMousePositionY);
@@ -1991,6 +2004,13 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                         this.resetUpdateTimer(me);
                     }
                 } else if (this.selectedSlice && (this.selectedSlice === this.surfaceView)) {
+                    //this.surfaceView.selectedFlag = true;
+                    this.draggingSliceDir = 0;
+                    this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
+                    this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
+
+                    this.contextMenuMousePosition.x = this.contextMenuMousePositionX;
+                    this.contextMenuMousePosition.y = this.contextMenuMousePositionY;
                     if (this.surfaceView.findProximalRulerHandle(this.previousMousePosition.x - this.canvasRect.left,
                             this.previousMousePosition.y - this.canvasRect.top)) {
 
@@ -1999,7 +2019,10 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                         this.surfaceView.setStartDynamic(this.previousMousePosition.x, this.previousMousePosition.y);
                     }
 
-                    this.container.display.drawEmptyDisplay();
+                    this.container.coordinateChanged(this);
+                    this.drawViewer(false);
+                    this.resetUpdateTimer(me);
+                    //this.container.display.drawEmptyDisplay();
                 }
             }
 
@@ -2132,6 +2155,7 @@ papaya.viewer.Viewer.prototype.findClickedSlice = function (viewer, xLoc, yLoc) 
 
 papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     me.preventDefault();
+    //this.surfaceView.selectedFlag = false;
 
     if (this.showingContextMenu) {
         me.handled = true;
@@ -2192,15 +2216,24 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
             if (this.selectedSlice !== null) {
                 if (this.selectedSlice === this.surfaceView) {
+                    //this.surfaceView.selectedFlag = true;
+                    this.contextMenuMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me) - this.canvasRect.left;
+                    this.contextMenuMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me) - this.canvasRect.top;
+
                     if (this.surfaceView.grabbedRulerPoint !== -1) {
                         this.surfaceView.pickRuler(currentMouseX - this.canvasRect.left,
                             currentMouseY - this.canvasRect.top);
                         this.drawViewer(false, true);
                     } else {
-                        this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me),
-                            papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
-                        this.drawViewer(false, true);
-                        this.container.display.drawEmptyDisplay();
+                        this.draggingSliceDir = 0;
+                        this.container.coordinateChanged(this);
+                        this.drawViewer(false);
+                        //this.resetUpdateTimer(me);
+
+                        // this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me),
+                        //     papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
+                        // this.drawViewer(false, true);
+                        // this.container.display.drawEmptyDisplay();
                     }
                 } else {
                     this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
@@ -2209,8 +2242,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             }
         }
     } else {
-        this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
-            papaya.utilities.PlatformUtils.getMousePositionY(me));
+        //this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
         this.isZoomMode = false;
     }
 
@@ -2254,7 +2286,7 @@ papaya.viewer.Viewer.prototype.mouseOutEvent = function (me) {
         this.mouseUpEvent(me);
     } else {
         if (this.container.display) {
-            this.container.display.drawEmptyDisplay();
+            //this.container.display.drawEmptyDisplay();
         }
 
         this.grabbedHandle = null;
@@ -2474,6 +2506,21 @@ papaya.viewer.Viewer.prototype.getIndexCoordinateAtWorld = function (ctrX, ctrY,
         -1 * ((ctrY / this.volume.header.voxelDimensions.ySize) - this.volume.header.origin.y),
         -1 * ((ctrZ / this.volume.header.voxelDimensions.zSize) - this.volume.header.origin.z), true);
     return coord;
+};
+
+
+
+papaya.viewer.Viewer.prototype.getColorTable = function () {
+    var filename;
+
+    for (let i = 0; i < papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES.length; ++i) {
+        filename = this.loadingVolume.fileName.substring(0, (this.loadingVolume.fileName.indexOf(".")));
+        if (filename === papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES[i].name) {
+            return filename;
+        }
+    }
+
+    return papaya.viewer.ColorTable.TABLE_RED2WHITE.name;
 };
 
 
