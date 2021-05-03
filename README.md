@@ -1,7 +1,7 @@
 ## SUITpapaya
 is a project by the Diedrichsen lab to build an html-based viewer for atlas data for the human cerebellum in SUIT or MNI space, including interactive visualization on the cerebellar flatmap. 
 It is heavily based on (and forked from) rii-mango/Papaya (https://github.com/rii-mango/Papaya/wiki/Supported-Formats)
-The package was mostly written by Da Zhi in 2019
+The package was mostly written by Da Zhi in 2019. For a installed version of the viewer with installed atlasses, see http://www.diedrichsenlab.org/imaging/AtlasViewer. 
 
 Acknowledgments
 -----
