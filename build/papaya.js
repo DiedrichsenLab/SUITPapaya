@@ -52,7 +52,7 @@ papaya.data.Atlas.labels = {
             //transformedname: "MNI (Nearest Grey Matter)",
             display: "*.",
             name: "Cerebellar Atlas in SUIT space",
-            type: "Probabalistic"
+            type: "Probabilistic"
         },
         version: 1
     }
