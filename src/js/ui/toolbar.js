@@ -23,7 +23,6 @@ papaya.ui.Toolbar = papaya.ui.Toolbar || function (container) {
 
 papaya.ui.Toolbar.SIZE = 22;
 
-
 // http://dataurl.net/#dataurlmaker
 papaya.ui.Toolbar.ICON_IMAGESPACE = "data:image/gif;base64,R0lGODlhFAAUAPcAMf//////GP////////////////////////////////" +
     "////////////////////////////////////////////////////////////////////////////////////////////////////////////////" +
@@ -88,7 +87,23 @@ papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
     "Slt0+kbYOuExiFuhng7JH2LFld0Ej2AeeCu6cF5cy3vs/XiDeAIWwS3Q298G8ZDoFuiBI7ACdKjegcZYSz2eBgjap1dAxafOkW9zyoUj7LnY/hCF" +
     "mNsByYQRzf9IR6L5XUKI/uXarHn/4Gvn/H5tQvqfi14rcXHzs6vPYh3RmT9N2ZHWxkYgt4/pN/LAOfka/AG9AAAAAElFTkSuQmCC";
 
-papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
+let json_data = [];
+$.ajax({
+    type:"get",
+    url: "data/cerebellar_atlases/package_description.json",
+    async: false,
+    dataType:"json",
+    success:function(data) {
+        json_data = data;
+    },
+    error:function() {
+        alert("failed");
+    }
+});
+
+console.log(json_data);
+
+papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Atlas", "icons": null,
     "items": [
         //{"label": "Add .nii contrasts", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
         //{"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
@@ -96,8 +111,34 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
         //     "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
         // {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
 
+        // {"label": "atl-Anatom", "icons":null, "items": [
+        //         {"label": "Anatom", "icons":null, "action": "OpenLabel-Buckner_7Networks"}
+        // ]},
+        // {"label": "atl-Buckner", "icons":null, "items": [
+        //         {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
+        //         {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"}
+        //     ]},
+        // {"label": "atl-Xue", "icons":null, "items": [
+        //         {"label": "Xue10Sub1", "action": "OpenLabel-Xue10Sub1"},
+        //         {"label": "Xue10Sub2", "action": "OpenLabel-Xue10Sub2"}
+        //     ]},
+        // {"label": "atl-Ji", "icons":null, "items": [
+        //         {"label": "Ji10", "action": "OpenLabel-Ji_10Networks"},
+        //     ]},
+        // {"label": "atl-MDTB", "icons":null, "items": [
+        //         {"label": "MDTB10", "action": "OpenLabel-MDTB"},
+        //     ]},
 
-        // {"label": "MDTB contrasts", "icons": null, "items": [
+
+        {"label": "Anatom", "icons":null, "action": "OpenLabel-Buckner_7Networks"},
+        {"label": "Buckner_7Networks", "icons":null, "action": "OpenLabel-Buckner_7Networks"},
+        {"label": "Buckner_17Networks", "icons":null, "action": "OpenLabel-Buckner_17Networks"},
+        {"label": "Xue10Sub1", "icons":null, "action": "OpenLabel-Xue10Sub1"},
+        {"label": "Xue10Sub2", "icons":null, "action": "OpenLabel-Xue10Sub2"},
+        {"label": "Ji10", "icons":null, "action": "OpenLabel-Ji_10Networks"},
+        {"label": "MDTB10", "icons":null, "action": "OpenLabel-MDTB"},
+
+        {"label": "con-MDTB", "icons": null, "items": [
                 {"label": "MDTB00_Left_Hand", "action": "OpenBoth-MDTB00_Left_Hand"},
                 {"label": "MDTB00_Right_Hand", "action": "OpenBoth-MDTB00_Right_Hand"},
                 {"label": "MDTB00_Saccades", "action": "OpenBoth-MDTB00_Saccades"},
@@ -148,7 +189,7 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
                 {"label": "MDTB45_Response_Alternatives_Easy", "action": "OpenBoth-MDTB45_Response_Alternatives_Easy"},
                 {"label": "MDTB46_Response_Alternatives_Medium", "action": "OpenBoth-MDTB46_Response_Alternatives_Medium"},
                 {"label": "MDTB47_Response_Alternatives_Hard", "action": "OpenBoth-MDTB47_Response_Alternatives_Hard"}
-            // ]},
+             ]}
 
         // {"label": "MDTB labels", "icons": null, "items": [
         //         {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
@@ -183,15 +224,17 @@ papaya.ui.Toolbar.MENU_DATA = {
         //     ]
         // },
 
-        {"label": "Parcellations", "icons": null,
-            "items": [
-                {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
-                {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"},
-                {"label": "Ji_10Networks", "action": "OpenLabel-Ji_10Networks"},
-                {"label": "Lobules_SUIT", "action": "OpenLabel-Lobules_SUIT"},
-                {"label": "MDTB_10Regions", "action": "OpenLabel-MDTB_10Regions"}
-            ]
-        },
+        // {"label": "Parcellations", "icons": null,
+        //     "items": [
+        //         {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
+        //         {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"},
+        //         {"label": "Ji_10Networks", "action": "OpenLabel-Ji_10Networks"},
+        //         {"label": "Lobules_SUIT", "action": "OpenLabel-Lobules_SUIT"},
+        //         {"label": "MDTB_10Regions", "action": "OpenLabel-MDTB_10Regions"},
+        //         // {"label": "HCP_somatotopy", "action": "OpenLabel-HCP_somatotopy"},
+        //         {"label": "vanEs_retinotopy", "action": "OpenLabel-vanEs_retinotopy"}
+        //     ]
+        // },
 
         {"label": "Settings", "icons": null,
             "items": [
@@ -283,7 +326,7 @@ papaya.ui.Toolbar.DTI_IMAGE_MENU_DATA = {
         {"label": "Display Lines", "action": "DTI-Lines", "type": "checkbox", "method": "isDTILines"},
         {"label": "Display Lines &amp; Colors", "action": "DTI-LinesColors", "type": "checkbox", "method": "isDTILinesAndRGB"},
         {"label": "Transparency", "action": "alpha", "type": "range", "method": "getAlpha", "required": "canCurrentOverlayLoadMod"},
-        {"label": "Modulate with...", "action": "DTI-Mod", "type": "file", "hide": papaya.utilities.PlatformUtils.ios, "required": "canCurrentOverlayLoadMod"},
+        //{"label": "Modulate with...", "action": "DTI-Mod", "type": "file", "hide": papaya.utilities.PlatformUtils.ios, "required": "canCurrentOverlayLoadMod"},
         {"label": "Modulation", "action": "dtiAlphaFactor", "type": "range", "method": "getDtiAlphaFactor", "required": "canCurrentOverlayModulate"},
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"}
     ]
@@ -425,6 +468,11 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
             if (this.container.noNewFiles) {
                 papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;
             } else {
+                // fetch("data/cerebellar_atlases/package_description.json").then(function (resp) {
+                //     return resp.json();
+                // }).then(function (data) {
+                //     console.log(data);
+                // });
                 papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.FILE_MENU_DATA;
             }
             this.buildOpenMenuItems(papaya.ui.Toolbar.MENU_DATA);

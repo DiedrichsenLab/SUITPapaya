@@ -89,7 +89,12 @@ papaya.viewer.ColorTable.TABLE_LOBULES_SUIT = {"name": "Lobules_SUIT", "data": [
     [0.4643, 1, 0, 0], [0.5, 1, 0.6, 0], [0.5357, 0.8, 0.478, 0], [0.5714, 1, 0.6, 0], [0.6071, 0.2, 1, 0], [0.6429, 0.161, 0.8, 0],
     [0.6786, 0.2, 1, 0], [0.7143, 0, 1, 1], [0.75, 0, 0.8, 0.8], [0.7857, 0, 1, 1], [0.8214, 0.2, 0, 1], [0.8571, 0.161, 0, 0.8],
     [0.8929, 0.2, 0, 1], [0.9286, 1, 0, 0.6], [0.9643, 0.8, 0, 0.478], [1, 1, 0, 0.6]], "gradation": true};
-
+papaya.viewer.ColorTable.TABLE_HCP_SOMATOTOPY = {"name": "HCP_somatotopy", "data": [[0,0,0,0], [0.2, 0.9000, 0.1000, 0.0000],
+        [0.4, 0.9000, 0.0000, 0.1000], [0.6, 0.1000, 0.0000, 0.8000], [0.8, 0.0000, 0.1000, 0.8000], [1, 0, 0.8000, 0]], "gradation": true};
+papaya.viewer.ColorTable.TABLE_VANES_RETINOTOPY = {"name": "vanEs_retinotopy", "data": [[0,0,0,0], [0.1, 0.8281, 0.5234, 0.5156],
+        [0.2, 0.6836, 0.2422, 0.2734], [0.3, 0.6836, 0.2422, 0.2734], [0.4, 0.8281, 0.5234, 0.5156],
+        [0.5, 0.8516, 0.6172, 0.2617], [0.6, 0.8516, 0.6172, 0.2617], [0.7, 0.1758, 0.3477, 0.5547],
+        [0.8, 0.5312, 0.5820, 0.7812], [0.9, 0.1758, 0.3477, 0.5547], [1, 0.5312, 0.5820, 0.7812]], "gradation": true};
 
 papaya.viewer.ColorTable.ARROW_ICON = "data:image/gif;base64,R0lGODlhCwARAPfGMf//////zP//mf//Zv//M///AP/M///MzP/Mmf/M" +
     "Zv/MM//MAP+Z//+ZzP+Zmf+ZZv+ZM/+ZAP9m//9mzP9mmf9mZv9mM/9mAP8z//8zzP8zmf8zZv8zM/8zAP8A//8AzP8Amf8AZv8AM/8AAMz//8z/" +
@@ -114,7 +119,9 @@ papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
     papaya.viewer.ColorTable.TABLE_BUCKNER_17NETWORKS,
     papaya.viewer.ColorTable.TABLE_JI_10NETWORKS,
     papaya.viewer.ColorTable.TABLE_MDTB_10REGIONS,
-    papaya.viewer.ColorTable.TABLE_LOBULES_SUIT
+    papaya.viewer.ColorTable.TABLE_LOBULES_SUIT,
+    papaya.viewer.ColorTable.TABLE_HCP_SOMATOTOPY,
+    papaya.viewer.ColorTable.TABLE_VANES_RETINOTOPY
 ];
 
 papaya.viewer.ColorTable.TABLE_ALL = [
@@ -132,7 +139,9 @@ papaya.viewer.ColorTable.TABLE_ALL = [
     papaya.viewer.ColorTable.TABLE_BUCKNER_17NETWORKS,
     papaya.viewer.ColorTable.TABLE_JI_10NETWORKS,
     papaya.viewer.ColorTable.TABLE_MDTB_10REGIONS,
-    papaya.viewer.ColorTable.TABLE_LOBULES_SUIT
+    papaya.viewer.ColorTable.TABLE_LOBULES_SUIT,
+    papaya.viewer.ColorTable.TABLE_HCP_SOMATOTOPY,
+    papaya.viewer.ColorTable.TABLE_VANES_RETINOTOPY
 ];
 
 papaya.viewer.ColorTable.LUT_MIN = 0;
