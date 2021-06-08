@@ -146,7 +146,9 @@ papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Atlas", "icons": null,
         //         {"label": "MDTB10", "action": "OpenLabel-MDTB"},
         //     ]}
 
-        // {"type": "spacer"},
+        {"label": "Add local atlas", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        //{"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        {"type": "spacer"},
         {"label": "Anatom", "action": "OpenLabel-Anatom"},
         {"label": "Buckner7", "action": "OpenLabel-Buckner7"},
         {"label": "Buckner17", "action": "OpenLabel-Buckner17"},

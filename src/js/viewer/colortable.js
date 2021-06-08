@@ -79,7 +79,7 @@ papaya.viewer.ColorTable.TABLE_JI_10NETWORKS = {"name": "Ji_10Networks", "data":
     [0.2, 0, 0.324219, 0.71875], [0.3, 0.238281, 0, 0.597656], [0.4, 0, 0.601562, 0.601562], [0.5, 0.308594, 0.613281, 0.996094],
     [0.6, 0.996094, 0.996094, 0], [0.7, 0.996094, 0.890625, 0.765625], [0.8, 0.691406, 0.347656, 0.15625],
     [0.9, 0.859375, 0.078125, 0.234375], [1, 0.996094, 0.609375, 0]], "gradation": true};
-papaya.viewer.ColorTable.TABLE_MDTB_10REGIONS = {"name": "MDTB_10Regions", "data": [[0, 0, 0, 0], [0.1, 0.180392, 0.650980, 0.596078],
+papaya.viewer.ColorTable.TABLE_MDTB10 = {"name": "atl-MDTB10_sp-SUIT", "data": [[0, 0, 0, 0], [0.1, 0.180392, 0.650980, 0.596078],
     [0.2, 0.333333, 0.592157, 0.125490], [0.3, 0.2, 0.4, 0.576471], [0.4, 0.058824, 0.098039, 0.494118], [0.5, 0.647059, 0.094118, 0.635294],
     [0.6, 0.686275, 0.172549, 0.278431], [0.7, 0.882353, 0.494118, 0.690196], [0.8, 0.925490, 0.631373, 0.031373],
     [0.9, 0.988235, 0.854902, 0.462745], [1, 0.466667, 0.462745, 0.964706]], "gradation": true};
@@ -118,7 +118,7 @@ papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
     papaya.viewer.ColorTable.TABLE_BUCKNER_7NETWORKS,
     papaya.viewer.ColorTable.TABLE_BUCKNER_17NETWORKS,
     papaya.viewer.ColorTable.TABLE_JI_10NETWORKS,
-    papaya.viewer.ColorTable.TABLE_MDTB_10REGIONS,
+    papaya.viewer.ColorTable.TABLE_MDTB10,
     papaya.viewer.ColorTable.TABLE_LOBULES_SUIT,
     papaya.viewer.ColorTable.TABLE_HCP_SOMATOTOPY,
     papaya.viewer.ColorTable.TABLE_VANES_RETINOTOPY
@@ -138,7 +138,7 @@ papaya.viewer.ColorTable.TABLE_ALL = [
     papaya.viewer.ColorTable.TABLE_BUCKNER_7NETWORKS,
     papaya.viewer.ColorTable.TABLE_BUCKNER_17NETWORKS,
     papaya.viewer.ColorTable.TABLE_JI_10NETWORKS,
-    papaya.viewer.ColorTable.TABLE_MDTB_10REGIONS,
+    papaya.viewer.ColorTable.TABLE_MDTB10,
     papaya.viewer.ColorTable.TABLE_LOBULES_SUIT,
     papaya.viewer.ColorTable.TABLE_HCP_SOMATOTOPY,
     papaya.viewer.ColorTable.TABLE_VANES_RETINOTOPY
