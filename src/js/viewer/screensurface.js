@@ -1240,7 +1240,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
         y_crosshair[2] = currentcenterX;
         y_crosshair[3] = this.yHalf / 100 + currentcenterY;
 
-        // TODO: update the current 3D coordinates in the three viewers
+        // Update the current 3D coordinates in the three viewers
         if (idx > 0 && idx <= 28935) {
             this.viewer.currentCoord.x = Number(this.surfaces[index].index2Coords[idx - 1][1]);
             this.viewer.currentCoord.y = Number(this.surfaces[index].index2Coords[idx - 1][2]);

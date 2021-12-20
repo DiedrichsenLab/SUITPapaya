@@ -128,34 +128,35 @@ papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Atlas", "icons": null,
         // {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
         //{"type": "spacer"},
 
-        // {"label": "atl-Anatom", "icons":null, "required": "isDesktopMode", "items": [
-        //         {"label": "Anatom", "type": "file","action": "OpenLabel-Anatom"}
-        //     ]},
-        // {"label": "atl-Buckner", "icons":null, "items": [
-        //         {"label": "Buckner_7Networks", "type": "file","action": "OpenLabel-Buckner_7Networks"},
-        //         {"label": "Buckner_17Networks", "type": "file","action": "OpenLabel-Buckner_17Networks"}
-        //     ]},
-        // {"label": "atl-Xue", "icons":null, "items": [
-        //         {"label": "Xue10Sub1", "action": "OpenLabel-Xue10Sub1"},
-        //         {"label": "Xue10Sub2", "action": "OpenLabel-Xue10Sub2"}
-        //     ]},
-        // {"label": "atl-Ji", "icons":null, "items": [
-        //         {"label": "Ji10", "action": "OpenLabel-Ji_10Networks"},
-        //     ]},
-        // {"label": "atl-MDTB", "icons":null, "items": [
-        //         {"label": "MDTB10", "action": "OpenLabel-MDTB"},
-        //     ]}
-
         {"label": "Add local atlas", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
         //{"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
         {"type": "spacer"},
-        {"label": "Anatom", "action": "OpenLabel-Anatom"},
-        {"label": "Buckner7", "action": "OpenLabel-Buckner7"},
-        {"label": "Buckner17", "action": "OpenLabel-Buckner17"},
-        {"label": "Xue10Sub1", "action": "OpenLabel-Xue10Sub1"},
-        {"label": "Xue10Sub2", "action": "OpenLabel-Xue10Sub2"},
-        {"label": "Ji10", "action": "OpenLabel-Ji10"},
-        {"label": "MDTB10", "action": "OpenLabel-MDTB10"}
+
+        {"label": "atl-Anatom", "icons":null, "items": [
+                {"label": "Anatom", "type": "file","action": "OpenLabel-Anatom"}
+            ]},
+        {"label": "atl-Buckner", "icons":null, "items": [
+                {"label": "Buckner_7Networks", "type": "file","action": "OpenLabel-Buckner_7Networks"},
+                {"label": "Buckner_17Networks", "type": "file","action": "OpenLabel-Buckner_17Networks"}
+            ]},
+        {"label": "atl-Xue", "icons":null, "items": [
+                {"label": "Xue10Sub1", "action": "OpenLabel-Xue10Sub1"},
+                {"label": "Xue10Sub2", "action": "OpenLabel-Xue10Sub2"}
+            ]},
+        {"label": "atl-Ji", "icons":null, "items": [
+                {"label": "Ji10", "action": "OpenLabel-Ji_10Networks"},
+            ]},
+        {"label": "atl-MDTB", "icons":null, "items": [
+                {"label": "MDTB10", "action": "OpenLabel-MDTB"},
+            ]}
+
+        // {"label": "Anatom", "action": "OpenLabel-Anatom"},
+        // {"label": "Buckner7", "action": "OpenLabel-Buckner7"},
+        // {"label": "Buckner17", "action": "OpenLabel-Buckner17"},
+        // {"label": "Xue10Sub1", "action": "OpenLabel-Xue10Sub1"},
+        // {"label": "Xue10Sub2", "action": "OpenLabel-Xue10Sub2"},
+        // {"label": "Ji10", "action": "OpenLabel-Ji10"},
+        // {"label": "MDTB10", "action": "OpenLabel-MDTB10"}
 
         // {"label": "MDTB labels", "icons": null, "items": [
         //         {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
