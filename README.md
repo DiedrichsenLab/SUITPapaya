@@ -11,7 +11,7 @@ For information on SUIT and an online version of the viewer, please visit [here]
 SUITPapaya extension
 ------
 ### SUIT flatmap development
-One of the major changes in SUITPapaya is we adaptively re-programmed the surface viewer object as a webgl object to render 
+One of the major changes in SUITPapaya is we adaptively re-allocate the surface viewer object as a webgl object to render 
 the cerebellum flatmap in order to synchronize with the SUIT volume viewer. These changes are mainly at ``src/js/viewer/screensurface.js``
 
 ![ScreenShot](docs/images/hierachical.PNG)
@@ -37,7 +37,50 @@ relative positions to the 3d volume object on the page to make it at the right p
 papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {}
 ```
 #### Flatmap as a Webgl object
+The main reason of using webgl to design of the cerebellum flatmap is the rendering speed consideration since the underlay
+cerebellum flatmap 28935 vertices and 56588 edges. All changes and webgl design located at `src/js/viewer/screensurface.js`
+The vertex and fragment shaders as shown below since we think the flatmap should only be rendered on 2d plane.
 
+![ScreenShot](docs/images/flatmap.PNG)
+```
+/*** Shaders ***/
+let vertexShaderText =
+    [
+        'precision mediump float;',
+
+        'attribute vec2 vertPosition;',
+        'attribute vec3 vertColor;',
+
+        "uniform bool uCrosshairs;",
+
+        'varying vec3 fragColor;',
+        '',
+        'void main()',
+        '{',
+        '  fragColor = vertColor;',
+        '  gl_Position = vec4(vertPosition, 0.0, 1.0);',
+        '  gl_PointSize = 2.0;',
+        '}'
+    ].join('\n');
+
+let fragmentShaderText =
+    [
+        'precision mediump float;',
+
+        "uniform bool uCrosshairs;",
+
+        'varying vec3 fragColor;',
+        'void main()',
+        '{',
+        '    gl_FragColor = vec4(fragColor, 1.0);',
+        '    if (uCrosshairs) {',
+        '       gl_FragColor = vec4(0.10980392156863, 0.52549019607843, 0.93333333333333, 1.0);',
+        '    } else {',
+        '       gl_FragColor = vec4(fragColor, 1.0);',
+        '    }',
+        '}'
+    ].join('\n');
+```
 
 
 ### Details of how volume/flatmap mapping and mouse censor synchronization works
@@ -103,18 +146,75 @@ if (val !== 0) {
 ```
 
 ### Loading volume .nii and flatmap .gii at the same time
+The three volume viewers load NIFTI file data, while the flatmap viewer needs the color information of vertices from .gii file for rendering.
+To communicate the three volume viewer to the flatmap viewer, the two part are loaded at the same time. This function is
+achieved in `src/js/ui/toolbar.js` at `papaya.ui.Toolbar.prototype.doAction` function callback.
 
+For all contrast files, we set the action start with `OpenBoth-` in `papaya.ui.Toolbar.FILE_MENU_DATA` list. Then the function
+load both contrast .nii and func.gii at the same time to the viewer.
 
-### CSS part: Menu drop down design using .json file
+For all parcellation files, we set the action start with `OpenLabel-` in `papaya.ui.Toolbar.MENU_DATA` list. Then the function callback
+lookup both parcellation .nii file and label.gii at the same time by the file name suffix to '-'.
 
+![ScreenShot](docs/images/contrast.PNG)&nbsp;&nbsp;&nbsp;![ScreenShot](docs/images/parcellation.PNG)
+
+For both contrast and parcellation loading, they eventually call the instance constructor of both volume instance and surface (flatmap) instance at
+
+```
+this.viewer.loadImage(NiifileName, true, false, false);
+this.viewer.loadSurface(GiifileName, true, false);
+```
+
+where `NiifileName` and `GiifileName` should align with the file name that stored in `data/cerebellar_atlases/con-MDTB`. Close the 
+current top overlay is achieved by:
+
+```
+else if (action.startsWith("CloseOverlay")) {
+    imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
+    this.container.viewer.surfaces[0].colorsData = null;
+    this.container.viewer.removeOverlay(imageIndex);
+}
+```
+
+### Color Table for overlay
+The color tables for label gii in the volume viewers are all hard-coded in `src/js/viewer/colortable.js`. When a `papaya.viewer.ColorTable`
+instance is created, viewer will lookup the according color table by the unique name which stored in `papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES`
+and `papaya.viewer.ColorTable.TABLE_ALL`.
+
+Each color table is an unique instance that stores all attributes of that functional overlay. For example, `papaya.viewer.ColorTable.TABLE_MDTB10` stores
+all color information for MDTB10 parcellation, such as `"name"`, color `"data"`, and `"gradation" = True` means the colors are gradually interpolated and
+rendered on the screen.
+
+```
+papaya.viewer.ColorTable.TABLE_MDTB10 = {"name": "atl-MDTB10_sp-SUIT", "data": [[0, 0, 0, 0], [0.1, 0.180392, 0.650980, 0.596078],
+    [0.2, 0.333333, 0.592157, 0.125490], [0.3, 0.2, 0.4, 0.576471], [0.4, 0.058824, 0.098039, 0.494118], [0.5, 0.647059, 0.094118, 0.635294],
+    [0.6, 0.686275, 0.172549, 0.278431], [0.7, 0.882353, 0.494118, 0.690196], [0.8, 0.925490, 0.631373, 0.031373],
+    [0.9, 0.988235, 0.854902, 0.462745], [1, 0.466667, 0.462745, 0.964706]], "gradation": true};
+```
+
+### CSS part: Menu drop down design using .json file (Ongoing)
+We are currently working on the menu bar to adaptively aligned with DataLad format by using `.json` file. The main entry to change the 
+menu bar design settings are located in `src/js/ui/toolbar.js`, where `papaya.ui.Toolbar.MENU_DATA` stores the top level menu button
+and their functions; `papaya.ui.Toolbar.FILE_MENU_DATA` has all contrast map and `papaya.ui.Toolbar.MDTB_MENU_DATA` contains all parcellation
+maps.
+
+Here, we wanted to design an dynamic drop down menu bar by scanning all atlas folders stored in root folder `data/cerebellar_atlases` instead
+of hard-coded all menu items. This can be achieved by reading the folder `.json` file. An example script is located in `papaya.ui.Toolbar.prototype.buildToolbar`
+which is the main function to build top-level menu bar.
+
+```
+fetch("data/cerebellar_atlases/package_description.json").then(function (resp) {
+         return resp.json();
+     }).then(function (data) {
+         console.log(data);
+});
+```
 
 
 
 Papaya
 ------
 Papaya is a pure JavaScript medical research image viewer, supporting [DICOM and NIFTI formats](https://github.com/rii-mango/Papaya/wiki/Supported-Formats), compatible across a [range of web browsers](https://github.com/rii-mango/Papaya/wiki/Requirements).  This orthogonal viewer supports [overlays](https://github.com/rii-mango/Papaya/wiki/Configuration#images), [atlases](https://github.com/rii-mango/Papaya/wiki/How-To-Use-Atlases), [GIFTI & VTK surface data](https://github.com/rii-mango/Papaya/wiki/Configuration#surfaces) and [DTI data](https://github.com/rii-mango/Papaya/wiki/Configuration#dti).  The Papaya UI is [configurable](https://github.com/rii-mango/Papaya/wiki/Configuration) with many [display, menu and control options](https://github.com/rii-mango/Papaya/wiki/Configuration#display-parameters) and can be run on a [web server or as a local, shareable file](https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya).
-
-![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/docs/images/splash1.png)&nbsp;&nbsp;&nbsp;![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/docs/images/splash2.png)
 
 ### [Documentation](https://github.com/rii-mango/Papaya/wiki) & [Demo](http://rii.uthscsa.edu/mango/papaya/)
 * [Requirements](https://github.com/rii-mango/Papaya/wiki/Requirements): Firefox (7+), Chrome (7+), Safari (6+), iOS (6+), IE (10+), Edge (12+)
