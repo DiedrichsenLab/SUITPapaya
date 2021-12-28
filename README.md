@@ -83,10 +83,10 @@ let fragmentShaderText =
 ```
 
 
-### Details of how volume/flatmap mapping and mouse censor synchronization works
+### Details of how volume/flatmap mapping and mouse cursor synchronization works
 #### 1. From flatmap to volume mapping
 ```
-mouse censor pixel -> flatmap 250 resolution mapping -> index -> 3d coordinate of the volume space
+mouse cursor pixel -> flatmap 250 resolution mapping -> index -> 3d coordinate of the volume space
 ```
 The real-time mapping of the crosshair from flatmap (surface instance) to the 3d volumes is achieved using `data/mapping_250_rerefine.csv` 
 which projects the whole cerebellum flatmap into a 250*250 resolution grid. The value on the grids is the indices of the flamap (0 value on a 
@@ -94,10 +94,10 @@ grid means this area is outside of the cerebellum flatmap). Then, we use this 25
 canvas of arbitrary width and height by the ratio. 
 
 For example, if the webgl object window is width 500 * height 500, then the first 2*2 square pixels at the upper left corner will 
-be projected to the 250 flatmap(0,0) value. And every time the mouse censor is located to these 4 pixels, it will always be mapped to
+be projected to the 250 flatmap(0,0) value. And every time the mouse cursor is located to these 4 pixels, it will always be mapped to
 the indices on 250 grid (0,0).
 
-After we get the index of the mouse censor pixel, we use `data/index_3dCoord.csv ` to lookup the 3d coordinates by the index.
+After we get the index of the mouse cursor pixel, we use `data/index_3dCoord.csv ` to lookup the 3d coordinates by the index.
 And this coordinates value will be passed to `viewer.currentCoord.x`, `viewer.currentCoord.y`, and `viewer.currentCoord.z` to
 synchronize the 3d volume instances crosshair. 
 
@@ -112,7 +112,7 @@ if (idx > 0 && idx <= 28935) {
 ```
 #### 2. From 3d volume to flatmap mapping
 ```
-mouse censor clicked on whichever three volumes (current x, y, z) -> index -> 2d coordinates at flatmap
+mouse cursor clicked on whichever three volumes (current x, y, z) -> index -> 2d coordinates at flatmap
 ```
 
 The mapping from 3d volume to the flatmap is much easier. When a volume is clicked `this.viewer.selectedSlice = True`,
