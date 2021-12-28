@@ -120,7 +120,7 @@ we just call function `papaya.volume.Volume.prototype.getVoxelAtMM()` by passing
 
 ```
 let val = papayaContainers[0].viewer.screenVolumes[1].volume.getVoxelAtMM(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z, 0, true);
-``` 
+```
 the `val` is the index of vertices stored in `data/flatmap_vertices.csv` then transfer to x, y coordinates on the flatmap for rendering.
 
 ```
@@ -210,7 +210,13 @@ fetch("data/cerebellar_atlases/package_description.json").then(function (resp) {
 });
 ```
 
+### Desired Menu behavior 
+1. data/cerebelllar atlasses should be replaced with https://github.com/DiedrichsenLab/cerebellar_atlases
 
+2. Atlas menue titles are populated by `package_description.json.Atlas` 
+3. Once the used chooses one of the menue items, a dialog (modal)/ submenue opens and displays all the Maps associated with the chosen atlas.
+4. Ideally the `package_description.json.MapDesc` is visible to the user by a)hover or by display in the title after loading   
+4. Once the users selects a Map, an action is being called with the action `OPEN-ATLAS-MAP`. The map name contains the information of label / contast. 
 
 Papaya
 ------
