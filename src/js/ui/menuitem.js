@@ -10,7 +10,7 @@ papaya.ui = papaya.ui || {};
 
 
 /*** Constructor ***/
-papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, callback, dataSource, method, modifier) {
+papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, callback, dataSource, method, modifier, hoverText) {
     this.viewer = viewer;
 
     this.modifier = "";
@@ -32,6 +32,8 @@ papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, call
     this.callback = callback;
     this.menu = null;
     this.isContext = false;
+    // tool-tip text displayed on hover
+    this.hoverText = hoverText;
 };
 
 
@@ -62,6 +64,8 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
         }));
 
     thisHtml.hover(function () { $(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
+
+    $(`#${this.id}`).attr('title', this.hoverText);
 };
 
 

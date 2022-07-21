@@ -9,34 +9,38 @@ import nilearn.image as nli
 
 def make_atlas_list():
     """
-        Makes the package list as json file
+        Generate metadata in a JSON file for all atlases.
     """
+    atlas_directories =  [
+        'atl-Anatom',
+        'atl-Buckner',
+        'atl-Xue',
+        'atl-Ji',
+        'atl-MDTB',
+        'con-MDTB'
+    ]
+    
     jsondict = {}
-    jsondict['Atlas'] = []
-    jsondict['ShortDesc'] = []
-    jsondict['Type'] = []
-    jsondict['Maps'] = []
-    jsondict['MapDesc'] = []
-    jsondict['Type'] = []
-
-    directories =  ['atl-Anatom','atl-Buckner','atl-Xue','atl-Ji','atl-MDTB','con-MDTB']
-    for name in directories:
+    atlases = {}
+    # Create an entry for each atlas, keyed by the atlas name
+    for name in atlas_directories:
+        atlas_dict = {}
         if name.startswith('atl-'):
             with open(name +'/atlas_description.json') as jsonfile:
                 file = json.load(jsonfile)
-                jsondict["Type"].append("Atlas")
-                jsondict["Atlas"].append(name)
-                jsondict["ShortDesc"].append(file["ShortDesc"])
-                jsondict["Maps"].append(file["Maps"])
-                jsondict["MapDesc"].append(file["MapDesc"])
+                atlas_dict["Type"] = "Atlas"
+                atlas_dict["ShortDesc"] = file["ShortDesc"]
+                atlas_dict["Maps"] = file["Maps"]
+                atlas_dict["MapDesc"] = file["MapDesc"]
         if name.startswith('con-'):
             with open(name +'/contrast_description.json') as jsonfile:
                 file = json.load(jsonfile)
-                jsondict["Type"].append("Contrast")
-                jsondict["Atlas"].append(name)
-                jsondict["ShortDesc"].append(file["ShortDesc"])
-                jsondict["Maps"].append(file["Maps"])
-                jsondict["MapDesc"].append(file["MapDesc"])
+                atlas_dict["Type"] = "Contrast"
+                atlas_dict["ShortDesc"] = file["ShortDesc"]
+                atlas_dict["Maps"] = file["Maps"]
+                atlas_dict["MapDesc"] = file["MapDesc"]
+        atlases[name] = atlas_dict
+        jsondict["atlases"] = atlases
     with open('package_description.json','w') as outfile:
         json.dump(jsondict,outfile,indent = 5)
 

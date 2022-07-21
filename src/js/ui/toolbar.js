@@ -87,144 +87,60 @@ papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
     "Slt0+kbYOuExiFuhng7JH2LFld0Ej2AeeCu6cF5cy3vs/XiDeAIWwS3Q298G8ZDoFuiBI7ACdKjegcZYSz2eBgjap1dAxafOkW9zyoUj7LnY/hCF" +
     "mNsByYQRzf9IR6L5XUKI/uXarHn/4Gvn/H5tQvqfi14rcXHzs6vPYh3RmT9N2ZHWxkYgt4/pN/LAOfka/AG9AAAAAElFTkSuQmCC";
 
-let atlas_data = [];
+let atlases = {};
 $.ajax({
-    type:"get",
-    url: "data/cerebellar_atlases/atlas.json",
+    type: "get",
+    url: "data/cerebellar_atlases/package_description.json",
     async: false,
-    dataType:"json",
-    success:function(data) {
-        atlas_data = data;
+    dataType: "json",
+    success: data => {
+        atlases = data.atlases;
     },
-    error:function() {
-        alert("failed");
-    }
+    error: () => alert("Failed to fetch /data/cerebellar_atlases/package_description.json")
 });
 
-let con_data = [];
-$.ajax({
-    type:"get",
-    url: "data/cerebellar_atlases/contrast.json",
-    async: false,
-    dataType:"json",
-    success:function(data) {
-        con_data = data;
-    },
-    error:function() {
-        alert("failed");
-    }
+// atlases to be displayed under "Atlas" in the toolbar
+const atlas_items = Object.keys(atlases).flatMap(name => {
+    const atlas = atlases[name];
+    if (atlas.Type !== "Atlas")
+        return [];
+
+    // maps to be displayed under each atlas
+    const map_items = atlas.Maps.map((label, idx) => ({
+        label,
+        action: `OpenLabel-${label}`,
+        hoverText: atlas.MapDesc[idx],
+    }));
+
+    return [
+        {
+            label: name,
+            items: map_items,
+            action: `OpenSubmenu-${name}`,
+            hoverText: atlas.ShortDesc,
+            icons: null,
+        }
+    ]
 });
+const contrast_items = atlases['con-MDTB'].Maps.map((label, idx) => ({
+    label,
+    action: `OpenBoth-${label}`,
+    hoverText: atlases['con-MDTB'].MapDesc[idx],
+}));
 
 // papaya.ui.Toolbar.FILE_MENU_DATA = con_data; // This is the MDTB contrast menu
 // papaya.ui.Toolbar.MDTB_MENU_DATA = atlas_data; // This is other atlas menu
 
-
-papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Atlas", "icons": null,
+papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Parcellations", "icons": null,
     "items": [
-        //{"label": "Add .nii contrasts", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        //{"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        // {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
-        //     "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
-        // {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
-        //{"type": "spacer"},
-
-        {"label": "Add local atlas", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        //{"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        {"type": "spacer"},
-
-        {"label": "atl-Anatom", "icons":null, "items": [
-                {"label": "Anatom", "type": "file","action": "OpenLabel-Anatom"}
-            ]},
-        {"label": "atl-Buckner", "icons":null, "items": [
-                {"label": "Buckner_7Networks", "type": "file","action": "OpenLabel-Buckner_7Networks"},
-                {"label": "Buckner_17Networks", "type": "file","action": "OpenLabel-Buckner_17Networks"}
-            ]},
-        {"label": "atl-Xue", "icons":null, "items": [
-                {"label": "Xue10Sub1", "action": "OpenLabel-Xue10Sub1"},
-                {"label": "Xue10Sub2", "action": "OpenLabel-Xue10Sub2"}
-            ]},
-        {"label": "atl-Ji", "icons":null, "items": [
-                {"label": "Ji10", "action": "OpenLabel-Ji_10Networks"},
-            ]},
-        {"label": "atl-MDTB", "icons":null, "items": [
-                {"label": "MDTB10", "action": "OpenLabel-MDTB"},
-            ]}
-
-        // {"label": "Anatom", "action": "OpenLabel-Anatom"},
-        // {"label": "Buckner7", "action": "OpenLabel-Buckner7"},
-        // {"label": "Buckner17", "action": "OpenLabel-Buckner17"},
-        // {"label": "Xue10Sub1", "action": "OpenLabel-Xue10Sub1"},
-        // {"label": "Xue10Sub2", "action": "OpenLabel-Xue10Sub2"},
-        // {"label": "Ji10", "action": "OpenLabel-Ji10"},
-        // {"label": "MDTB10", "action": "OpenLabel-MDTB10"}
-
-        // {"label": "MDTB labels", "icons": null, "items": [
-        //         {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
-        //         {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"},
-        //         {"label": "Ji_10Networks", "action": "OpenLabel-Ji_10Networks"},
-        //         {"label": "Lobules-SUIT", "action": "OpenLabel-Lobules-SUIT"},
-        //         {"label": "MDTB_10Regions", "action": "OpenLabel-MDTB_10Regions"}
-        //     ]}
-
-        //{"type": "spacer"}
-        //{"label": "Close Overlay", "action": "CloseOverlay", "required": "isDesktopMode" },
-        //{"label": "Close All", "action": "CloseAllImages"}
+        // {"label": "Add local atlas", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        // {"type": "spacer"},
+        ...atlas_items,
     ]
 };
 
 papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "con-MDTB", "icons": null,
-    "items": [
-        {"label": "MDTB01LeftHandMovement", "action": "OpenBoth-MDTB01LeftHandMovement"},
-        {"label": "MDTB02RightHandMovement", "action": "OpenBoth-MDTB02RightHandMovement"},
-        {"label": "MDTB03Saccades", "action": "OpenBoth-MDTB03Saccades"},
-        {"label": "MDTB04NoGo", "action": "OpenBoth-MDTB04NoGo"},
-        {"label": "MDTB05Go", "action": "OpenBoth-MDTB05Go"},
-        {"label": "MDTB06TheoryOfMind", "action": "OpenBoth-MDTB06TheoryOfMind"},
-        {"label": "MDTB07ActionObservation", "action": "OpenBoth-MDTB07ActionObservation"},
-        {"label": "MDTB08VideoKnots", "action": "OpenBoth-MDTB08VideoKnots"},
-        {"label": "MDTB09UnpleasantScenes", "action": "OpenBoth-MDTB09UnpleasantScenes"},
-        {"label": "MDTB10PleasantScenes", "action": "OpenBoth-MDTB10PleasantScenes"},
-        {"label": "MDTB11Math", "action": "OpenBoth-MDTB11Math"},
-        {"label": "MDTB12DigitJudgement", "action": "OpenBoth-MDTB12DigitJudgement"},
-        {"label": "MDTB13ObjectViewing", "action": "OpenBoth-MDTB13ObjectViewing"},
-        {"label": "MDTB14SadFaces", "action": "OpenBoth-MDTB14SadFaces"},
-        {"label": "MDTB15HappyFaces", "action": "OpenBoth-MDTB15HappyFaces"},
-        {"label": "MDTB16IntervalTiming", "action": "OpenBoth-MDTB16IntervalTiming"},
-        {"label": "MDTB17MotorImagery", "action": "OpenBoth-MDTB17MotorImagery"},
-        {"label": "MDTB18FingerSimple", "action": "OpenBoth-MDTB18FingerSimple"},
-        {"label": "MDTB19FingerSequence", "action": "OpenBoth-MDTB19FingerSequence"},
-        {"label": "MDTB20Verbal2Back-", "action": "OpenBoth-MDTB20Verbal2Back-"},
-        {"label": "MDTB21Verbal2Back+", "action": "OpenBoth-MDTB21Verbal2Back"},
-        {"label": "MDTB22Object2Back-", "action": "OpenBoth-MDTB22Object2Back-"},
-        {"label": "MDTB23Object2Back+", "action": "OpenBoth-MDTB23Object2Back"},
-        {"label": "MDTB24SpatialImagery", "action": "OpenBoth-MDTB24SpatialImagery"},
-        {"label": "MDTB25StroopIncongruent", "action": "OpenBoth-MDTB25StroopIncongruent"},
-        {"label": "MDTB26StroopCongruent", "action": "OpenBoth-MDTB26StroopCongruent"},
-        {"label": "MDTB27VerbGeneration", "action": "OpenBoth-MDTB27VerbGeneration"},
-        {"label": "MDTB28WordReading", "action": "OpenBoth-MDTB28WordReading"},
-        {"label": "MDTB29VisualSearchSmall", "action": "OpenBoth-MDTB29VisualSearchSmall"},
-        {"label": "MDTB30VisualSearchMedium", "action": "OpenBoth-MDTB30VisualSearchMedium"},
-        {"label": "MDTB31VisualSearchLarge", "action": "OpenBoth-MDTB31VisualSearchLarge"},
-        {"label": "MDTB32Rest", "action": "OpenBoth-MDTB32Rest"},
-        {"label": "MDTB33CPRO", "action": "OpenBoth-MDTB33CPRO"},
-        {"label": "MDTB34PredictionTrue", "action": "OpenBoth-MDTB34PredictionTrue"},
-        {"label": "MDTB35PredictionViolated", "action": "OpenBoth-MDTB35PredictionViolated"},
-        {"label": "MDTB36PredictionScrambles", "action": "OpenBoth-MDTB36PredictionScrambles"},
-        {"label": "MDTB37SpatialMapEasy", "action": "OpenBoth-MDTB37SpatialMapEasy"},
-        {"label": "MDTB38SpatialMapMedium", "action": "OpenBoth-MDTB38SpatialMapMedium"},
-        {"label": "MDTB39SpatialMapHard", "action": "OpenBoth-MDTB39SpatialMapHard"},
-        {"label": "MDTB40NatureMovie", "action": "OpenBoth-MDTB40NatureMovie"},
-        {"label": "MDTB41AnimatedMovie", "action": "OpenBoth-MDTB41AnimatedMovie"},
-        {"label": "MDTB42LandscapeMovie", "action": "OpenBoth-MDTB42LandscapeMovie"},
-        {"label": "MDTB43MentalRotationEasy", "action": "OpenBoth-MDTB43MentalRotationEasy"},
-        {"label": "MDTB44MentalRotationMedium", "action": "OpenBoth-MDTB44MentalRotationMedium"},
-        {"label": "MDTB45MentalRotationHard", "action": "OpenBoth-MDTB45MentalRotationHard"},
-        {"label": "MDTB46BiologicalMotion", "action": "OpenBoth-MDTB46BiologicalMotion"},
-        {"label": "MDTB47ScrambledMotion", "action": "OpenBoth-MDTB47ScrambledMotion"},
-        {"label": "MDTB48ResponseAlternativesEasy", "action": "OpenBoth-MDTB48ResponseAlternativesEasy"},
-        {"label": "MDTB49ResponseAlternativesMedium", "action": "OpenBoth-MDTB49ResponseAlternativesMedium"},
-        {"label": "MDTB50ResponseAlternativesHard", "action": "OpenBoth-MDTB50ResponseAlternativesHard"}
-     ]
+    "items": contrast_items
 };
 
 
@@ -700,7 +616,8 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
                 }
             } else {
                 item = new papaya.ui.MenuItem(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
-                    papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+                    papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier,
+                    itemData[ctrItems].hoverText);
             }
         } else {
             item = null;
@@ -709,6 +626,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
         if (item) {
             menu.addMenuItem(item);
 
+            // make this menu item a sub menu if it contains items
             if (itemData[ctrItems].items) {
                 menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
                 item.menu = menu2;
