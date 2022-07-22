@@ -11,13 +11,11 @@ def make_atlas_list():
     """
         Generate metadata in a JSON file for all atlases.
     """
-    atlas_directories =  [
-        'atl-Anatom',
-        'atl-Buckner',
-        'atl-Xue',
-        'atl-Ji',
-        'atl-MDTB',
-        'con-MDTB'
+    # get all subdirectories in this folder with the
+    # 'atl-' or 'con-' prefix
+    atlas_directories = [
+        name for name in os.listdir('.')
+        if name.startswith('atl-') or name.startswith('con-')
     ]
     
     jsondict = {}
@@ -224,14 +222,14 @@ def crop_to_MNI(filesource,filenew,interp = 'continuous'):
 
 if __name__ == "__main__":
     # preprocess_all()
-    # make_atlas_list()
+    make_atlas_list()
     # descr = read_all_atlasdescrip()
     # write_readme(descr)
     # export_as_FSLatlas('Buckner','Buckner7')
     # rgbtxt_to_lut('atl-Xue10Sub1_desc-color.txt')
     # make_MDTB_json()
     # all_maps_to_surf()
-    make_MDTB_contrasts()
+    # make_MDTB_contrasts()
     # map_to_surf('atl-MDTB/atl-MDTB10',isLabel = True)
     # crop_to_MNI('atl-Xue/atl-Xue10Sub1.nii','atl-Xue/atl-Xue10Sub1_sp-MNI.nii',interp='nearest')
     # crop_to_MNI('atl-Xue/atl-Xue10Sub2.nii','atl-Xue/atl-Xue10Sub2_sp-MNI.nii',interp='nearest')

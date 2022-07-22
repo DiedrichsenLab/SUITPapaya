@@ -193,30 +193,15 @@ papaya.viewer.ColorTable.TABLE_MDTB10 = {"name": "atl-MDTB10_sp-SUIT", "data": [
 ```
 
 ### CSS part: Menu drop down design using .json file (Ongoing)
-We are currently working on the menu bar to adaptively aligned with DataLad format by using `.json` file. The main entry to change the 
-menu bar design settings are located in `src/js/ui/toolbar.js`, where `papaya.ui.Toolbar.MENU_DATA` stores the top level menu button
-and their functions; `papaya.ui.Toolbar.FILE_MENU_DATA` has all contrast map and `papaya.ui.Toolbar.MDTB_MENU_DATA` contains all parcellation
-maps.
 
-Here, we wanted to design an dynamic drop down menu bar by scanning all atlas folders stored in root folder `data/cerebellar_atlases` instead
-of hard-coded all menu items. This can be achieved by reading the folder `.json` file. An example script is located in `papaya.ui.Toolbar.prototype.buildToolbar`
-which is the main function to build top-level menu bar.
+The atlases available for viewing under the "con-MDTB" and "Parcellations" menus are pullrf from the `data/cerebellar_atlases` folder. SUITPapaya collects the necessary metadata from the `data/cerebellar_atlases/package_description.json` file.
 
-```
-fetch("data/cerebellar_atlases/package_description.json").then(function (resp) {
-         return resp.json();
-     }).then(function (data) {
-         console.log(data);
-});
+To include a new atlas:
+1. Add the atlas folder to `data/cerebellar_atlases`. The folder name should be prefixed with "atl-" (e.g. "atl-Anatom") if the folder contains atlas maps or "con-" (e.g. "con-MDTB") if the folder contains contrast maps.
+1. Generate a new `package_description.json` file with the `make_atlas_list()` function in `data/cerebellar_atlases/cereb_atlas_process.py`.
 ```
 
-### Desired Menu behavior 
-1. data/cerebelllar atlasses should be replaced with https://github.com/DiedrichsenLab/cerebellar_atlases
-
-2. Atlas menue titles are populated by `package_description.json.Atlas` 
-3. Once the used chooses one of the menue items, a dialog (modal)/ submenue opens and displays all the Maps associated with the chosen atlas.
-4. Ideally the `package_description.json.MapDesc` is visible to the user by a)hover or by display in the title after loading   
-4. Once the users selects a Map, an action is being called with the action `OPEN-ATLAS-MAP`. The map name contains the information of label / contast. 
+Local atlas and contrast maps can be imported under the "Parcellations > Add local atlas..." option in the viewer. When prompted, open both the corresponding `_sp-SUIT.nii` image file and `.gii` surface file to view it in the viewer.
 
 Papaya
 ------

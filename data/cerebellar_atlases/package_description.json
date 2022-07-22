@@ -24,18 +24,6 @@
                     "Assignment of cerebellar voxels to the 17 network parcellation"
                ]
           },
-          "atl-Xue": {
-               "Type": "Atlas",
-               "ShortDesc": "Individual resting state parcellation: Xue et al. (2020)",
-               "Maps": [
-                    "Xue10Sub1",
-                    "Xue10Sub2"
-               ],
-               "MapDesc": [
-                    "Individual parcellation for subject 1",
-                    "Individual parcellation for subject 2"
-               ]
-          },
           "atl-Ji": {
                "Type": "Atlas",
                "ShortDesc": "Subcortical restingstate parcellation: Ji et al. (2019)",
@@ -54,6 +42,18 @@
                ],
                "MapDesc": [
                     "MDTB 10 region parcellation"
+               ]
+          },
+          "atl-Xue": {
+               "Type": "Atlas",
+               "ShortDesc": "Individual resting state parcellation: Xue et al. (2020)",
+               "Maps": [
+                    "Xue10Sub1",
+                    "Xue10Sub2"
+               ],
+               "MapDesc": [
+                    "Individual parcellation for subject 1",
+                    "Individual parcellation for subject 2"
                ]
           },
           "con-MDTB": {

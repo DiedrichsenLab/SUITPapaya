@@ -100,17 +100,6 @@
         ];
          DO NOT EDIT (end) */
         // Replace ./data.json with your JSON feed
-        let pkg_des = [];
-        fetch('data/cerebellar_atlases/package_description.json').then(response => {
-            return response.json();
-        }).then(data => {
-            // Work with JSON data here
-            console.log(JSON.stringify(data));
-            pkg_des = JSON.stringify(data);
-        }).catch(err => {
-            // Do something for an error here
-        });
-        console.log(pkg_des);
 
         var papayaLoadableImages = [{
             hide: true,

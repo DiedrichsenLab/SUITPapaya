@@ -133,8 +133,8 @@ const contrast_items = atlases['con-MDTB'].Maps.map((label, idx) => ({
 
 papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Parcellations", "icons": null,
     "items": [
-        // {"label": "Add local atlas", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        // {"type": "spacer"},
+        {"label": "Add local atlas", "action": "OpenLocal", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        {"type": "spacer"},
         ...atlas_items,
     ]
 };
@@ -815,7 +815,29 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.viewer.isLabelGii = true;
             this.viewer.loadImage(NiifileName, true, false, false);
             this.viewer.loadSurface(GiifileName, true, false);
-        }else if (action.startsWith("OpenSurface-")) {
+        } else if (action === "OpenLocal") {
+            if (this.container.viewer.screenVolumes.length > 2) {
+                this.container.viewer.removeOverlay(2); // Always remove the previous one, index = 2
+            }
+
+            // select the .nii and .gii files from the list
+            let Niifile = null, Giifile = null;
+            for (let i = 0; i < file.length; ++i) {
+                const { name } = file[i];
+                if (name.endsWith("_sp-SUIT.nii")) {
+                    Niifile = file[i];
+                } else if (name.endsWith(".gii")) {
+                    Giifile = file[i];
+                }
+            }
+            if (Niifile === null || Giifile === null) {
+                alert("Invalid files: open one '_sp-SUIT.nii' image file and one '.gii' surface file");
+            }
+            this.viewer.rangeClicked = false;
+            this.viewer.isLabelGii = Giifile.name.endsWith(".label.gii");
+            this.viewer.loadImage([Niifile]);
+            this.viewer.loadSurface([Giifile]);
+        } else if (action.startsWith("OpenSurface-")) {
             imageName = action.substring(action.indexOf("-") + 1);
             this.viewer.loadSurface(imageName);
         } else if (action.startsWith("Open-")) {
