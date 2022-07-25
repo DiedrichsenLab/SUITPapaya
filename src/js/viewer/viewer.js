@@ -2516,11 +2516,14 @@ papaya.viewer.Viewer.prototype.getIndexCoordinateAtWorld = function (ctrX, ctrY,
  * color table (e.g. Red Overlay) if the surface has no .lut file (e.g. no a .label.gii file)
  */
 papaya.viewer.Viewer.prototype.getColorTable = function () {
+    const defaultColorTable = "Red Overlay";
+    if (!this.loadingVolume.urls)
+        return defaultColorTable;
     // remove trailing _sp-MNI, _sp-SUIT, .label.gii, .nii, etc.
     const regex = /((_sp-MNI\.nii)|(_sp-SUIT\.nii)|(_sp-MNI\.nii)|(_sp-SUIT\.nii)|(\.label\.gii))$/
     const filePath = this.loadingVolume.urls[0];
     if (!regex.test(filePath))
-        return "Red Overlay"; // use Red Overlay as the default color table
+        return defaultColorTable;
     return filePath.replace(regex, ".lut"); // otherwise pull it from the corresponding .lut file
 };
 

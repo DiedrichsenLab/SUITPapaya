@@ -140,7 +140,11 @@ papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Parcellations", "icons": null,
 };
 
 papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "con-MDTB", "icons": null,
-    "items": contrast_items
+    "items": [
+        { "label": "Add local contrast", "action": "OpenLocal", "type": "file", "hide": papaya.utilities.PlatformUtils.ios },
+        {"type": "spacer"},
+        ...contrast_items
+    ]
 };
 
 
@@ -821,17 +825,17 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
 
             // select the .nii and .gii files from the list
-            let Niifile = null, Giifile = null;
+            let Niifile = null, Giifile= null;
             for (let i = 0; i < file.length; ++i) {
                 const { name } = file[i];
-                if (name.endsWith("_sp-SUIT.nii")) {
+                if (["_sp-SUIT.nii", "_sp-MNI.nii"].some(ext => name.endsWith(ext))) {
                     Niifile = file[i];
                 } else if (name.endsWith(".gii")) {
                     Giifile = file[i];
                 }
             }
             if (Niifile === null || Giifile === null) {
-                alert("Invalid files: open one '_sp-SUIT.nii' image file and one '.gii' surface file");
+                alert("Invalid files: open one '_sp-SUIT.nii / _sp-MNI.nii' image file and one '.gii' surface file");
             }
             this.viewer.rangeClicked = false;
             this.viewer.isLabelGii = Giifile.name.endsWith(".label.gii");
