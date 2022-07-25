@@ -2509,18 +2509,19 @@ papaya.viewer.Viewer.prototype.getIndexCoordinateAtWorld = function (ctrX, ctrY,
 };
 
 
-
+/**
+ * Get the color table name from the .nii or .gii file:
+ * /data/.../atl-Buckner7_sp-SUIT.nii => /data/.../atl-Buckner7.lut
+ * @returns The path to the corresponding .lut file, or the name of a default
+ * color table (e.g. Red Overlay) if the surface has no .lut file (e.g. no a .label.gii file)
+ */
 papaya.viewer.Viewer.prototype.getColorTable = function () {
-    var filename;
-
-    for (let i = 0; i < papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES.length; ++i) {
-        filename = this.loadingVolume.fileName.substring(0, (this.loadingVolume.fileName.indexOf(".")));
-        if (filename === papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES[i].name) {
-            return filename;
-        }
-    }
-
-    return papaya.viewer.ColorTable.TABLE_RED2WHITE.name;
+    // remove trailing _sp-MNI, _sp-SUIT, .label.gii, .nii, etc.
+    const regex = /((_sp-MNI\.nii)|(_sp-SUIT\.nii)|(_sp-MNI\.nii)|(_sp-SUIT\.nii)|(\.label\.gii))$/
+    const filePath = this.loadingVolume.urls[0];
+    if (!regex.test(filePath))
+        return "Red Overlay"; // use Red Overlay as the default color table
+    return filePath.replace(regex, ".lut"); // otherwise pull it from the corresponding .lut file
 };
 
 

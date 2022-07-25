@@ -124,25 +124,18 @@ papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
     papaya.viewer.ColorTable.TABLE_VANES_RETINOTOPY
 ];
 
-papaya.viewer.ColorTable.TABLE_ALL = [
-    papaya.viewer.ColorTable.TABLE_GRAYSCALE,
-    papaya.viewer.ColorTable.TABLE_SPECTRUM,
-    papaya.viewer.ColorTable.TABLE_FIRE,
-    papaya.viewer.ColorTable.TABLE_HOTANDCOLD,
-    papaya.viewer.ColorTable.TABLE_GOLD,
-    papaya.viewer.ColorTable.TABLE_RED2YELLOW,
-    papaya.viewer.ColorTable.TABLE_BLUE2GREEN,
-    papaya.viewer.ColorTable.TABLE_RED2WHITE,
-    papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
-    papaya.viewer.ColorTable.TABLE_BLUE2WHITE,
-    papaya.viewer.ColorTable.TABLE_BUCKNER_7NETWORKS,
-    papaya.viewer.ColorTable.TABLE_BUCKNER_17NETWORKS,
-    papaya.viewer.ColorTable.TABLE_JI_10NETWORKS,
-    papaya.viewer.ColorTable.TABLE_MDTB10,
-    papaya.viewer.ColorTable.TABLE_LOBULES_SUIT,
-    papaya.viewer.ColorTable.TABLE_HCP_SOMATOTOPY,
-    papaya.viewer.ColorTable.TABLE_VANES_RETINOTOPY
-];
+papaya.viewer.ColorTable.TABLE_ALL = {
+    "Grayscale": papaya.viewer.ColorTable.TABLE_GRAYSCALE,
+    "Spectrum": papaya.viewer.ColorTable.TABLE_SPECTRUM,
+    "Fire": papaya.viewer.ColorTable.TABLE_FIRE,
+    "Hot-and-Cold": papaya.viewer.ColorTable.TABLE_HOTANDCOLD,
+    "Gold": papaya.viewer.ColorTable.TABLE_GOLD,
+    "Overlay (Positives)": papaya.viewer.ColorTable.TABLE_RED2YELLOW,
+    "Overlay (Negatives)": papaya.viewer.ColorTable.TABLE_BLUE2GREEN,
+    "Red Overlay": papaya.viewer.ColorTable.TABLE_RED2WHITE,
+    "Green Overlay": papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
+    "Blue Overlay": papaya.viewer.ColorTable.TABLE_BLUE2WHITE,
+};
 
 papaya.viewer.ColorTable.LUT_MIN = 0;
 papaya.viewer.ColorTable.LUT_MAX = 255;
@@ -154,15 +147,42 @@ papaya.viewer.ColorTable.COLOR_BAR_HEIGHT = 15;
 /*** Static Methods ***/
 
 papaya.viewer.ColorTable.findLUT = function (name) {
-    var ctr;
-
-    for (ctr = 0; ctr < papaya.viewer.ColorTable.TABLE_ALL.length; ctr += 1) {
-        if (papaya.viewer.ColorTable.TABLE_ALL[ctr].name == name) {  // needs to be ==, not ===
-            return papaya.viewer.ColorTable.TABLE_ALL[ctr];
-        }
-    }
-
-    return papaya.viewer.ColorTable.TABLE_GRAYSCALE;
+    // return one of the built-in color tables
+    if (name in papaya.viewer.ColorTable.TABLE_ALL)
+        return papaya.viewer.ColorTable.TABLE_ALL[name];
+    // otherwise it is an external color table that must be loaded from the
+    // corresponding name.lut file
+    const lutFile = name;
+    let lutData, fileNotFound = false;
+    $.ajax({
+        type: "get",
+        url: lutFile,
+        async: false,
+        dataType: "text",
+        success: data => {
+            lutData = data;
+        },
+        error: () => fileNotFound = true,
+    });
+    // use Red Overlay by default if no .lut file found
+    if (fileNotFound)
+        return papaya.viewer.ColorTable.TABLE_ALL["Red Overlay"];
+    const lutLines = lutData.split(/\r\n|\n/);
+    lutLines.pop();
+    const lutColors = lutLines.map(line => {
+        const values = line.split(' ');
+        return [
+            values[0] * 1 / lutLines.length, // gradation
+            parseFloat(values[1]), // red
+            parseFloat(values[2]), // green
+            parseFloat(values[3]), // blue
+        ]
+    });
+    lutColors.unshift([0.0, 0.0, 0.0, 0.0]); // add [0,0,0,0] entry to the beginning
+    return {
+        name,
+        data: lutColors
+    };
 };
 
 
