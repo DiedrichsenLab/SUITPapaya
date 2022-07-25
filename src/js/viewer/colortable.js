@@ -128,7 +128,7 @@ papaya.viewer.ColorTable.findLUT = function (name) {
     if (fileNotFound)
         return papaya.viewer.ColorTable.TABLE_ALL["Red Overlay"];
     const lutLines = lutData.split(/\r\n|\n/);
-    lutLines.pop();
+    // lutLines.pop();
     const lutColors = lutLines.map(line => {
         const values = line.split(' ');
         return [
