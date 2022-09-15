@@ -102,13 +102,13 @@ $.ajax({
 // atlases to be displayed under "Atlas" in the toolbar
 const atlas_items = Object.keys(atlases).flatMap(name => {
     const atlas = atlases[name];
-    if (atlas.Type !== "Atlas")
-        return [];
+    // if (atlas.Type !== "Atlas")
+    //     return [];
 
     // maps to be displayed under each atlas
     const map_items = atlas.Maps.map((label, idx) => ({
         label,
-        action: `OpenLabel-${label}`,
+        action: atlas.Type[idx]=="dseg" ? `OpenLabel-${label}` : `OpenBoth-${label}`,
         hoverText: atlas.MapDesc[idx],
     }));
 
@@ -122,28 +122,29 @@ const atlas_items = Object.keys(atlases).flatMap(name => {
         }
     ]
 });
-const contrast_items = atlases['con-MDTB'].Maps.map((label, idx) => ({
-    label,
-    action: `OpenBoth-${label}`,
-    hoverText: atlases['con-MDTB'].MapDesc[idx],
-}));
+// const contrast_items = atlases['con-MDTB'].Maps.map((label, idx) => ({
+//     label,
+//     action: `OpenBoth-${label}`,
+//     hoverText: atlases['con-MDTB'].MapDesc[idx],
+// }));
 
 // papaya.ui.Toolbar.FILE_MENU_DATA = con_data; // This is the MDTB contrast menu
 // papaya.ui.Toolbar.MDTB_MENU_DATA = atlas_data; // This is other atlas menu
 
-papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Parcellations", "icons": null,
+papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Atlases", "icons": null, "action": "OpenSubmenu-atlas",
     "items": [
-        {"label": "Add local atlas", "action": "OpenLocal", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        {"type": "spacer"},
+        // {"label": "Add local atlas", "action": "OpenLocal", "type": "file",
+        //     "hoverText": "aaaa","hide": papaya.utilities.PlatformUtils.ios},
+        // {"type": "spacer"},
         ...atlas_items,
     ]
 };
 
-papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "con-MDTB", "icons": null,
+papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "File", "icons": null,
     "items": [
-        { "label": "Add local contrast", "action": "OpenLocal", "type": "file", "hide": papaya.utilities.PlatformUtils.ios },
+        { "label": "Add local files", "action": "OpenLocal", "type": "file", "hide": papaya.utilities.PlatformUtils.ios },
         {"type": "spacer"},
-        ...contrast_items
+        {"label": "Close All", "action": "CloseAllImages"}
     ]
 };
 
@@ -635,6 +636,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
                 menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
                 item.menu = menu2;
                 item.callback = papaya.utilities.ObjectUtils.bind(menu2, menu2.showMenu);
+                item.callback2 = papaya.utilities.ObjectUtils.bind(this, this.doAction);
             }
         }
     }
@@ -793,6 +795,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageIndex = parseInt(action.substr(action.length - 2, 1), 10);
             this.viewer.setCurrentScreenVol(imageIndex);
             this.updateImageButtons();
+        } else if (action.startsWith("OpenSubmenu-")) {
+            this.viewer.atlasNameCurrent = action.substring(action.indexOf("-") + 1);
+            console.log("atlas root changed")
         } else if (action.startsWith("OpenBoth-")) {
             if (this.container.viewer.screenVolumes.length > 2) {
                 this.container.viewer.removeOverlay(2); // Always remove the previous one, index = 2
@@ -801,8 +806,8 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             if (imageName === "MDTB21Verbal2Back" || imageName === "MDTB23Object2Back") {
                 imageName = imageName + "+";
             }
-            let NiifileName = ["data/cerebellar_atlases/con-MDTB/con-" + imageName + "_sp-SUIT.nii"];
-            let GiifileName = "data/cerebellar_atlases/con-MDTB/con-" + imageName + ".func.gii";
+            let NiifileName = ["data/cerebellar_atlases/"+this.viewer.atlasNameCurrent+"/"+imageName+"_space-SUIT.nii"];
+            let GiifileName = "data/cerebellar_atlases/"+this.viewer.atlasNameCurrent+"/"+imageName+".func.gii";
             this.viewer.rangeClicked = false;
             this.viewer.isLabelGii = false;
             this.viewer.loadImage(NiifileName, true, false, false);
@@ -813,8 +818,8 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
             imageName = action.substring(action.indexOf("-") + 1);
 
-            let NiifileName = ["data/cerebellar_atlases/atl-" + imageName.split(/\d/)[0] + "/atl-" + imageName + "_sp-SUIT.nii"];
-            let GiifileName = "data/cerebellar_atlases/atl-" + imageName.split(/\d/)[0] + "/atl-" + imageName + ".label.gii";
+            let NiifileName = ["data/cerebellar_atlases/"+this.viewer.atlasNameCurrent+"/"+imageName+"_space-SUIT_dseg.nii"];
+            let GiifileName = "data/cerebellar_atlases/"+this.viewer.atlasNameCurrent+"/"+imageName+"_dseg.label.gii";
             this.viewer.rangeClicked = false;
             this.viewer.isLabelGii = true;
             this.viewer.loadImage(NiifileName, true, false, false);

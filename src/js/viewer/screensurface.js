@@ -476,7 +476,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
         }
     });
     surface.pixelMapping = pixel_mapping;
-    console.log(pixel_mapping);
+    // console.log(pixel_mapping);
 
     // ------------ Load index to coordinates mapping -------------//
     let index2Coords = [];
@@ -488,7 +488,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
         }
     });
     surface.index2Coords = index2Coords;
-    console.log(index2Coords);
+    // console.log(index2Coords);
 
     // ------------ Load flatmap vertices information and transfer to array -------------//
     let triangleVertices = [];
@@ -513,7 +513,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     });
     //surface.verticesIndex = verticesIndex;
     surface.triangleVerticesMap = new Float32Array(triangleVertices);
-    console.log(triangleVertices);
+    // console.log(triangleVertices);
 
     // ------------ Load flatmap border information and transfer to array -------------//
     let border = [];
@@ -532,7 +532,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
         }
     });
     surface.border = new Float32Array(border);
-    console.log(border);
+    // console.log(border);
 
     // ------------ Load flatmap edges information and transfer to array -------------//
     let triangleIndex = [];
@@ -549,7 +549,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
         }
     });
     surface.triangleIndex = new Uint16Array(triangleIndex);
-    console.log(triangleIndex);
+    // console.log(triangleIndex);
 
     // ------------ Load vertices color information -------------//
     if (surface.colorsData && this.surfaces.length > 1) {

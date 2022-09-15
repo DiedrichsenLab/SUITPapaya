@@ -75,5 +75,8 @@ papaya.ui.MenuItem.prototype.doAction = function (keepOpen) {
         this.viewer.showingContextMenu = false;
     }
 
+    if(this.callback2){
+        this.callback2(this.action, null, keepOpen);
+    }
     this.callback(this.action, null, keepOpen);
 };

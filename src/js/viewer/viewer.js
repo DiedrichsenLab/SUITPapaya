@@ -84,6 +84,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.rangeChangedFlag = false;
     this.rangeClicked = false;
     this.isLabelGii = false;
+    this.atlasNameCurrent = null;
 
     this.listenerContextMenu = function (me) { me.preventDefault(); return false; };
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
