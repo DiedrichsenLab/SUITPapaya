@@ -833,7 +833,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             let Niifile = null, Giifile= null;
             for (let i = 0; i < file.length; ++i) {
                 const { name } = file[i];
-                if (["_sp-SUIT.nii", "_sp-MNI.nii"].some(ext => name.endsWith(ext))) {
+                if (["_sp-SUIT.nii", "_sp-MNI.nii", "_space-SUIT_dseg.nii", "_space-MNI_dseg.nii"].some(ext => name.endsWith(ext))) {
                     Niifile = file[i];
                 } else if (name.endsWith(".gii")) {
                     Giifile = file[i];

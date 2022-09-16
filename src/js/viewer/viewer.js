@@ -2521,7 +2521,7 @@ papaya.viewer.Viewer.prototype.getColorTable = function () {
     if (!this.loadingVolume.urls)
         return defaultColorTable;
     // remove trailing _sp-MNI, _sp-SUIT, .label.gii, .nii, etc.
-    const regex = /((_sp-MNI\.nii)|(_sp-SUIT\.nii)|(_sp-MNI\.nii)|(_sp-SUIT\.nii)|(\.label\.gii))$/
+    const regex = /((_sp-MNI\.nii)|(_sp-SUIT\.nii)|(_space-MNI_dseg\.nii)|(_space-SUIT_dseg\.nii)|(\.label\.gii)|(_dseg\.label\.gii))$/
     const filePath = this.loadingVolume.urls[0];
     if (!regex.test(filePath))
         return defaultColorTable;
