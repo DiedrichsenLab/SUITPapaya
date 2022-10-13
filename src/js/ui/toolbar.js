@@ -102,8 +102,6 @@ $.ajax({
 // atlases to be displayed under "Atlas" in the toolbar
 const atlas_items = Object.keys(atlases).flatMap(name => {
     const atlas = atlases[name];
-    // if (atlas.Type !== "Atlas")
-    //     return [];
 
     // maps to be displayed under each atlas
     const map_items = atlas.Maps.map((label, idx) => ({

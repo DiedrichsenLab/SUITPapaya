@@ -51,7 +51,8 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
     html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + label + "</span>" + (this.menu ? "<span style='float:right'>&nbsp;&#x25B6;</span>" : "") + "</li>";
     $("#" + parentId).append(html);
 
-    thisHtml = $("#" + this.id);
+    // we make sure to escape the selector here in case this.id contains special characters (e.g. '+')
+    thisHtml = $("#" + $.escapeSelector(this.id));
 
     if (this.viewer.container.contextManager && papaya.utilities.PlatformUtils.smallScreen) {
         thisHtml[0].style.width = (this.viewer.viewerDim - 10) + 'px';
