@@ -110,6 +110,23 @@ papaya.viewer.ColorTable.findLUT = function (name) {
     // return one of the built-in color tables
     if (name in papaya.viewer.ColorTable.TABLE_ALL)
         return papaya.viewer.ColorTable.TABLE_ALL[name];
+    // Then check if it's a color info passed from an existing gii file
+    // If it is, then we use the color in gii for nii
+    if (Array.isArray(name)) {
+        let filename = name.shift();
+        filename = filename.replace(/\.[^/.]+$/, "")
+        const colorinfo = name.map(element =>
+            [parseFloat(element.key) / (name.length - 1), // gradation
+                element.r, // red
+                element.g, // green
+                element.b] // blue
+        );
+        name.unshift(filename)
+        return {
+            name: filename,
+            data: colorinfo
+        };
+    }
     // otherwise it is an external color table that must be loaded from the
     // corresponding name.lut file
     const lutFile = name;

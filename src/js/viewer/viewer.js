@@ -2519,7 +2519,15 @@ papaya.viewer.Viewer.prototype.getIndexCoordinateAtWorld = function (ctrX, ctrY,
 papaya.viewer.Viewer.prototype.getColorTable = function () {
     const defaultColorTable = "Red Overlay";
     if (!this.loadingVolume.urls)
-        return defaultColorTable;
+        // Check if the current loading surface has the color info
+        // If it has, we use the color in gii as the colorTable for nii as well
+        if (this.surfaces[0].labelsData) {
+            let this_colorTable = this.surfaces[0].labelsData;
+            this_colorTable.unshift(this.loadingVolume.fileName);
+            return this_colorTable;
+        }
+        else
+            return defaultColorTable;
     // remove trailing _sp-MNI, _sp-SUIT, .label.gii, .nii, etc.
     const regex = /((_sp-MNI\.nii)|(_sp-SUIT\.nii)|(_space-MNI_dseg\.nii)|(_space-SUIT_dseg\.nii)|(\.label\.gii)|(_dseg\.label\.gii))$/
     const filePath = this.loadingVolume.urls[0];

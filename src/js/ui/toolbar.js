@@ -808,8 +808,8 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             let GiifileName = "data/cerebellar_atlases/"+this.viewer.atlasNameCurrent+"/"+imageName+".func.gii";
             this.viewer.rangeClicked = false;
             this.viewer.isLabelGii = false;
-            this.viewer.loadImage(NiifileName, true, false, false);
             this.viewer.loadSurface(GiifileName, true, false);
+            this.viewer.loadImage(NiifileName, true, false, false);
         } else if (action.startsWith("OpenLabel-")) {
             if (this.container.viewer.screenVolumes.length > 2) {
                 this.container.viewer.removeOverlay(2); // Always remove the previous one, index = 2
@@ -820,8 +820,8 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             let GiifileName = "data/cerebellar_atlases/"+this.viewer.atlasNameCurrent+"/"+imageName+"_dseg.label.gii";
             this.viewer.rangeClicked = false;
             this.viewer.isLabelGii = true;
-            this.viewer.loadImage(NiifileName, true, false, false);
             this.viewer.loadSurface(GiifileName, true, false);
+            this.viewer.loadImage(NiifileName, true, false, false);
         } else if (action === "OpenLocal") {
             if (this.container.viewer.screenVolumes.length > 2) {
                 this.container.viewer.removeOverlay(2); // Always remove the previous one, index = 2
@@ -842,8 +842,8 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
             this.viewer.rangeClicked = false;
             this.viewer.isLabelGii = Giifile.name.endsWith(".label.gii");
-            this.viewer.loadImage([Niifile]);
             this.viewer.loadSurface([Giifile]);
+            this.viewer.loadImage([Niifile]);
         } else if (action.startsWith("OpenSurface-")) {
             imageName = action.substring(action.indexOf("-") + 1);
             this.viewer.loadSurface(imageName);

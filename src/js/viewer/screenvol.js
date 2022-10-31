@@ -16,6 +16,10 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.volume = vol;
     this.lutName = lutName;
     this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage);
+    // if the lutName is an array, then we know it looks up the gii color info
+    if (Array.isArray(this.lutName)){
+        this.lutName = this.lutName[0]
+    }
     this.screenMin = this.volume.header.imageRange.displayMin;
     this.screenMax = this.volume.header.imageRange.displayMax;
     this.imageMin = this.volume.header.imageRange.imageMin;
