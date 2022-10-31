@@ -66,31 +66,6 @@ papaya.viewer.ColorTable.TABLE_FIRE = {"name": "Fire", "data": [[0, 0, 0, 0], [0
     [0.22, 0.48, 0, 0.89], [0.31, 0.68, 0, 0.6], [0.37, 0.76, 0, 0.36], [0.5, 0.94, 0.31, 0], [0.56, 1, 0.45, 0],
     [0.81, 1, 0.91, 0], [0.88, 1, 1, 0.38], [1,1,1,1]], "gradation": true};
 
-// Color tables for label gii in the volume viewers
-papaya.viewer.ColorTable.TABLE_BUCKNER_7NETWORKS = {"name": "Buckner_7Networks", "data": [[0, 0, 0, 0], [0.14, 0.470588, 0.070588, 0.52549],
-    [0.29, 0.2745098, 0.5098, 0.70588], [0.43, 0, 0.462745, 0.0549], [0.57, 0.7686, 0.22745, 0.98039], [0.71, 0.8627, 0.9725, 0.6431],
-    [0.86, 0.90196, 0.58039, 0.1333], [1, 0.80392, 0.2431, 0.30588]], "gradation": true};
-papaya.viewer.ColorTable.TABLE_BUCKNER_17NETWORKS = {"name": "Buckner_17Networks", "data": [[0, 0.667, 0.667, 0.667],
-    [0.0588, 0.4706, 0.0706, 0.5255], [0.1176, 1, 0, 0], [0.1765, 0.2745, 0.5098, 0.7059], [0.2353, 0.1647, 0.8, 0.6431], [0.2941, 0.2902, 0.6078, 0.2353],
-    [0.3529, 0, 0.4627, 0.0549], [0.4118, 0.7686, 0.2275, 0.9804], [0.4706, 1, 0.5961, 0.8353], [0.5294, 0.8627, 0.9725, 0.6431], [0.5882, 0.4784, 0.5294, 0.1961],
-    [0.6471, 0.4667, 0.5490, 0.6902], [0.7059, 0.9019, 0.5804, 0.1333], [0.7647, 0.5294, 0.1961, 0.2902], [0.8235, 0.0471, 0.1882, 1], [0.8824, 0, 0, 0.5098],
-    [0.9412, 1, 1, 0], [1, 0.8039, 0.2431, 0.3059]], "gradation": true};
-papaya.viewer.ColorTable.TABLE_JI_10NETWORKS = {"name": "Ji_10Networks", "data": [[0, 0, 0, 0], [0.1, 0.5625, 0.886719, 0.597656],
-    [0.2, 0, 0.324219, 0.71875], [0.3, 0.238281, 0, 0.597656], [0.4, 0, 0.601562, 0.601562], [0.5, 0.308594, 0.613281, 0.996094],
-    [0.6, 0.996094, 0.996094, 0], [0.7, 0.996094, 0.890625, 0.765625], [0.8, 0.691406, 0.347656, 0.15625],
-    [0.9, 0.859375, 0.078125, 0.234375], [1, 0.996094, 0.609375, 0]], "gradation": true};
-papaya.viewer.ColorTable.TABLE_MDTB_10REGIONS = {"name": "MDTB_10Regions", "data": [[0, 0, 0, 0], [0.1, 0.180392, 0.650980, 0.596078],
-    [0.2, 0.333333, 0.592157, 0.125490], [0.3, 0.2, 0.4, 0.576471], [0.4, 0.058824, 0.098039, 0.494118], [0.5, 0.647059, 0.094118, 0.635294],
-    [0.6, 0.686275, 0.172549, 0.278431], [0.7, 0.882353, 0.494118, 0.690196], [0.8, 0.925490, 0.631373, 0.031373],
-    [0.9, 0.988235, 0.854902, 0.462745], [1, 0.466667, 0.462745, 0.964706]], "gradation": true};
-papaya.viewer.ColorTable.TABLE_LOBULES_SUIT = {"name": "Lobules_SUIT", "data": [[0, 0.667, 0.667, 0.667], [0.0357, 0.8, 1, 0],
-    [0.0714, 0.722, 0.902, 0], [0.1071, 0, 0.902, 0.361], [0.1429, 0, 1, 0.4], [0.1786, 0, 0.4, 1], [0.2143, 0, 0.322, 0.8],
-    [0.25, 0, 0.4, 1], [0.2857, 0.8, 0, 1], [0.3214, 0.639, 0, 0.8], [0.3571, 0.8, 0, 1], [0.3929, 1, 0, 0], [0.4286, 0.8, 0, 0],
-    [0.4643, 1, 0, 0], [0.5, 1, 0.6, 0], [0.5357, 0.8, 0.478, 0], [0.5714, 1, 0.6, 0], [0.6071, 0.2, 1, 0], [0.6429, 0.161, 0.8, 0],
-    [0.6786, 0.2, 1, 0], [0.7143, 0, 1, 1], [0.75, 0, 0.8, 0.8], [0.7857, 0, 1, 1], [0.8214, 0.2, 0, 1], [0.8571, 0.161, 0, 0.8],
-    [0.8929, 0.2, 0, 1], [0.9286, 1, 0, 0.6], [0.9643, 0.8, 0, 0.478], [1, 1, 0, 0.6]], "gradation": true};
-
-
 papaya.viewer.ColorTable.ARROW_ICON = "data:image/gif;base64,R0lGODlhCwARAPfGMf//////zP//mf//Zv//M///AP/M///MzP/Mmf/M" +
     "Zv/MM//MAP+Z//+ZzP+Zmf+ZZv+ZM/+ZAP9m//9mzP9mmf9mZv9mM/9mAP8z//8zzP8zmf8zZv8zM/8zAP8A//8AzP8Amf8AZv8AM/8AAMz//8z/" +
     "zMz/mcz/Zsz/M8z/AMzM/8zMzMzMmczMZszMM8zMAMyZ/8yZzMyZmcyZZsyZM8yZAMxm/8xmzMxmmcxmZsxmM8xmAMwz/8wzzMwzmcwzZswzM8wz" +
@@ -109,31 +84,18 @@ papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE = papaya.viewer.ColorTable.TABLE_GR
 papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES = [papaya.viewer.ColorTable.TABLE_RED2YELLOW,
     papaya.viewer.ColorTable.TABLE_BLUE2GREEN];
 
-papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
-    papaya.viewer.ColorTable.TABLE_BUCKNER_7NETWORKS,
-    papaya.viewer.ColorTable.TABLE_BUCKNER_17NETWORKS,
-    papaya.viewer.ColorTable.TABLE_JI_10NETWORKS,
-    papaya.viewer.ColorTable.TABLE_MDTB_10REGIONS,
-    papaya.viewer.ColorTable.TABLE_LOBULES_SUIT
-];
-
-papaya.viewer.ColorTable.TABLE_ALL = [
-    papaya.viewer.ColorTable.TABLE_GRAYSCALE,
-    papaya.viewer.ColorTable.TABLE_SPECTRUM,
-    papaya.viewer.ColorTable.TABLE_FIRE,
-    papaya.viewer.ColorTable.TABLE_HOTANDCOLD,
-    papaya.viewer.ColorTable.TABLE_GOLD,
-    papaya.viewer.ColorTable.TABLE_RED2YELLOW,
-    papaya.viewer.ColorTable.TABLE_BLUE2GREEN,
-    papaya.viewer.ColorTable.TABLE_RED2WHITE,
-    papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
-    papaya.viewer.ColorTable.TABLE_BLUE2WHITE,
-    papaya.viewer.ColorTable.TABLE_BUCKNER_7NETWORKS,
-    papaya.viewer.ColorTable.TABLE_BUCKNER_17NETWORKS,
-    papaya.viewer.ColorTable.TABLE_JI_10NETWORKS,
-    papaya.viewer.ColorTable.TABLE_MDTB_10REGIONS,
-    papaya.viewer.ColorTable.TABLE_LOBULES_SUIT
-];
+papaya.viewer.ColorTable.TABLE_ALL = {
+    "Grayscale": papaya.viewer.ColorTable.TABLE_GRAYSCALE,
+    "Spectrum": papaya.viewer.ColorTable.TABLE_SPECTRUM,
+    "Fire": papaya.viewer.ColorTable.TABLE_FIRE,
+    "Hot-and-Cold": papaya.viewer.ColorTable.TABLE_HOTANDCOLD,
+    "Gold": papaya.viewer.ColorTable.TABLE_GOLD,
+    "Overlay (Positives)": papaya.viewer.ColorTable.TABLE_RED2YELLOW,
+    "Overlay (Negatives)": papaya.viewer.ColorTable.TABLE_BLUE2GREEN,
+    "Red Overlay": papaya.viewer.ColorTable.TABLE_RED2WHITE,
+    "Green Overlay": papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
+    "Blue Overlay": papaya.viewer.ColorTable.TABLE_BLUE2WHITE,
+};
 
 papaya.viewer.ColorTable.LUT_MIN = 0;
 papaya.viewer.ColorTable.LUT_MAX = 255;
@@ -145,15 +107,59 @@ papaya.viewer.ColorTable.COLOR_BAR_HEIGHT = 15;
 /*** Static Methods ***/
 
 papaya.viewer.ColorTable.findLUT = function (name) {
-    var ctr;
-
-    for (ctr = 0; ctr < papaya.viewer.ColorTable.TABLE_ALL.length; ctr += 1) {
-        if (papaya.viewer.ColorTable.TABLE_ALL[ctr].name == name) {  // needs to be ==, not ===
-            return papaya.viewer.ColorTable.TABLE_ALL[ctr];
-        }
+    // return one of the built-in color tables
+    if (name in papaya.viewer.ColorTable.TABLE_ALL)
+        return papaya.viewer.ColorTable.TABLE_ALL[name];
+    // Then check if it's a color info passed from an existing gii file
+    // If it is, then we use the color in gii for nii
+    if (Array.isArray(name)) {
+        let filename = name.shift();
+        filename = filename.replace(/\.[^/.]+$/, "")
+        const colorinfo = name.map(element =>
+            [parseFloat(element.key) / (name.length - 1), // gradation
+                element.r, // red
+                element.g, // green
+                element.b] // blue
+        );
+        name.unshift(filename)
+        return {
+            name: filename,
+            data: colorinfo
+        };
     }
-
-    return papaya.viewer.ColorTable.TABLE_GRAYSCALE;
+    // otherwise it is an external color table that must be loaded from the
+    // corresponding name.lut file
+    const lutFile = name;
+    let lutData, fileNotFound = false;
+    $.ajax({
+        type: "get",
+        url: lutFile,
+        async: false,
+        dataType: "text",
+        success: data => {
+            lutData = data;
+        },
+        error: () => fileNotFound = true,
+    });
+    // use Red Overlay by default if no .lut file found
+    if (fileNotFound)
+        return papaya.viewer.ColorTable.TABLE_ALL["Red Overlay"];
+    const lutLines = lutData.split(/\r\n|\n/);
+    // lutLines.pop();
+    const lutColors = lutLines.map(line => {
+        const values = line.split(' ');
+        return [
+            values[0] * 1 / lutLines.length, // gradation
+            parseFloat(values[1]), // red
+            parseFloat(values[2]), // green
+            parseFloat(values[3]), // blue
+        ]
+    });
+    lutColors.unshift([0.0, 0.0, 0.0, 0.0]); // add [0,0,0,0] entry to the beginning
+    return {
+        name,
+        data: lutColors
+    };
 };
 
 

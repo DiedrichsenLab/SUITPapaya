@@ -10,7 +10,7 @@ papaya.ui = papaya.ui || {};
 
 
 /*** Constructor ***/
-papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, callback, dataSource, method, modifier) {
+papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, callback, dataSource, method, modifier, hoverText) {
     this.viewer = viewer;
 
     this.modifier = "";
@@ -32,6 +32,8 @@ papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, call
     this.callback = callback;
     this.menu = null;
     this.isContext = false;
+    // tool-tip text displayed on hover
+    this.hoverText = hoverText;
 };
 
 
@@ -49,7 +51,8 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
     html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + label + "</span>" + (this.menu ? "<span style='float:right'>&nbsp;&#x25B6;</span>" : "") + "</li>";
     $("#" + parentId).append(html);
 
-    thisHtml = $("#" + this.id);
+    // we make sure to escape the selector here in case this.id contains special characters (e.g. '+')
+    thisHtml = $("#" + $.escapeSelector(this.id));
 
     if (this.viewer.container.contextManager && papaya.utilities.PlatformUtils.smallScreen) {
         thisHtml[0].style.width = (this.viewer.viewerDim - 10) + 'px';
@@ -62,6 +65,8 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
         }));
 
     thisHtml.hover(function () { $(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
+
+    $(`#${this.id}`).attr('title', this.hoverText);
 };
 
 
@@ -71,5 +76,8 @@ papaya.ui.MenuItem.prototype.doAction = function (keepOpen) {
         this.viewer.showingContextMenu = false;
     }
 
+    if(this.callback2){
+        this.callback2(this.action, null, keepOpen);
+    }
     this.callback(this.action, null, keepOpen);
 };

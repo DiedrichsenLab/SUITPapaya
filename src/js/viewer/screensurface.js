@@ -476,7 +476,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
         }
     });
     surface.pixelMapping = pixel_mapping;
-    console.log(pixel_mapping);
+    // console.log(pixel_mapping);
 
     // ------------ Load index to coordinates mapping -------------//
     let index2Coords = [];
@@ -488,7 +488,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
         }
     });
     surface.index2Coords = index2Coords;
-    console.log(index2Coords);
+    // console.log(index2Coords);
 
     // ------------ Load flatmap vertices information and transfer to array -------------//
     let triangleVertices = [];
@@ -513,7 +513,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
     });
     //surface.verticesIndex = verticesIndex;
     surface.triangleVerticesMap = new Float32Array(triangleVertices);
-    console.log(triangleVertices);
+    // console.log(triangleVertices);
 
     // ------------ Load flatmap border information and transfer to array -------------//
     let border = [];
@@ -532,7 +532,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
         }
     });
     surface.border = new Float32Array(border);
-    console.log(border);
+    // console.log(border);
 
     // ------------ Load flatmap edges information and transfer to array -------------//
     let triangleIndex = [];
@@ -549,7 +549,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
         }
     });
     surface.triangleIndex = new Uint16Array(triangleIndex);
-    console.log(triangleIndex);
+    // console.log(triangleIndex);
 
     // ------------ Load vertices color information -------------//
     if (surface.colorsData && this.surfaces.length > 1) {
@@ -1240,7 +1240,7 @@ papaya.viewer.ScreenSurface.prototype.renderSurface = function (gl, index, isTra
         y_crosshair[2] = currentcenterX;
         y_crosshair[3] = this.yHalf / 100 + currentcenterY;
 
-        // TODO: update the current 3D coordinates in the three viewers
+        // Update the current 3D coordinates in the three viewers
         if (idx > 0 && idx <= 28935) {
             this.viewer.currentCoord.x = Number(this.surfaces[index].index2Coords[idx - 1][1]);
             this.viewer.currentCoord.y = Number(this.surfaces[index].index2Coords[idx - 1][2]);

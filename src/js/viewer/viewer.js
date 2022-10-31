@@ -84,6 +84,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.rangeChangedFlag = false;
     this.rangeClicked = false;
     this.isLabelGii = false;
+    this.atlasNameCurrent = null;
 
     this.listenerContextMenu = function (me) { me.preventDefault(); return false; };
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
@@ -2509,18 +2510,30 @@ papaya.viewer.Viewer.prototype.getIndexCoordinateAtWorld = function (ctrX, ctrY,
 };
 
 
-
+/**
+ * Get the color table name from the .nii or .gii file:
+ * /data/.../atl-Buckner7_sp-SUIT.nii => /data/.../atl-Buckner7.lut
+ * @returns The path to the corresponding .lut file, or the name of a default
+ * color table (e.g. Red Overlay) if the surface has no .lut file (e.g. no a .label.gii file)
+ */
 papaya.viewer.Viewer.prototype.getColorTable = function () {
-    var filename;
-
-    for (let i = 0; i < papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES.length; ++i) {
-        filename = this.loadingVolume.fileName.substring(0, (this.loadingVolume.fileName.indexOf(".")));
-        if (filename === papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES[i].name) {
-            return filename;
+    const defaultColorTable = "Red Overlay";
+    if (!this.loadingVolume.urls)
+        // Check if the current loading surface has the color info
+        // If it has, we use the color in gii as the colorTable for nii as well
+        if (this.surfaces[0].labelsData) {
+            let this_colorTable = this.surfaces[0].labelsData;
+            this_colorTable.unshift(this.loadingVolume.fileName);
+            return this_colorTable;
         }
-    }
-
-    return papaya.viewer.ColorTable.TABLE_RED2WHITE.name;
+        else
+            return defaultColorTable;
+    // remove trailing _sp-MNI, _sp-SUIT, .label.gii, .nii, etc.
+    const regex = /((_sp-MNI\.nii)|(_sp-SUIT\.nii)|(_space-MNI_dseg\.nii)|(_space-SUIT_dseg\.nii)|(\.label\.gii)|(_dseg\.label\.gii))$/
+    const filePath = this.loadingVolume.urls[0];
+    if (!regex.test(filePath))
+        return defaultColorTable;
+    return filePath.replace(regex, ".lut"); // otherwise pull it from the corresponding .lut file
 };
 
 

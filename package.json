@@ -1,14 +1,10 @@
 {
   "name": "papaya-viewer",
   "version": "1.0.1449",
-  "description": "A JavaScript medical image viewer.",
+  "description": "A JavaScript atlas viewer based on papaya project.",
   "main": "src/js/main.js",
   "scripts": {
     "build": "rm -rf ./build; mkdir ./build; ./papaya-builder.sh"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rii-mango/Papaya.git"
   },
   "keywords": [
     "JavaScript",
@@ -16,15 +12,12 @@
     "nifti",
     "DICOM"
   ],
-  "author": "Michael Martinez",
+  "author": "Da Zhi",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/rii-mango/Papaya/issues"
-  },
-  "homepage": "https://github.com/rii-mango/Papaya",
   "dependencies": {
     "browserify": "^16.2.3",
     "colormap": "^2.3.1",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "node-fetch": "^2.6.1"
   }
 }

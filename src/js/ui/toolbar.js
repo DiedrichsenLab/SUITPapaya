@@ -23,7 +23,6 @@ papaya.ui.Toolbar = papaya.ui.Toolbar || function (container) {
 
 papaya.ui.Toolbar.SIZE = 22;
 
-
 // http://dataurl.net/#dataurlmaker
 papaya.ui.Toolbar.ICON_IMAGESPACE = "data:image/gif;base64,R0lGODlhFAAUAPcAMf//////GP////////////////////////////////" +
     "////////////////////////////////////////////////////////////////////////////////////////////////////////////////" +
@@ -88,81 +87,65 @@ papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
     "Slt0+kbYOuExiFuhng7JH2LFld0Ej2AeeCu6cF5cy3vs/XiDeAIWwS3Q298G8ZDoFuiBI7ACdKjegcZYSz2eBgjap1dAxafOkW9zyoUj7LnY/hCF" +
     "mNsByYQRzf9IR6L5XUKI/uXarHn/4Gvn/H5tQvqfi14rcXHzs6vPYh3RmT9N2ZHWxkYgt4/pN/LAOfka/AG9AAAAAElFTkSuQmCC";
 
-papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "Contrasts", "icons": null,
+let atlases = {};
+$.ajax({
+    type: "get",
+    url: "data/cerebellar_atlases/package_description.json",
+    async: false,
+    dataType: "json",
+    success: data => {
+        atlases = data.atlases;
+    },
+    error: () => alert("Failed to fetch /data/cerebellar_atlases/package_description.json")
+});
+
+// atlases to be displayed under "Atlas" in the toolbar
+const atlas_items = Object.keys(atlases).flatMap(name => {
+    const atlas = atlases[name];
+
+    // maps to be displayed under each atlas
+    const map_items = atlas.Maps.map((label, idx) => ({
+        label,
+        action: atlas.Type[idx]=="dseg" ? `OpenLabel-${label}` : `OpenBoth-${label}`,
+        hoverText: atlas.MapDesc[idx],
+    }));
+
+    return [
+        {
+            label: name,
+            items: map_items,
+            action: `OpenSubmenu-${name}`,
+            hoverText: atlas.ShortDesc,
+            icons: null,
+        }
+    ]
+});
+// const contrast_items = atlases['con-MDTB'].Maps.map((label, idx) => ({
+//     label,
+//     action: `OpenBoth-${label}`,
+//     hoverText: atlases['con-MDTB'].MapDesc[idx],
+// }));
+
+// papaya.ui.Toolbar.FILE_MENU_DATA = con_data; // This is the MDTB contrast menu
+// papaya.ui.Toolbar.MDTB_MENU_DATA = atlas_data; // This is other atlas menu
+
+papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Atlases", "icons": null, "action": "OpenSubmenu-atlas",
     "items": [
-        //{"label": "Add .nii contrasts", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        //{"label": "Add Flat map...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        // {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
-        //     "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
-        // {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
-
-
-        // {"label": "MDTB contrasts", "icons": null, "items": [
-                {"label": "MDTB00_Left_Hand", "action": "OpenBoth-MDTB00_Left_Hand"},
-                {"label": "MDTB00_Right_Hand", "action": "OpenBoth-MDTB00_Right_Hand"},
-                {"label": "MDTB00_Saccades", "action": "OpenBoth-MDTB00_Saccades"},
-                {"label": "MDTB01_No-Go", "action": "OpenBoth-MDTB01_No-Go"},
-                {"label": "MDTB02_Go", "action": "OpenBoth-MDTB02_Go"},
-                {"label": "MDTB03_Theory_Of_Mind", "action": "OpenBoth-MDTB03_Theory_Of_Mind"},
-                {"label": "MDTB04_Action_Observation", "action": "OpenBoth-MDTB04_Action_Observation"},
-                {"label": "MDTB05_Video_Knots", "action": "OpenBoth-MDTB05_Video_Knots"},
-                {"label": "MDTB06_Unpleasant_Scenes", "action": "OpenBoth-MDTB06_Unpleasant_Scenes"},
-                {"label": "MDTB07_Pleasant_Scenes", "action": "OpenBoth-MDTB07_Pleasant_Scenes"},
-                {"label": "MDTB08_Math", "action": "OpenBoth-MDTB08_Math"},
-                {"label": "MDTB09_Digit_Judgment", "action": "OpenBoth-MDTB09_Digit_Judgment"},
-                {"label": "MDTB10_Object_Viewing", "action": "OpenBoth-MDTB10_Object_Viewing"},
-                {"label": "MDTB11_Sad_Faces", "action": "OpenBoth-MDTB11_Sad_Faces"},
-                {"label": "MDTB12_Happy_Faces", "action": "OpenBoth-MDTB12_Happy_Faces"},
-                {"label": "MDTB13_Interval_Timing", "action": "OpenBoth-MDTB13_Interval_Timing"},
-                {"label": "MDTB14_Motor_Imagery", "action": "OpenBoth-MDTB14_Motor_Imagery"},
-                {"label": "MDTB15_Finger_Simple", "action": "OpenBoth-MDTB15_Finger_Simple"},
-                {"label": "MDTB16_Finger_Sequence", "action": "OpenBoth-MDTB16_Finger_Sequence"},
-                {"label": "MDTB17_Verbal_2Back-", "action": "OpenBoth-MDTB17_Verbal_2Back-"},
-                {"label": "MDTB18_Verbal_2Back+", "action": "OpenBoth-MDTB18_Verbal_2Back"},
-                {"label": "MDTB19_Object_2Back-", "action": "OpenBoth-MDTB19_Object_2Back-"},
-                {"label": "MDTB20_Object_2Back+", "action": "OpenBoth-MDTB20_Object_2Back"},
-                {"label": "MDTB21_Spatial_Imagery", "action": "OpenBoth-MDTB21_Spatial_Imagery"},
-                {"label": "MDTB22_Stroop_Incongruent", "action": "OpenBoth-MDTB22_Stroop_Incongruent"},
-                {"label": "MDTB23_Stroop_Congruent", "action": "OpenBoth-MDTB23_Stroop_Congruent"},
-                {"label": "MDTB24_Verb_Generation", "action": "OpenBoth-MDTB24_Verb_Generation"},
-                {"label": "MDTB25_Word_Reading", "action": "OpenBoth-MDTB25_Word_Reading"},
-                {"label": "MDTB26_Visual_Search_Small", "action": "OpenBoth-MDTB26_Visual_Search_Small"},
-                {"label": "MDTB27_Visual_Search_Medium", "action": "OpenBoth-MDTB27_Visual_Search_Medium"},
-                {"label": "MDTB28_Visual_Search_Large", "action": "OpenBoth-MDTB28_Visual_Search_Large"},
-                {"label": "MDTB29_Rest", "action": "OpenBoth-MDTB29_Rest"},
-                {"label": "MDTB30_CPRO", "action": "OpenBoth-MDTB30_CPRO"},
-                {"label": "MDTB31_Prediction_True", "action": "OpenBoth-MDTB31_Prediction_True"},
-                {"label": "MDTB32_Prediction_Violated", "action": "OpenBoth-MDTB32_Prediction_Violated"},
-                {"label": "MDTB33_Prediction_Scrambled", "action": "OpenBoth-MDTB33_Prediction_Scrambled"},
-                {"label": "MDTB34_Spatial_Map_Easy", "action": "OpenBoth-MDTB34_Spatial_Map_Easy"},
-                {"label": "MDTB35_Spatial_Map_Medium", "action": "OpenBoth-MDTB35_Spatial_Map_Medium"},
-                {"label": "MDTB36_Spatial_Map_Hard", "action": "OpenBoth-MDTB36_Spatial_Map_Hard"},
-                {"label": "MDTB37_Nature_Movie", "action": "OpenBoth-MDTB37_Nature_Movie"},
-                {"label": "MDTB38_Animated_Movie", "action": "OpenBoth-MDTB38_Animated_Movie"},
-                {"label": "MDTB39_Landscape_Movie", "action": "OpenBoth-MDTB39_Landscape_Movie"},
-                {"label": "MDTB40_Mental_Rotation_Easy", "action": "OpenBoth-MDTB40_Mental_Rotation_Easy"},
-                {"label": "MDTB41_Mental_Rotation_Medium", "action": "OpenBoth-MDTB41_Mental_Rotation_Medium"},
-                {"label": "MDTB42_Mental_Rotation_Hard", "action": "OpenBoth-MDTB42_Mental_Rotation_Hard"},
-                {"label": "MDTB43_Biological_Motion", "action": "OpenBoth-MDTB43_Biological_Motion"},
-                {"label": "MDTB44_Scrambled_Motion", "action": "OpenBoth-MDTB44_Scrambled_Motion"},
-                {"label": "MDTB45_Response_Alternatives_Easy", "action": "OpenBoth-MDTB45_Response_Alternatives_Easy"},
-                {"label": "MDTB46_Response_Alternatives_Medium", "action": "OpenBoth-MDTB46_Response_Alternatives_Medium"},
-                {"label": "MDTB47_Response_Alternatives_Hard", "action": "OpenBoth-MDTB47_Response_Alternatives_Hard"}
-            // ]},
-
-        // {"label": "MDTB labels", "icons": null, "items": [
-        //         {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
-        //         {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"},
-        //         {"label": "Ji_10Networks", "action": "OpenLabel-Ji_10Networks"},
-        //         {"label": "Lobules-SUIT", "action": "OpenLabel-Lobules-SUIT"},
-        //         {"label": "MDTB_10Regions", "action": "OpenLabel-MDTB_10Regions"}
-        //     ]}
-
-        //{"type": "spacer"}
-        //{"label": "Close Overlay", "action": "CloseOverlay", "required": "isDesktopMode" },
-        //{"label": "Close All", "action": "CloseAllImages"}
+        // {"label": "Add local atlas", "action": "OpenLocal", "type": "file",
+        //     "hoverText": "aaaa","hide": papaya.utilities.PlatformUtils.ios},
+        // {"type": "spacer"},
+        ...atlas_items,
     ]
 };
+
+papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "File", "icons": null,
+    "items": [
+        { "label": "Add local files", "action": "OpenLocal", "type": "file", "hide": papaya.utilities.PlatformUtils.ios },
+        {"type": "spacer"},
+        {"label": "Close All", "action": "CloseAllImages"}
+    ]
+};
+
 
 papaya.ui.Toolbar.RGB_FILE_MENU_DATA = {"label": "File", "icons": null,
     "items": [
@@ -173,6 +156,7 @@ papaya.ui.Toolbar.RGB_FILE_MENU_DATA = {"label": "File", "icons": null,
 papaya.ui.Toolbar.MENU_DATA = {
     "menus": [
         papaya.ui.Toolbar.FILE_MENU_DATA,
+        papaya.ui.Toolbar.MDTB_MENU_DATA,
         // {"label": "View", "icons": null,
         //     "items": [
         //         {"label": "Orientation", "action": "ShowOrientation", "type": "checkbox", "method": "isShowingOrientation"},
@@ -183,15 +167,17 @@ papaya.ui.Toolbar.MENU_DATA = {
         //     ]
         // },
 
-        {"label": "Parcellations", "icons": null,
-            "items": [
-                {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
-                {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"},
-                {"label": "Ji_10Networks", "action": "OpenLabel-Ji_10Networks"},
-                {"label": "Lobules_SUIT", "action": "OpenLabel-Lobules_SUIT"},
-                {"label": "MDTB_10Regions", "action": "OpenLabel-MDTB_10Regions"}
-            ]
-        },
+        // {"label": "Parcellations", "icons": null,
+        //     "items": [
+        //         {"label": "Buckner_7Networks", "action": "OpenLabel-Buckner_7Networks"},
+        //         {"label": "Buckner_17Networks", "action": "OpenLabel-Buckner_17Networks"},
+        //         {"label": "Ji_10Networks", "action": "OpenLabel-Ji_10Networks"},
+        //         {"label": "Lobules_SUIT", "action": "OpenLabel-Lobules_SUIT"},
+        //         {"label": "MDTB_10Regions", "action": "OpenLabel-MDTB_10Regions"},
+        //         // {"label": "HCP_somatotopy", "action": "OpenLabel-HCP_somatotopy"},
+        //         {"label": "vanEs_retinotopy", "action": "OpenLabel-vanEs_retinotopy"}
+        //     ]
+        // },
 
         {"label": "Settings", "icons": null,
             "items": [
@@ -283,7 +269,7 @@ papaya.ui.Toolbar.DTI_IMAGE_MENU_DATA = {
         {"label": "Display Lines", "action": "DTI-Lines", "type": "checkbox", "method": "isDTILines"},
         {"label": "Display Lines &amp; Colors", "action": "DTI-LinesColors", "type": "checkbox", "method": "isDTILinesAndRGB"},
         {"label": "Transparency", "action": "alpha", "type": "range", "method": "getAlpha", "required": "canCurrentOverlayLoadMod"},
-        {"label": "Modulate with...", "action": "DTI-Mod", "type": "file", "hide": papaya.utilities.PlatformUtils.ios, "required": "canCurrentOverlayLoadMod"},
+        //{"label": "Modulate with...", "action": "DTI-Mod", "type": "file", "hide": papaya.utilities.PlatformUtils.ios, "required": "canCurrentOverlayLoadMod"},
         {"label": "Modulation", "action": "dtiAlphaFactor", "type": "range", "method": "getDtiAlphaFactor", "required": "canCurrentOverlayModulate"},
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"}
     ]
@@ -425,6 +411,11 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
             if (this.container.noNewFiles) {
                 papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;
             } else {
+                // fetch("data/cerebellar_atlases/package_description.json").then(function (resp) {
+                //     return resp.json();
+                // }).then(function (data) {
+                //     console.log(data);
+                // });
                 papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.FILE_MENU_DATA;
             }
             this.buildOpenMenuItems(papaya.ui.Toolbar.MENU_DATA);
@@ -628,7 +619,8 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
                 }
             } else {
                 item = new papaya.ui.MenuItem(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
-                    papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+                    papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier,
+                    itemData[ctrItems].hoverText);
             }
         } else {
             item = null;
@@ -637,10 +629,12 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
         if (item) {
             menu.addMenuItem(item);
 
+            // make this menu item a sub menu if it contains items
             if (itemData[ctrItems].items) {
                 menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
                 item.menu = menu2;
                 item.callback = papaya.utilities.ObjectUtils.bind(menu2, menu2.showMenu);
+                item.callback2 = papaya.utilities.ObjectUtils.bind(this, this.doAction);
             }
         }
     }
@@ -799,32 +793,58 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageIndex = parseInt(action.substr(action.length - 2, 1), 10);
             this.viewer.setCurrentScreenVol(imageIndex);
             this.updateImageButtons();
+        } else if (action.startsWith("OpenSubmenu-")) {
+            this.viewer.atlasNameCurrent = action.substring(action.indexOf("-") + 1);
+            console.log("atlas root changed")
         } else if (action.startsWith("OpenBoth-")) {
             if (this.container.viewer.screenVolumes.length > 2) {
                 this.container.viewer.removeOverlay(2); // Always remove the previous one, index = 2
             }
             imageName = action.substring(action.indexOf("-") + 1);
-            if (imageName === "MDTB18_Verbal_2Back" || imageName === "MDTB20_Object_2Back") {
+            if (imageName === "MDTB21Verbal2Back" || imageName === "MDTB23Object2Back") {
                 imageName = imageName + "+";
             }
-            let NiifileName = ["data/onlineAtlas/" + imageName + ".nii"];
-            let GiifileName = "data/onlineAtlas/" + imageName + ".func.gii";
+            let NiifileName = ["data/cerebellar_atlases/"+this.viewer.atlasNameCurrent+"/"+imageName+"_space-SUIT.nii"];
+            let GiifileName = "data/cerebellar_atlases/"+this.viewer.atlasNameCurrent+"/"+imageName+".func.gii";
             this.viewer.rangeClicked = false;
             this.viewer.isLabelGii = false;
-            this.viewer.loadImage(NiifileName, true, false, false);
             this.viewer.loadSurface(GiifileName, true, false);
+            this.viewer.loadImage(NiifileName, true, false, false);
         } else if (action.startsWith("OpenLabel-")) {
             if (this.container.viewer.screenVolumes.length > 2) {
                 this.container.viewer.removeOverlay(2); // Always remove the previous one, index = 2
             }
             imageName = action.substring(action.indexOf("-") + 1);
-            let NiifileName = ["data/labelAtlas/" + imageName + ".nii"];
-            let GiifileName = "data/labelAtlas/" + imageName + ".label.gii";
+
+            let NiifileName = ["data/cerebellar_atlases/"+this.viewer.atlasNameCurrent+"/"+imageName+"_space-SUIT_dseg.nii"];
+            let GiifileName = "data/cerebellar_atlases/"+this.viewer.atlasNameCurrent+"/"+imageName+"_dseg.label.gii";
             this.viewer.rangeClicked = false;
             this.viewer.isLabelGii = true;
-            this.viewer.loadImage(NiifileName, true, false, false);
             this.viewer.loadSurface(GiifileName, true, false);
-        }else if (action.startsWith("OpenSurface-")) {
+            this.viewer.loadImage(NiifileName, true, false, false);
+        } else if (action === "OpenLocal") {
+            if (this.container.viewer.screenVolumes.length > 2) {
+                this.container.viewer.removeOverlay(2); // Always remove the previous one, index = 2
+            }
+
+            // select the .nii and .gii files from the list
+            let Niifile = null, Giifile= null;
+            for (let i = 0; i < file.length; ++i) {
+                const { name } = file[i];
+                if (["_sp-SUIT.nii", "_sp-MNI.nii", "_space-SUIT_dseg.nii", "_space-MNI_dseg.nii"].some(ext => name.endsWith(ext))) {
+                    Niifile = file[i];
+                } else if (name.endsWith(".gii")) {
+                    Giifile = file[i];
+                }
+            }
+            if (Niifile === null || Giifile === null) {
+                alert("Invalid files: open one '_sp-SUIT.nii / _sp-MNI.nii' image file and one '.gii' surface file");
+            }
+            this.viewer.rangeClicked = false;
+            this.viewer.isLabelGii = Giifile.name.endsWith(".label.gii");
+            this.viewer.loadSurface([Giifile]);
+            this.viewer.loadImage([Niifile]);
+        } else if (action.startsWith("OpenSurface-")) {
             imageName = action.substring(action.indexOf("-") + 1);
             this.viewer.loadSurface(imageName);
         } else if (action.startsWith("Open-")) {

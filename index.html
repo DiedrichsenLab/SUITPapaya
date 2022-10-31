@@ -30,7 +30,7 @@
     <script type="text/javascript" src="lib/bowser.js"></script>
     <script type="text/javascript" src="lib/daikon.js"></script>
     <script type="text/javascript" src="lib/nifti-reader.js"></script>
-    <script type="text/javascript" src="lib/jquery.js"></script>
+    <script type="text/javascript" src="lib/jquery-3.6.0.js"></script>
     <script type="text/javascript" src="lib/jquery.csv.js"></script>
     <script type="text/javascript" src="lib/numerics.js"></script>
     <script type="text/javascript" src="lib/pako-inflate.js"></script>
@@ -78,7 +78,6 @@
     <script type="text/javascript" src="src/js/ui/menuitemrange.js"></script>
     <script type="text/javascript" src="src/js/ui/menuitemslider.js"></script>
     <script type="text/javascript" src="src/js/ui/menuitemspacer.js"></script>
-    <script type="text/javascript" src="src/js/ui/toolbar.js"></script>
 
     <script type="text/javascript" src="src/js/viewer/atlas.js"></script>
     <script type="text/javascript" src="src/js/viewer/colortable.js"></script>
@@ -88,6 +87,7 @@
     <script type="text/javascript" src="src/js/viewer/screensurface.js"></script>
     <script type="text/javascript" src="src/js/viewer/screenvol.js"></script>
     <script type="text/javascript" src="src/js/viewer/viewer.js"></script>
+    <script type="text/javascript" src="src/js/ui/toolbar.js"></script>
 
     <script type="text/javascript" src="src/js/main.js"></script>
     <!-- JS debug end -->
@@ -99,6 +99,7 @@
             {nicename: "Atlas", name: "Talairach_labels_1mm", encode: "Talairach_labels_1mm", hide:true}
         ];
          DO NOT EDIT (end) */
+        // Replace ./data.json with your JSON feed
 
         var papayaLoadableImages = [{
             hide: true,
@@ -106,7 +107,6 @@
             nicename: "Cerebellum_SUIT",
             url: "data/Cerebellum-SUIT-maxprob-thr25.nii.gz"
         }];
-
 
         var params = [];
         params["orthogonalTall"] = true;
