@@ -140,9 +140,9 @@ papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Atlases", "icons": null, "action":
 
 papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "File", "icons": null,
     "items": [
-        { "label": "Add local files", "action": "OpenLocal", "type": "file", "hide": papaya.utilities.PlatformUtils.ios },
-        {"type": "spacer"},
-        {"label": "Close All", "action": "CloseAllImages"}
+        { "label": "Add local files", "action": "OpenLocal", "type": "file", "hide": papaya.utilities.PlatformUtils.ios }
+        // {"type": "spacer"},
+        // {"label": "Close All", "action": "CloseAllImages"}
     ]
 };
 
