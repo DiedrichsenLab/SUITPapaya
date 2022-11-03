@@ -94,7 +94,7 @@ $.ajax({
     async: false,
     dataType: "json",
     success: data => {
-        atlases = data.atlases;
+        atlases = data;
     },
     error: () => alert("Failed to fetch /data/cerebellar_atlases/package_description.json")
 });
