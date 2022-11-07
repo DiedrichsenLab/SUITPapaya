@@ -831,14 +831,14 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             let Niifile = null, Giifile= null;
             for (let i = 0; i < file.length; ++i) {
                 const { name } = file[i];
-                if (["_sp-SUIT.nii", "_sp-MNI.nii", "_space-SUIT_dseg.nii", "_space-MNI_dseg.nii"].some(ext => name.endsWith(ext))) {
+                if ([".nii"].some(ext => name.endsWith(ext))) {
                     Niifile = file[i];
                 } else if (name.endsWith(".gii")) {
                     Giifile = file[i];
                 }
             }
             if (Niifile === null || Giifile === null) {
-                alert("Invalid files: open one '_sp-SUIT.nii / _sp-MNI.nii' image file and one '.gii' surface file");
+                alert("Invalid files: open one '.nii' image file and corresponding '.gii' surface file at same time");
             }
             this.viewer.rangeClicked = false;
             this.viewer.isLabelGii = Giifile.name.endsWith(".label.gii");
