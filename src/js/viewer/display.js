@@ -184,7 +184,15 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
             } else if (this.viewer.currentScreenVolume.lutName.search(/atl/) !== -1) {
                 if (this.viewer.surfaces[0].labelsData) { // always get the parcel label from existing .gii first
                     var labelName = this.viewer.surfaces[0].labelsData.find(element => element.key == val);
-                    this.context.fillText(labelName.label,(2 * papaya.viewer.Display.PADDING) + (3 * coordinateItemWidth), locY);
+                    if (labelName) {
+                        // if the current label value in .nii is not NaN, we show the label
+                        this.context.fillText(labelName.label,
+                            (2 * papaya.viewer.Display.PADDING) + (3 * coordinateItemWidth), locY);
+                    } else {
+                        // else if the current label value in .nii is NaN, we show the "???"
+                        this.context.fillText("???",
+                            (2 * papaya.viewer.Display.PADDING) + (3 * coordinateItemWidth), locY);
+                    }
                 } else {
                 this.context.fillText("Region " + val.toString().substr(0, precision), (2 * papaya.viewer.Display.PADDING) +
                     (3 * coordinateItemWidth), locY);
