@@ -1,6 +1,7 @@
 {
      "Diedrichsen_2009": {
           "ShortDesc": "Probabilistic atlas for cerebellar lobules and nuclei: Diedrichsen (2009)",
+          "LongDesc": "The anatomical definitions are based on the fMRI atlas of an individual cerebellum by Schmahmann et al. (2000). We manually identified the main lobules on MRI scans of 20 healthy young participants (ROIs 1-28). Using a different set of 23 participants, we also identified the deep cerebellar nuclei (ROIs 29-34).",
           "Maps": [
                "atl-Anatom"
           ],
@@ -18,6 +19,7 @@
      },
      "Buckner_2011": {
           "ShortDesc": "Resting state network partcellation: Buckner et al. (2011)",
+          "LongDesc": "Buckner et al. (2011) presented the first comprehensive functional atlas of the human cerebellum, based on the correlation of each cerebellar voxel and with the 7 or 17 cortical resting state networks, described in Yeo et al. Parcellation is based on the data from 1000 subjects. ",
           "Maps": [
                "atl-Buckner7",
                "atl-Buckner17"
@@ -31,11 +33,12 @@
                "Assignment of cerebellar voxels to the 17 network parcellation"
           ],
           "ReferencesAndLinks": [
-               "Buckner, R. L., Krienen, F. M., Castellanos, A., Diaz, J. C. & Yeo, B. T. (2011). The organization of the human cerebellum estimated by intrinsic functional connectivity. J Neurophysiol 106, 2322\u00e2\u20ac\u201c2345."
+               "Buckner, R. L., Krienen, F. M., Castellanos, A., Diaz, J. C. & Yeo, B. T. (2011). The organization of the human cerebellum estimated by intrinsic functional connectivity. J Neurophysiol 106, 2322\u20132345."
           ]
      },
      "Xue_2021": {
           "ShortDesc": "Individual resting state parcellation: Xue et al. (2020)",
+          "LongDesc": "Xue et al. (2020) provided two individual parcellations based on resting state data from 31 sessions for each. 10 Cortical networks were estimated using a hierarchical Bayesian model (Kong et al. 2019) and the cerebellum labeled based on the highest correlation with these networks.",
           "Maps": [
                "atl-Xue10Sub1",
                "atl-Xue10Sub2"
@@ -49,11 +52,12 @@
                "Individual parcellation for subject 2"
           ],
           "ReferencesAndLinks": [
-               "Xue, A., Kong, R., Yang, Q., Eldaief, M. C., Angeli, P. A., Dinicola, L. M., \u00e2\u20ac\u00a6 Yeo, B. T. T. (2021). The detailed organization of the human cerebellum estimated by intrinsic functional connectivity within the individual. https://doi.org/10.1152/jn.00561.2020"
+               "Xue, A., Kong, R., Yang, Q., Eldaief, M. C., Angeli, P. A., Dinicola, L. M., \u2026 Yeo, B. T. T. (2021). The detailed organization of the human cerebellum estimated by intrinsic functional connectivity within the individual. https://doi.org/10.1152/jn.00561.2020"
           ]
      },
      "Ji_2019": {
           "ShortDesc": "Subcortical restingstate parcellation: Ji et al. (2019)",
+          "LongDesc": "Ji et al. (2019) presented a parcellation of subcortical structures based on correlation with 10 cortical networks, based on the HCP resting state data.",
           "Maps": [
                "atl-Ji10"
           ],
@@ -64,11 +68,12 @@
                "Subcortical resting state parcellation in 10 networks"
           ],
           "ReferencesAndLinks": [
-               "Buckner, R. L., Krienen, F. M., Castellanos, A., Diaz, J. C. & Yeo, B. T. (2011). The organization of the human cerebellum estimated by intrinsic functional connectivity. J Neurophysiol 106, 2322\u00e2\u20ac\u201c2345."
+               "Buckner, R. L., Krienen, F. M., Castellanos, A., Diaz, J. C. & Yeo, B. T. (2011). The organization of the human cerebellum estimated by intrinsic functional connectivity. J Neurophysiol 106, 2322\u20132345."
           ]
      },
      "King_2019": {
           "ShortDesc": "Multi-domain task battery (MDTB) parcellation and contrasts: King et al. (2019)",
+          "LongDesc": "King et al. (2019) provided an extensive characterization of the functional organization of the cerebellum of 24 healthy, young participants. The contast are for for 47 task conditions, accounted for the activity caused by left hand, right hand, and eye movements. All contrast maps are relative to the mean activitiy across all tasks. The parcellation into 10 regions is defined from the task-evoked activity across all tasks.",
           "Maps": [
                "atl-MDTB10",
                "con-MDTB01LeftHandMovement",
@@ -230,6 +235,22 @@
           ],
           "ReferencesAndLinks": [
                "King, M., Hernandez-Castillo, C.R., Poldrack, R.R., Ivry, R., and Diedrichsen, J. (2019). Functional Boundaries in the Human Cerebellum revealed by a Multi-Domain Task Battery. Nat. Neurosci."
+          ]
+     },
+     "Nettekoven_unp": {
+          "ShortDesc": "Functional cerebellar atlas from fusion across task-based datasets (unpublished alpha version)",
+          "LongDesc": "Alpha version of functional parcellation into 34 symmetric regions. The map is based on the probabilistic integration of 4 datasets (King et al., 2019; Nakai & Nishimoto, 2010; Individual Brain Charting project, Pinho et al., 2021; and an unpublished high-resolution version of the MDTB). The color scheme reflects the functional similarity of different regions. The map has not been published or peer reviewed. It is a preliminary version for illustrative purposes only, and is subject to change. Do not use or cite without permission.",
+          "Maps": [
+               "atl-NettekovenSym34"
+          ],
+          "Type": [
+               "dseg"
+          ],
+          "MapDesc": [
+               "Symmetric 34-region parcellation based on 4 deep task-based datasets"
+          ],
+          "ReferencesAndLinks": [
+               "Nettekoven, Zhi, Pinho, Shashahani, Diedrichsen (in preparation). Please do not use / cite without permission by authors."
           ]
      }
 }

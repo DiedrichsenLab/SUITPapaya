@@ -7,6 +7,64 @@ The code is extensively based on the repository [rii-mango/Papaya](https://githu
 
 For information on SUIT and an online version of the viewer, please visit [here](diedrichsenlab.org/imaging/suit.htm).
 
+Usage
+------
+Please read below instructions carefully if you want to upload your atlases or functional maps and visible
+in the online [atlas viewer](https://www.diedrichsenlab.org/imaging/AtlasViewer/index.htm)
+
+## Atlas collection structure
+An atlas collection is a folder that contains all files support for visualization in the viewer to be submitted.
+There are some examples in this repo, such as `Buckner_2011`, `King_2019`, ... The abstract structure and
+descriptions of each file is listed below.
+
+    <Project Name>/
+        │
+        └───atl-<XXX>_space-SUIT_dseg.nii (Required if you have at least one atlas to show)
+        │       The nifti file contains label information in SUIT space. This is required file if you
+        │       have a parcellation to show and will be used to display in the viewer. The prefix 
+        │       "atl-" indicates this is an atlas .nii. If you want to show multiple atlases, then 
+        │       please make sure to replace <XXX> with unique atlas name, which will also be used in
+        │       the viewer menu bar.
+        │
+        │
+        └───atl-<XXX>_dseg.label.gii (Required if you have at least one atlas to show)
+        │       The gifti file contains label information in SUIT surface space. This is required if you
+        │       have a parcellation to show and will be used to display in the viewer. The prefix 
+        │       "atl-" indicates this is an atlas .gii. If you want to show multiple atlases, then 
+        │       please make sure to replace <XXX> with unique atlas name, and align with its corresponding
+        │       nii file.
+        │
+        └───atl-<XXX>_space-MNI_dseg.nii (Optional)
+        │       A nifti file contains label information in MNI152 space.
+        │
+        └───atl-<XXX>_desc-confid_space-<XXX>_dseg.nii (Optional)
+        │       The nifti file contains probabilistic atlas information in MNI152 or SUIT space.         
+        │
+        └───atl-<XXX>.lut (Required if you have at least one atlas to show)
+        │       A .lut file contains color information for the labels in the corresponding .nii file.
+        │       please make sure to replace <XXX> with its corresponding .nii and .gii files.
+        │
+        └───atl-<XXX>.tsv (Optional)
+        │       A tsv file contains color information of the parcels in hex format.
+        │
+        └───atlas_description.json (Required)
+        │       A .json file that summarizes the current folder collection and describe each of the 
+        │       files in BIDS template format. Note, the `package_description.json` file is generated
+        │       based on this atlas_description.json file in each of the collection. 
+        │
+        └───con-<XXX>.func.gii (Required if you have at least one contrast to show)
+        │       A func.gii file in SUIT flatmap space for a specific task activation. <XXX> is the 
+        │       name of that task and should be the same as its corresponding .nii file.
+        │
+        └───con-<XXX>_space-SUIT.nii (Required if you have at least one contrast to show)
+        │       A .nii file in SUIT volume space for a specific task activation. <XXX> is the 
+        │       name of that task and should be the same as its corresponding .func.gii file.
+        │
+        └───README.md (Optional)               
+                A README file to describe the folder which used to show in github.
+
+## how to generate .lut file
+A `atl-<XXX>.lut` file is associated to an atlas (parcellation)
 
 SUITPapaya extension
 ------
