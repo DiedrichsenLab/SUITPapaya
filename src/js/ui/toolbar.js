@@ -94,7 +94,7 @@ $.ajax({
     async: false,
     dataType: "json",
     success: data => {
-        atlases = data.atlases;
+        atlases = data;
     },
     error: () => alert("Failed to fetch /data/cerebellar_atlases/package_description.json")
 });
@@ -140,9 +140,9 @@ papaya.ui.Toolbar.MDTB_MENU_DATA = {"label": "Atlases", "icons": null, "action":
 
 papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "File", "icons": null,
     "items": [
-        { "label": "Add local files", "action": "OpenLocal", "type": "file", "hide": papaya.utilities.PlatformUtils.ios },
-        {"type": "spacer"},
-        {"label": "Close All", "action": "CloseAllImages"}
+        { "label": "Add local files", "action": "OpenLocal", "type": "file", "hide": papaya.utilities.PlatformUtils.ios }
+        // {"type": "spacer"},
+        // {"label": "Close All", "action": "CloseAllImages"}
     ]
 };
 
@@ -831,14 +831,14 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             let Niifile = null, Giifile= null;
             for (let i = 0; i < file.length; ++i) {
                 const { name } = file[i];
-                if (["_sp-SUIT.nii", "_sp-MNI.nii", "_space-SUIT_dseg.nii", "_space-MNI_dseg.nii"].some(ext => name.endsWith(ext))) {
+                if ([".nii"].some(ext => name.endsWith(ext))) {
                     Niifile = file[i];
                 } else if (name.endsWith(".gii")) {
                     Giifile = file[i];
                 }
             }
             if (Niifile === null || Giifile === null) {
-                alert("Invalid files: open one '_sp-SUIT.nii / _sp-MNI.nii' image file and one '.gii' surface file");
+                alert("Invalid files: open one '.nii' image file and corresponding '.gii' surface file at same time");
             }
             this.viewer.rangeClicked = false;
             this.viewer.isLabelGii = Giifile.name.endsWith(".label.gii");
