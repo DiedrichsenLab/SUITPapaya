@@ -36,7 +36,9 @@ descriptions of each file is listed below.
         │
         └───atl-<XXX>.lut (Required if you have at least one atlas to show)
         │       A .lut file contains color information for the labels in the corresponding .nii file.
-        │       please make sure to replace <XXX> with its corresponding atlas name
+        |				Currently, the first column of the lut file (lable number) is ignored and the code assumes the
+        |       labels start at 1 on continuously increase. Remove any leading line with 0!  
+        │       please make sure to replace <XXX> with its corresponding atlas name. 
         │
         └───atlas_description.json (Required)
         │       A .json file that summarizes the current folder collection and describe each of the 
@@ -238,7 +240,7 @@ papaya.viewer.ColorTable.TABLE_MDTB10 = {"name": "atl-MDTB10_sp-SUIT", "data": [
     [0.9, 0.988235, 0.854902, 0.462745], [1, 0.466667, 0.462745, 0.964706]], "gradation": true};
 ```
 
-### Menu drop down design using .json file 
+### Adding a new atlas 
 
 The atlases available for viewing under the "con-MDTB" and "Parcellations" menus are pullrf from the `data/cerebellar_atlases` folder. SUITPapaya collects the necessary metadata from the `data/cerebellar_atlases/package_description.json` file.
 
@@ -252,6 +254,20 @@ To include a new atlas:
 ```
 Local atlas and contrast maps can be imported under the "Parcellations > Add local atlas..." option in the viewer. When prompted, open both the corresponding `_sp-SUIT.nii` image file and `.gii` surface file to view it in the viewer.
 ```
+
+### Testing the viewer using vscode and Live Server
+
+* Install the Live Server Plugin 
+* Open the project folder
+* Right-click on the index.html and click open in live server 
+
+### Building a new version of SUITPapaya 
+
+When adding new maps, it is not necessary to build a new version. 
+
+However, if you modify the code, you need to rebuild it: 
+
+QUICK INSTRUCTION
 
 
 ```
