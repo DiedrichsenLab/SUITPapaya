@@ -2,7 +2,7 @@ SuitPapaya
 ====
 Diedrichsen Lab, Western University
 
-SUITPapaya is a project of the Diedrichsen lab to build and html-based viewer for functional and other atlas data for the human cerebellum in SUIT or MNI space, including interactive visualization on the SUIT flatmap. 
+SUITPapaya is a project of the Diedrichsen lab to build and html-based viewer for functional and other atlas data for the human cerebellum in SUIT space, including interactive visualization on the SUIT flatmap. 
 The code is extensively based on the repository [rii-mango/Papaya](https://github.com/rii-mango/Papaya). The package was mostly written by Da Zhi in 2019. For an installed version of the viewer with installed atlases, see [Atlas Viewer](http://www.diedrichsenlab.org/imaging/AtlasViewer).
 
 For information on SUIT and an online version of the viewer, please visit [here](diedrichsenlab.org/imaging/suit.htm).
@@ -32,20 +32,11 @@ descriptions of each file is listed below.
         │       have a parcellation to show and will be used to display in the viewer. The prefix 
         │       "atl-" indicates this is an atlas .gii. If you want to show multiple atlases, then 
         │       please make sure to replace <XXX> with unique atlas name, and align with its corresponding
-        │       nii file.
-        │
-        └───atl-<XXX>_space-MNI_dseg.nii (Optional)
-        │       A nifti file contains label information in MNI152 space.
-        │
-        └───atl-<XXX>_desc-confid_space-<XXX>_dseg.nii (Optional)
-        │       The nifti file contains probabilistic atlas information in MNI152 or SUIT space.         
+        │       nii file. 
         │
         └───atl-<XXX>.lut (Required if you have at least one atlas to show)
         │       A .lut file contains color information for the labels in the corresponding .nii file.
-        │       please make sure to replace <XXX> with its corresponding .nii and .gii files.
-        │
-        └───atl-<XXX>.tsv (Optional)
-        │       A tsv file contains color information of the parcels in hex format.
+        │       please make sure to replace <XXX> with its corresponding atlas name
         │
         └───atlas_description.json (Required)
         │       A .json file that summarizes the current folder collection and describe each of the 
@@ -59,9 +50,6 @@ descriptions of each file is listed below.
         └───con-<XXX>_space-SUIT.nii (Required if you have at least one contrast to show)
         │       A .nii file in SUIT volume space for a specific task activation. <XXX> is the 
         │       name of that task and should be the same as its corresponding .func.gii file.
-        │
-        └───README.md (Optional)               
-                A README file to describe the folder which used to show in github.
 
 ## how to generate .lut file
 A `atl-<XXX>.lut` file is associated to an atlas (parcellation)
@@ -250,17 +238,23 @@ papaya.viewer.ColorTable.TABLE_MDTB10 = {"name": "atl-MDTB10_sp-SUIT", "data": [
     [0.9, 0.988235, 0.854902, 0.462745], [1, 0.466667, 0.462745, 0.964706]], "gradation": true};
 ```
 
-### CSS part: Menu drop down design using .json file (Ongoing)
+### Menu drop down design using .json file 
 
 The atlases available for viewing under the "con-MDTB" and "Parcellations" menus are pullrf from the `data/cerebellar_atlases` folder. SUITPapaya collects the necessary metadata from the `data/cerebellar_atlases/package_description.json` file.
 
 To include a new atlas:
-1. Add the atlas folder to `data/cerebellar_atlases`. The folder name should be prefixed with "atl-" (e.g. "atl-Anatom") if the folder contains atlas maps or "con-" (e.g. "con-MDTB") if the folder contains contrast maps.
-2. Generate a new `package_description.json` file with the `make_atlas_list()` function in `data/cerebellar_atlases/cereb_atlas_process.py`.
+1. Add the atlas folder to `data/cerebellar_atlases`. For structure see the `cerebellar_atlases` repro. . 
+
+2. Generate a new `package_description.json` file with the `make_atlas_list()`. See  `cerebellar_atlases` repro. 
+
+   Menus are being automatically generate from the package_description.json
+
+```
+Local atlas and contrast maps can be imported under the "Parcellations > Add local atlas..." option in the viewer. When prompted, open both the corresponding `_sp-SUIT.nii` image file and `.gii` surface file to view it in the viewer.
 ```
 
-Local atlas and contrast maps can be imported under the "Parcellations > Add local atlas..." option in the viewer. When prompted, open both the corresponding `_sp-SUIT.nii` image file and `.gii` surface file to view it in the viewer.
 
+```
 Papaya
 ------
 Papaya is a pure JavaScript medical research image viewer, supporting [DICOM and NIFTI formats](https://github.com/rii-mango/Papaya/wiki/Supported-Formats), compatible across a [range of web browsers](https://github.com/rii-mango/Papaya/wiki/Requirements).  This orthogonal viewer supports [overlays](https://github.com/rii-mango/Papaya/wiki/Configuration#images), [atlases](https://github.com/rii-mango/Papaya/wiki/How-To-Use-Atlases), [GIFTI & VTK surface data](https://github.com/rii-mango/Papaya/wiki/Configuration#surfaces) and [DTI data](https://github.com/rii-mango/Papaya/wiki/Configuration#dti).  The Papaya UI is [configurable](https://github.com/rii-mango/Papaya/wiki/Configuration) with many [display, menu and control options](https://github.com/rii-mango/Papaya/wiki/Configuration#display-parameters) and can be run on a [web server or as a local, shareable file](https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya).
