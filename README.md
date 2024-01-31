@@ -2,7 +2,7 @@ SuitPapaya
 ====
 Diedrichsen Lab, Western University
 
-SUITPapaya is a project of the Diedrichsen lab to build and html-based viewer for functional and other atlas data for the human cerebellum in SUIT space, including interactive visualization on the SUIT flatmap. 
+SUITPapaya is a project of the Diedrichsen lab to build and html-based viewer for functional and other atlas data for the human cerebellum in SUIT space, including interactive visualization on the SUIT flatmap.
 The code is extensively based on the repository [rii-mango/Papaya](https://github.com/rii-mango/Papaya). The package was mostly written by Da Zhi in 2019. For an installed version of the viewer with installed atlases, see [Atlas Viewer](http://www.diedrichsenlab.org/imaging/AtlasViewer).
 
 For information on SUIT and an online version of the viewer, please visit [here](diedrichsenlab.org/imaging/suit.htm).
@@ -21,36 +21,36 @@ descriptions of each file is listed below.
         │
         └───atl-<XXX>_space-SUIT_dseg.nii (Required if you have at least one atlas to show)
         │       The nifti file contains label information in SUIT space. This is required file if you
-        │       have a parcellation to show and will be used to display in the viewer. The prefix 
-        │       "atl-" indicates this is an atlas .nii. If you want to show multiple atlases, then 
+        │       have a parcellation to show and will be used to display in the viewer. The prefix
+        │       "atl-" indicates this is an atlas .nii. If you want to show multiple atlases, then
         │       please make sure to replace <XXX> with unique atlas name, which will also be used in
         │       the viewer menu bar.
         │
         │
         └───atl-<XXX>_dseg.label.gii (Required if you have at least one atlas to show)
         │       The gifti file contains label information in SUIT surface space. This is required if you
-        │       have a parcellation to show and will be used to display in the viewer. The prefix 
-        │       "atl-" indicates this is an atlas .gii. If you want to show multiple atlases, then 
+        │       have a parcellation to show and will be used to display in the viewer. The prefix
+        │       "atl-" indicates this is an atlas .gii. If you want to show multiple atlases, then
         │       please make sure to replace <XXX> with unique atlas name, and align with its corresponding
-        │       nii file. 
+        │       nii file.
         │
         └───atl-<XXX>.lut (Required if you have at least one atlas to show)
         │       A .lut file contains color information for the labels in the corresponding .nii file.
         |				Currently, the first column of the lut file (lable number) is ignored and the code assumes the
-        |       labels start at 1 on continuously increase. Remove any leading line with 0!  
-        │       please make sure to replace <XXX> with its corresponding atlas name. 
+        |       labels start at 1 on continuously increase. Remove any leading line with 0!
+        │       please make sure to replace <XXX> with its corresponding atlas name.
         │
         └───atlas_description.json (Required)
-        │       A .json file that summarizes the current folder collection and describe each of the 
+        │       A .json file that summarizes the current folder collection and describe each of the
         │       files in BIDS template format. Note, the `package_description.json` file is generated
-        │       based on this atlas_description.json file in each of the collection. 
+        │       based on this atlas_description.json file in each of the collection.
         │
         └───con-<XXX>.func.gii (Required if you have at least one contrast to show)
-        │       A func.gii file in SUIT flatmap space for a specific task activation. <XXX> is the 
+        │       A func.gii file in SUIT flatmap space for a specific task activation. <XXX> is the
         │       name of that task and should be the same as its corresponding .nii file.
         │
         └───con-<XXX>_space-SUIT.nii (Required if you have at least one contrast to show)
-        │       A .nii file in SUIT volume space for a specific task activation. <XXX> is the 
+        │       A .nii file in SUIT volume space for a specific task activation. <XXX> is the
         │       name of that task and should be the same as its corresponding .func.gii file.
 
 ## how to generate .lut file
@@ -59,7 +59,7 @@ A `atl-<XXX>.lut` file is associated to an atlas (parcellation)
 SUITPapaya extension
 ------
 ### SUIT flatmap development
-One of the major changes in SUITPapaya is we adaptively re-allocate the surface viewer object as a webgl object to render 
+One of the major changes in SUITPapaya is we adaptively re-allocate the surface viewer object as a webgl object to render
 the cerebellum flatmap in order to synchronize with the SUIT volume viewer. These changes are mainly at ``src/js/viewer/screensurface.js``
 
 ![ScreenShot](docs/images/hierachical.PNG)
@@ -79,7 +79,7 @@ data/index_3dCoord.csv            --> the mapping from flatmap indices to the 3d
 data/mapping_250_rerefine.csv     --> this file is the projection of the whole cerebellum flatmap into a 250*250 grid
 ```
 
-We take advantage of using the `papaya.viewer.lowerImageBot2` instance as the new flatmap placeholder by re-defining the 
+We take advantage of using the `papaya.viewer.lowerImageBot2` instance as the new flatmap placeholder by re-defining the
 relative positions to the 3d volume object on the page to make it at the right place. Detailed code located at function
 ```
 papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {}
@@ -136,18 +136,18 @@ let fragmentShaderText =
 ```
 mouse cursor pixel -> flatmap 250 resolution mapping -> index -> 3d coordinate of the volume space
 ```
-The real-time mapping of the crosshair from flatmap (surface instance) to the 3d volumes is achieved using `data/mapping_250_rerefine.csv` 
-which projects the whole cerebellum flatmap into a 250*250 resolution grid. The value on the grids is the indices of the flamap (0 value on a 
-grid means this area is outside of the cerebellum flatmap). Then, we use this 250 by 250 flatmap to resize to any given webgl 
-canvas of arbitrary width and height by the ratio. 
+The real-time mapping of the crosshair from flatmap (surface instance) to the 3d volumes is achieved using `data/mapping_250_rerefine.csv`
+which projects the whole cerebellum flatmap into a 250*250 resolution grid. The value on the grids is the indices of the flamap (0 value on a
+grid means this area is outside of the cerebellum flatmap). Then, we use this 250 by 250 flatmap to resize to any given webgl
+canvas of arbitrary width and height by the ratio.
 
-For example, if the webgl object window is width 500 * height 500, then the first 2*2 square pixels at the upper left corner will 
+For example, if the webgl object window is width 500 * height 500, then the first 2*2 square pixels at the upper left corner will
 be projected to the 250 flatmap(0,0) value. And every time the mouse cursor is located to these 4 pixels, it will always be mapped to
 the indices on 250 grid (0,0).
 
 After we get the index of the mouse cursor pixel, we use `data/index_3dCoord.csv ` to lookup the 3d coordinates by the index.
 And this coordinates value will be passed to `viewer.currentCoord.x`, `viewer.currentCoord.y`, and `viewer.currentCoord.z` to
-synchronize the 3d volume instances crosshair. 
+synchronize the 3d volume instances crosshair.
 
 ```
 // Update the current 3D coordinates in the three viewers
@@ -213,7 +213,7 @@ this.viewer.loadImage(NiifileName, true, false, false);
 this.viewer.loadSurface(GiifileName, true, false);
 ```
 
-where `NiifileName` and `GiifileName` should align with the file name that stored in `data/cerebellar_atlases/con-MDTB`. Close the 
+where `NiifileName` and `GiifileName` should align with the file name that stored in `data/cerebellar_atlases/con-MDTB`. Close the
 current top overlay is achieved by:
 
 ```
@@ -240,14 +240,14 @@ papaya.viewer.ColorTable.TABLE_MDTB10 = {"name": "atl-MDTB10_sp-SUIT", "data": [
     [0.9, 0.988235, 0.854902, 0.462745], [1, 0.466667, 0.462745, 0.964706]], "gradation": true};
 ```
 
-### Adding a new atlas 
+### Adding a new atlas
 
 The atlases available for viewing under the "con-MDTB" and "Parcellations" menus are pullrf from the `data/cerebellar_atlases` folder. SUITPapaya collects the necessary metadata from the `data/cerebellar_atlases/package_description.json` file.
 
 To include a new atlas:
-1. Add the atlas folder to `data/cerebellar_atlases`. For structure see the `cerebellar_atlases` repro. . 
+1. Add the atlas folder to `data/cerebellar_atlases`. For structure see the `cerebellar_atlases` repro. .
 
-2. Generate a new `package_description.json` file with the `make_atlas_list()`. See  `cerebellar_atlases` repro. 
+2. Generate a new `package_description.json` file with the `make_atlas_list()`. See  `cerebellar_atlases` repro.
 
    Menus are being automatically generate from the package_description.json
 
@@ -255,17 +255,19 @@ To include a new atlas:
 Local atlas and contrast maps can be imported under the "Parcellations > Add local atlas..." option in the viewer. When prompted, open both the corresponding `_sp-SUIT.nii` image file and `.gii` surface file to view it in the viewer.
 ```
 
+Note that for label atlas, the `.lut` file is also required to be in the same folder as the `.nii` file. In the current version the lut file needs exactly as many lines as the number of parcels in the nii file. The code that the color in the first line is mapped to parcel #1, etc. The lut file cannot contain empty lines or lines with 0 in the first column. I hope that this will be fixed in the future (see Issue #1).
+
 ### Testing the viewer using vscode and Live Server
 
-* Install the Live Server Plugin 
+* Install the Live Server Plugin
 * Open the project folder
-* Right-click on the index.html and click open in live server 
+* Right-click on the index.html and click open in live server
 
-### Building a new version of SUITPapaya 
+### Building a new version of SUITPapaya
 
-When adding new maps, it is not necessary to build a new version. 
+When adding new maps, it is not necessary to build a new version.
 
-However, if you modify the code, you need to rebuild it: 
+However, if you modify the code, you need to rebuild it:
 
 QUICK INSTRUCTION
 
@@ -330,8 +332,8 @@ Acknowledgments
 SUITPapaya uses:
 - rii-mango/Papaya (https://github.com/rii-mango/Papaya/wiki/Supported-Formats)
 - [Daikon](https://github.com/rii-mango/Daikon) for DICOM support
-- [NIFTI-Reader-JS](https://github.com/rii-mango/NIFTI-Reader-JS) for NIFTI support 
-- [GIFTI-Reader-JS](https://github.com/rii-mango/GIFTI-Reader-JS) for GIFTI support 
+- [NIFTI-Reader-JS](https://github.com/rii-mango/NIFTI-Reader-JS) for NIFTI support
+- [GIFTI-Reader-JS](https://github.com/rii-mango/GIFTI-Reader-JS) for GIFTI support
 
 As well as the following third-party libraries:
 - [bowser](https://github.com/ded/bowser) &mdash; for browser detection
